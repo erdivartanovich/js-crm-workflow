@@ -1,0 +1,4 @@
+migrations_stubs/
+ES*.php
+Inspire.php
+!.gitignore

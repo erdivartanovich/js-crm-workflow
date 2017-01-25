@@ -1,0 +1,119 @@
+language: php
+
+php:
+  - 7.0.12
+
+dist: trusty 
+sudo: required
+addons:
+  apt:
+    sources:
+      - elasticsearch-2.x
+    packages:
+      - mysql-server-5.6
+      - mysql-client-core-5.6
+      - mysql-client-5.6
+      - elasticsearch
+
+services:
+  - elasticsearch
+
+cache:
+  directories:
+    - laravel
+
+env:
+  global:
+    - AWS_ACCESS_KEY_ID=AKIAIAAFUBYS4GSVEFVQ
+    - secure: "V+l3nEh95iDjEL5J4QFg0Rj/jmgHl9ES7IrdpOlqSaBat6F/MmuuXco/g+Vr2N8PN7mKzK8ZwwKqFNplDIyOBot5CR8ilx/DsUZjy5hi6eiN97KIUfUEeC9hrgX1adgV5EElpRe0tHAifUUho4tV8O2WJu/nu4FL2HaHUfsbU4YEQQbdCHcHnwKsJEw6PtS7jcIImaV8PL+lp1+mizQUg/SniBqRwMTgmi44gI8TVtHoC0lEFTJQfGz0qI9Ktopso7JJA6W54If6y91BGNMwtKh1zOFK2hzkGtPgMV24DpAi9P49NCEDiqDQfrPkHyVwQh7fXZPy+FBv8hAAoYJnj6PP/qqvNMMGZQXvZ5kLvhIxwFU56mMyzX9Q2/6mdTTeHrSfhUCeJdyj0irTo7CaNAaeXN+qskfGlG4+GbHuaK823/RTOt2QTL29KD0iSOTc/m8bJ3AnBysxXfgeEE3jCnSV4rZwKbcbZeKRYw7mzSU8l9NGc1lxN+h5QWKl1oQUXvFA1HZSPlZJV4Mn5ljzfiD5rAi5yuZvc8dafUs8cbLqljyJ9eZ+pBj5SRLQy5fNAp3XpgMFsa1tb0mgtLP6Se1EU25sgiHm4t8wpomT+A9xuSsEYj9OYtfcNrcOn9l02ELW4NBTLL8l7+02hbc0sy/zomM6hPmY/XjwtqezkVE=" # AWS_SECRET_ACCESS_KEY
+    - secure: "xDmXKd4/dxdW3GZ6bjEIydqBaO+jdjK2oJUHa6Nou8SjETfCiqfrUii67Xtp7sAatWnW6D9I9KB/EB6XLlIvChRibDbAxvnbVvs2HtNkHLwtMFmPVAVcskvaGZrIPfhHrLFE/dmtRKRC9FeYSg27fUDUKNI1KdePwSTFW3kYss9Es+9W73dZjameFSmBH4RnzTsGd3+Noa8PZS8Yq1Sy8S/uYjFeZxZVv8xgWdH/uFgFRAUXL6/hyclM3qsdJvg2nOVQHZCAXwr1PwcYrU3LYenApAjhoi0tiCTX0vIo2REK4TR/UlOV8OoPdL6FKOozAoo3cLpU3isE9Ao+JljUjKkUnwu/eM1qwLrtCcmCJEPPsukD41eeW4oYqVCwN1cYVWRrxgLGAVZRuIKkU1aB8JY8eaQC/T8DWBSoMPMGJD3sWcuQkIZFRh48ZQa3fw8wH2900baK/y9DiTlyo/70ltvqT1bH9bpxpRicRmckKF3RGAtGkN1ycN6fEtUas4rDEDnHz3OUYYePqHOXUfKqwYuldP2zv3L5ItQMCpxX1rABkp78zdPuPtiy+TXk8tE/Lch4JRPXm9mgq6SyaS/wJ7bn3g3fquH7/KC5i+DG02PpXKfInmgtXfvn31eoUZhjOHXwASeXZmpsmEtULiwgY2WDwkAhOERYFtvT46Ousms=" # OAUTH_ACCESS_TOKEN
+    - AWS_DEFAULT_REGION=us-east-1
+    - COMMIT=${TRAVIS_COMMIT::8}
+
+notifications:
+  slack:
+    rooms:
+      - kwdev:dknCQKK3enfxFtNg9gGg2s6C
+    on_success: always
+    on_failure: always
+    on_start: always
+
+# Only watch the master branch and tagged release.
+branches:
+ only:
+   - master
+   - /\d+\.\d+\.\d+/
+   - /\d+\.\d+/
+
+# Commands to be run before your environment runs.
+before_script:
+  - sleep 10
+  - openssl aes-256-cbc -K $encrypted_1e72b09029fe_key -iv $encrypted_1e72b09029fe_iv -in travis_set_composer_auth.sh.enc -out travis_set_composer_auth.sh -d
+  - source ./travis_set_composer_auth.sh
+  - git config --global url."https://$OAUTH_ACCESS_TOKEN:x-oauth-basic@github.com".insteadOf "https://github.com"
+  - cp .env.travis .env
+  - mysql -u root -e 'CREATE DATABASE homestead_test;'
+  - composer self-update -vvv
+  - composer install --no-interaction  -vvv
+  - composer update codacy/coverage --dev -vvv
+  - git clone https://github.com/KWRI/hydrogen-crm resources/hydrogen-crm
+  - php artisan vendor:publish --provider="App\Providers\HydrogenCrmServiceProvider"
+  - composer dump-autoload -vvv
+
+# Commands you want to run that will verify your build.
+# CANNOT DO ANY OF THESE YET
+#script:
+#  - php artisan migrate:install --no-interaction -v
+#  - php artisan migrate:refresh --no-interaction -v
+#  - php artisan es:install --no-interaction -v
+#  - php artisan es:migrate --no-interaction -v
+#  - php artisan db:seed --no-interaction -v
+#  - vendor/bin/phpunit 
+
+#after_script:
+#  - php vendor/bin/codacycoverage clover build/logs/clover.xml -v
+
+before_install:
+# Disable garbage collection and memory limits
+  # - echo -e "machine github.com\n  login $CI_USER_TOKEN" >> ~/.netrc
+  #- sudo pip install awscli
+  - whereis elasticsearch
+  - echo "zend.enable_gc = Off" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "memory_limit -1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+
+matrix:
+  allow_failures:
+    - php: 5.6
+    - php: hhvm
+  fast_finish: true
+
+before_deploy:
+  - zip -qr latest *
+  - mkdir -p dpl_cd_upload
+  - mv latest.zip dpl_cd_upload/latest.zip
+  - cp dpl_cd_upload/latest.zip dpl_cd_upload/latest.zip
+#  - cp dpl_cd_upload/latest.zip dpl_cd_upload/$TRAVIS_COMMIT.zip
+
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    bucket: "hydrogen-crm-workflow"
+    skip_cleanup: true
+    region: us-east-1
+    local-dir: "dpl_cd_upload"
+
+# Uncomment after Testing
+#  - provider: codedeploy
+#    access_key_id: $AWS_ACCESS_KEY_ID
+#    secret_access_key: $AWS_SECRET_ACCESS_KEY
+#    application: hydrogen-crm-workflow
+#    deployment_group: Development
+#    bucket: "hydrogen-crm-workflow"
+#    key: latest.zip
+#    bundle_type: zip
+#    region: us-east-1
+
+after_success:
+  # - aws deploy create-deployment --ignore-application-stop-failures --application-name Satis-Repo --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name Prod --github-location repository=KWRI/satis,commitId=master --region us-east-1 --profile kellerwilliams
+

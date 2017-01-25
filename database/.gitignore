@@ -1,0 +1,4 @@
+migrations/
+es_migrations/
+seeds/
+!.gitignore

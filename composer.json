@@ -1,0 +1,48 @@
+{
+    "name": "kwri/hydrogen-crm-workflow",
+    "description": "Hydrogen crm workflow package",
+    "type": "library",
+    "license": "proprietary",
+    "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://52.55.20.21:8000/",
+            "options": {
+              "http": {
+                "header": [
+                  "Authorization: token 3f06e7ed62a123a3d8f1e7cd520f764018a29996"
+                ]
+              }
+            }
+        }
+    ],
+    "require": {
+        "php": ">=7.0.1",
+        "kwri/hydrogen-crm-foundation": "v1.0.0",
+        "ramsey/uuid": "^3.5",
+        "kwri/kwapi-wrapper": "^1.0",
+        "doctrine/dbal": "^2.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "mockery/mockery": "~0.8"
+    },
+    "autoload": {
+        "classmap": [
+            "database"
+        ],
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\": "tests/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist",
+        "secure-http": false
+    }
+}
