@@ -5,7 +5,10 @@ class PersonContactTypeService extends BaseService {
     constructor() {
         super()
         this.tableName = 'person_contact_types'
-        this.id = 'id'
+    }
+
+    sync(person, ...contactType) {
+        
     }
 }
 
