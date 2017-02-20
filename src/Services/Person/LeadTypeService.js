@@ -5,7 +5,7 @@ class LeadTypeService {
   constructor() {
     this.tableName = 'lead_types'
   }
-  
+
 }
 
 
