@@ -1,11 +1,11 @@
 const knex = require('../../connection')
 const BaseService = require('../BaseService')
 
-class PersonOpportunity extends BaseService {
+class PersonOpportunityService extends BaseService {
   constructor() {
     super()
-    this.tableName = person_opportunities
+    this.tableName = 'person_opportunities'
   }
 }
 
-module.exports = PersonOpportunity;
+module.exports = PersonOpportunityService;
