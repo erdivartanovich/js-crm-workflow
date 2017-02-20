@@ -1,19 +1,42 @@
+const knex = require('../../connection')
+
 class PersonLoginService {
 
-	constructor(PersonLoginRepository) {
-		this.repository = PersonLoginRepository
+	constructor() {
+		this.tablename = 'person_logins'
 	}
 
-	create(login) {
-		return this.repository.create(login)
+	browse() {
+		return knex
+			.select()
+			.from(this.tablename)
+			.get()
 	}
 
-	update(login) {
-		return this.repository.update(login)
+	read(id) {
+		return knex(this.tablename)
+			.where('id', id)
+			.first()
 	}
 
-	delete(login) {
-		return this.repository.delete(login)
+	edit(login) {
+		return knex(this.tablename)
+			.where('id', login.id)
+			.update(login)
+	}
+
+	add(login) {
+		return knex(this.tablename)
+			.insert(login)
+
+	}
+
+	delete(id) {
+		return knex(this.tablename)
+			.where('id', id)
+			.delete()
 	}
 
 }
+
+module.exports = PersonLoginService
