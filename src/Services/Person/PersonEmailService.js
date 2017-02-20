@@ -8,7 +8,7 @@ class PersonEmailService {
 
     constructor() {
         this.tableName = 'person_emails'
-        this.identifier = 2
+        this.id = 2
 
     }
 
@@ -29,7 +29,7 @@ class PersonEmailService {
 
             .from(this.tableName)
 
-            .where('id', this.identifier)
+            .where('id', this.id)
 
             .first()
 
@@ -61,7 +61,7 @@ class PersonEmailService {
 
     return knex(this.tableName)
 
-    .where('id', this.identifier)
+    .where('id', this.id)
 
     .del()
 
