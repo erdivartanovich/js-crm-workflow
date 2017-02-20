@@ -1,9 +1,16 @@
 const knex = require('../../connection')
 
-class PersonFamilyService {
+const moment = require('moment')
+const DATEFORMAT = 'YYYY-MM-DD HH:mm:ss'
 
+//Empty entity object
+var entity = {}
+
+class PersonFamilyService {
+    
     constructor() {
         this.tableName = 'person_family'
+        
     }
 
     browse() {
@@ -19,20 +26,40 @@ class PersonFamilyService {
     }
 
     edit(personFamily) {
+        entity = this.editTimestamp(personFamily)
         return knex(this.tableName)         
-            .where('id', personFamily.id)
-            .update(personFamily)
+            .where('id', entity.id)
+            .update(entity)
     }
 
     add(personFamily) {
+        entity = this.addTimestamp(personFamily)
         return knex(this.tableName)         
-            .insert(personFamily)
+            .insert(entity)
     }
 
     delete(id) {
         return knex(this.tableName)   
             .where('id', id)      
             .del()
+    }
+
+    addTimestamp(payload) {
+        if (! payload.created_at) {
+            payload.created_at = (new moment).format(DATEFORMAT)
+        }
+
+        payload = this.editTimestamp(payload)
+
+        return payload
+    }
+
+    editTimestamp(payload) {
+        if (! payload.updated_at) {
+            payload.updated_at = (new moment).format(DATEFORMAT)
+        }
+
+        return payload
     }
 }
 
