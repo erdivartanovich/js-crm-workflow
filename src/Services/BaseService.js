@@ -5,7 +5,7 @@ const DATEFORMAT = 'YYYY-MM-DD HH:mm:ss'
 class BaseService {
 
     constructor() {
-        this.id = 'id'
+        this.tableName = null
         this.softDelete = true
     }
 
@@ -17,27 +17,25 @@ class BaseService {
     read(id) {
         return knex(this.tableName)
             .where('deleted_at', null)
-            .where(this.id, id)
+            .where('id', id)
             .first()
     }
 
     edit(payload) {
-        payload = this.editTimestamp(payload)
-
+        this.beforeEdit(payload)
         return knex(this.tableName)
-            .where(this.id, payload[this.id])
+            .where('id', payload['id'])
             .update(payload)
     }
 
     add(payload) {
-        payload = this.addTimestamp(payload)
-
+        this.beforeAdd(payload)
         return knex(this.tableName)
             .insert(payload)
     }
 
-    delete(id, isForced) {
-        const query =  knex(this.tableName).where(this.id, id)
+    delete(payload, isForced) {
+        const query =  knex(this.tableName).where('id', payload['id'])
 
         if ( ! isForced && this.softDelete) {
             return query.update({'deleted_at': this.getNow()})
@@ -46,8 +44,8 @@ class BaseService {
         return query.del()
     }
 
-    forceDelete(id) {
-        return this.delete(id, true)
+    forceDelete(payload) {
+        return this.delete(payload, true)
     }
 
     beforeAdd(payload) {
@@ -55,7 +53,9 @@ class BaseService {
             payload.created_at = this.getNow()
         }
 
-        return this.editTimestamp(payload)
+        if (! payload.updated_at) {
+            payload.updated_at = this.getNow()
+        }
     }
 
     beforeEdit(payload) {
@@ -63,12 +63,12 @@ class BaseService {
             payload.updated_at = this.getNow()
         }
 
-        return payload
     }
 
     getNow() {
         return (new moment).format(DATEFORMAT)
     }
+
 }
 
 module.exports = BaseService
