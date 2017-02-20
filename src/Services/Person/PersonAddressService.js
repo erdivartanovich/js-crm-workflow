@@ -4,7 +4,7 @@ class PersonAddressService{
 
     constructor() {
         this.tableName = 'person_addresses'
-        this.identifier = 'id'
+        this.id = 'id'
     }
 
     browse() {
@@ -15,13 +15,13 @@ class PersonAddressService{
         return knex
             .select()
             .from(this.tableName)
-            .where(this.identifier, id)
+            .where(this.id, id)
             .first()
     }
 
     edit(person) {
         return knex(this.tableName).
-               where(this.identifier, person.id).update(person)
+               where(this.id, person.id).update(person)
     }
 
     add(person) {
@@ -29,7 +29,7 @@ class PersonAddressService{
     }
 
     delete(id) {
-      return knex(this.tableName).where(this.identifier,id).del()
+      return knex(this.tableName).where(this.id,id).del()
     }
 }
 
