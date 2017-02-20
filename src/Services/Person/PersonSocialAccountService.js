@@ -18,14 +18,14 @@ class PersonSocialAccountService{
               .first()
     }
 
-    edit(personSocialAccountService){
+    edit(personSocialAccount){
         return knex(this.tableName)
-               .where(this.id, personSocialAccountService.id)
-               .update(personSocialAccountService)
+               .where(this.id, personSocialAccount.id)
+               .update(personSocialAccount)
     }
 
-    add(personSocialAccountService){
-        return knex(this.tableName).insert(personSocialAccountService)
+    add(personSocialAccount){
+        return knex(this.tableName).insert(personSocialAccount)
     }
 
     delete(id){
