@@ -39,15 +39,13 @@ class BaseService {
             .where(this.id, id)
             .del()
     }
-    
+
     addTimestamp(payload) {
         if (! payload.created_at) {
             payload.created_at = (new moment).format(DATEFORMAT)
         }
 
-        payload = this.editTimestamp(payload)
-
-        return payload
+        return this.editTimestamp(payload)
     }
 
     editTimestamp(payload) {
