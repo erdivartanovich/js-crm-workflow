@@ -4,9 +4,9 @@ const DATEFORMAT = 'YYYY-MM-DD HH:mm:ss'
 
 class BaseService {
 
-
     constructor() {
         this.id = 'id'
+        this.softDelete = true
     }
 
     browse() {
@@ -34,15 +34,23 @@ class BaseService {
             .insert(payload)
     }
 
-    delete(id) {
-        return knex(this.tableName)
-            .where(this.id, id)
-            .del()
+    delete(id, isForced) {
+        const query =  knex(this.tableName).where(this.id, id)
+
+        if ( ! isForced && this.softDelete) {
+            return query.update({'deleted_at': this.getNow()})
+        }
+
+        return query.del()
+    }
+
+    forceDelete(id) {
+        return this.delete(id, true)
     }
 
     addTimestamp(payload) {
         if (! payload.created_at) {
-            payload.created_at = (new moment).format(DATEFORMAT)
+            payload.created_at = this.getNow()
         }
 
         return this.editTimestamp(payload)
@@ -50,10 +58,14 @@ class BaseService {
 
     editTimestamp(payload) {
         if (! payload.updated_at) {
-            payload.updated_at = (new moment).format(DATEFORMAT)
+            payload.updated_at = this.getNow()
         }
 
         return payload
+    }
+    
+    getNow() {
+        return (new moment).format(DATEFORMAT)
     }
 }
 
