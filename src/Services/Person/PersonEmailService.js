@@ -23,15 +23,7 @@ class PersonEmailService {
     // read success
     read(id) {
 
-        return knex
-
-            .select()
-
-            .from(this.tableName)
-
-            .where('id', this.id)
-
-            .first()
+        return knex.select().from(this.tableName).where(this.id, id).first()
 
     }
 
@@ -39,11 +31,7 @@ class PersonEmailService {
     // edit success
     edit(email) {
 
-    return knex(this.tableName)
-
-      .where('id', email.id)
-
-      .update(email)
+      return knex(this.tableName).where(this.id, email.id).update(email)
 
   }
 
@@ -51,7 +39,7 @@ class PersonEmailService {
     // add success
     add(email) {
 
-    return knex(this.tableName).insert(email)
+      return knex(this.tableName).insert(email)
 
   }
 
@@ -59,11 +47,7 @@ class PersonEmailService {
     // delete success
     delete(id) {
 
-    return knex(this.tableName)
-
-    .where('id', this.id)
-
-    .del()
+      return knex(this.tableName).where(this.id, id).del()
 
   }
 
