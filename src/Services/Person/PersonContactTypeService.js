@@ -8,6 +8,7 @@ class PersonContactTypeService extends BaseService {
         this.tableName = 'person_contact_types'
     }
 
+    // TODO: Finish sync method
     sync(person, ...contactType) {
         return knex.transaction((trx) => {
             trx.from(this.tableName)
