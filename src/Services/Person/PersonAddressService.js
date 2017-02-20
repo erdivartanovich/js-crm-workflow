@@ -19,17 +19,18 @@ class PersonAddressService{
             .first()
     }
 
-    edit(person) {
-        return knex(this.tableName).
-               where(this.id, person.id).update(person)
+    edit(personAddress) {
+        return knex(this.tableName)
+               .where(this.id, personAddress.id)
+               .update(person)
     }
 
-    add(person) {
-      return knex(this.tableName).insert(person)
+    add(personAddress) {
+      return knex(this.tableName).insert(personAddress)
     }
 
     delete(id) {
-      return knex(this.tableName).where(this.id,id).del()
+      return knex(this.tableName).where(this.id, id).del()
     }
 }
 
