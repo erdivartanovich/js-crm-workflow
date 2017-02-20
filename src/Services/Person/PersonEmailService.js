@@ -8,11 +8,7 @@ class PersonEmailService {
 
     constructor() {
         this.tableName = 'person_emails'
-<<<<<<< 788fbe0d753492a6f85dfdb22030be6ccdca2b65
         this.id = `id`
-=======
-        this.identifier = 2
->>>>>>> #34 Rewrite Person Email Service
 
     }
 
@@ -27,19 +23,15 @@ class PersonEmailService {
     // read success
     read(id) {
 
-<<<<<<< 788fbe0d753492a6f85dfdb22030be6ccdca2b65
-        return knex.select().from(this.tableName).where(this.id, id).first()
-=======
         return knex
 
             .select()
 
             .from(this.tableName)
 
-            .where('id', this.identifier)
+            .where('id', this.id)
 
             .first()
->>>>>>> #34 Rewrite Person Email Service
 
     }
 
@@ -47,15 +39,11 @@ class PersonEmailService {
     // edit success
     edit(email) {
 
-<<<<<<< 788fbe0d753492a6f85dfdb22030be6ccdca2b65
-      return knex(this.tableName).where(this.id, email.id).update(email)
-=======
     return knex(this.tableName)
 
       .where('id', email.id)
 
       .update(email)
->>>>>>> #34 Rewrite Person Email Service
 
   }
 
@@ -63,11 +51,7 @@ class PersonEmailService {
     // add success
     add(email) {
 
-<<<<<<< 788fbe0d753492a6f85dfdb22030be6ccdca2b65
-      return knex(this.tableName).insert(email)
-=======
     return knex(this.tableName).insert(email)
->>>>>>> #34 Rewrite Person Email Service
 
   }
 
@@ -75,15 +59,11 @@ class PersonEmailService {
     // delete success
     delete(id) {
 
-<<<<<<< 788fbe0d753492a6f85dfdb22030be6ccdca2b65
-      return knex(this.tableName).where(this.id, id).del()
-=======
     return knex(this.tableName)
 
-    .where('id', this.identifier)
+    .where('id', this.id)
 
     .del()
->>>>>>> #34 Rewrite Person Email Service
 
   }
 
