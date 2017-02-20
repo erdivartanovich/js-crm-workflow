@@ -1,9 +1,4 @@
-const config = require('../config/config.js')
-const knex = require('knex')({
-    client: 'mysql',
-    connection: config.storage.db1,
-    debug: true
-})
+const knex = require('./connection')
 const program = require('commander')
 
 class Factory {
@@ -69,15 +64,15 @@ program
 .option('-w, --workflow =<n>', 'Workflow id')
 .option('-a, --action <n>', 'Action id')
 .on('--help', () => {
-    console.log('  Examples:');
-    console.log();
-    console.log('    $ index -w workflow_id -a action_id');
-    console.log();
+    console.log('  Examples:')
+    console.log()
+    console.log('    $ index -w workflow_id -a action_id')
+    console.log()
 })
-.parse(process.argv);
+.parse(process.argv)
 
 run(program.workflow, program.action)
 
 if (!process.argv.slice(2).length) {
-  program.help();
+    program.help()
 }
