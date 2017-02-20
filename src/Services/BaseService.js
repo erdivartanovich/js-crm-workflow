@@ -28,18 +28,15 @@ class BaseService {
     }
 
     edit(payload) {
-        //add timestamp before edit to payload
-        this.beforeEdit(payload)
-        
-        //update where table.id = payload.id
+        payload = this.editTimestamp(payload)
+
         return knex(this.tableName)
-            .where('id', payload['id'])
+            .where(this.id, payload[this.id])
             .update(payload)
     }
 
     add(payload) {
-        //add timestamp before edit to payload
-        this.beforeAdd(payload)
+        payload = this.addTimestamp(payload)
 
         //insert payload to current table
         return knex(this.tableName)
@@ -58,34 +55,29 @@ class BaseService {
         return query.del()
     }
 
-    forceDelete(payload) {
-        return this.delete(payload, true)
+    forceDelete(id) {
+        return this.delete(id, true)
     }
 
-    beforeAdd(payload) {
-        //add timestamp on before add
+    addTimestamp(payload) {
         if (! payload.created_at) {
             payload.created_at = this.getNow()
         }
 
-        if (! payload.updated_at) {
-            payload.updated_at = this.getNow()
-        }
+        return this.editTimestamp(payload)
     }
 
-    beforeEdit(payload) {
-        //add timestamp on before edit
+    editTimestamp(payload) {
         if (! payload.updated_at) {
             payload.updated_at = this.getNow()
         }
 
+        return payload
     }
     
     getNow() {
-        //get current timestamp
         return (new moment).format(DATEFORMAT)
     }
-
 }
 
 module.exports = BaseService
