@@ -8,4 +8,4 @@ class PersonPhoneService extends BaseService {
   }
 }
 
-module.exports = new PersonPhoneService
+module.exports = PersonPhoneService
