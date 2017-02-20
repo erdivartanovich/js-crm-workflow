@@ -11,10 +11,12 @@ class BaseService {
 
     browse() {
         return knex(this.tableName)
+            .where('deleted_at', null)
     }
 
     read(id) {
         return knex(this.tableName)
+            .where('deleted_at', null)
             .where(this.id, id)
             .first()
     }
