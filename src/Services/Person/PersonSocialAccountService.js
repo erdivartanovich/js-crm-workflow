@@ -1,5 +1,5 @@
 const knex = require('../../connection')
-<<<<<<< HEAD
+
 const BaseService = require('../BaseService')
 
 class PersonSocialAccountService extends BaseService{
