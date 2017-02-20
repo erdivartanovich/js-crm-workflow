@@ -4,57 +4,71 @@ const DATEFORMAT = 'YYYY-MM-DD HH:mm:ss'
 
 class BaseService {
 
-
     constructor() {
-        this.id = 'id'
+        this.tableName = null
+        this.softDelete = true
     }
 
     browse() {
         return knex(this.tableName)
+            .where('deleted_at', null)
     }
 
     read(id) {
         return knex(this.tableName)
-            .where(this.id, id)
+            .where('deleted_at', null)
+            .where('id', id)
             .first()
     }
 
     edit(payload) {
-        payload = this.editTimestamp(payload)
-
+        this.beforeEdit(payload)
         return knex(this.tableName)
-            .where(this.id, payload[this.id])
+            .where('id', payload['id'])
             .update(payload)
     }
 
     add(payload) {
-        payload = this.addTimestamp(payload)
-
+        this.beforeAdd(payload)
         return knex(this.tableName)
             .insert(payload)
     }
 
-    delete(id) {
-        return knex(this.tableName)
-            .where(this.id, id)
-            .del()
+    delete(payload, isForced) {
+        const query =  knex(this.tableName).where('id', payload['id'])
+
+        if ( ! isForced && this.softDelete) {
+            return query.update({'deleted_at': this.getNow()})
+        }
+
+        return query.del()
     }
 
-    addTimestamp(payload) {
+    forceDelete(payload) {
+        return this.delete(payload, true)
+    }
+
+    beforeAdd(payload) {
         if (! payload.created_at) {
-            payload.created_at = (new moment).format(DATEFORMAT)
+            payload.created_at = this.getNow()
         }
 
-        return this.editTimestamp(payload)
-    }
-
-    editTimestamp(payload) {
         if (! payload.updated_at) {
-            payload.updated_at = (new moment).format(DATEFORMAT)
+            payload.updated_at = this.getNow()
+        }
+    }
+
+    beforeEdit(payload) {
+        if (! payload.updated_at) {
+            payload.updated_at = this.getNow()
         }
 
-        return payload
     }
+    
+    getNow() {
+        return (new moment).format(DATEFORMAT)
+    }
+
 }
 
 module.exports = BaseService
