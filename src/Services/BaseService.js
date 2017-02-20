@@ -64,7 +64,7 @@ class BaseService {
         }
 
     }
-    
+
     getNow() {
         return (new moment).format(DATEFORMAT)
     }
