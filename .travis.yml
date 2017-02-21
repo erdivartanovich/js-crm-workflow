@@ -66,7 +66,8 @@ before_script:
 
 # Commands you want to run that will verify your build.
 # CANNOT DO ANY OF THESE YET
-#script:
+script:
+  - npm run test
 #  - php artisan migrate:install --no-interaction -v
 #  - php artisan migrate:refresh --no-interaction -v
 #  - php artisan es:install --no-interaction -v
