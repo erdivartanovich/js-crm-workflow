@@ -2,8 +2,10 @@ language: php
 
 php:
   - 7.0.12
+node_js:
+  - 7
 
-dist: trusty 
+dist: trusty
 sudo: required
 addons:
   apt:
@@ -68,7 +70,7 @@ before_script:
 #  - php artisan es:install --no-interaction -v
 #  - php artisan es:migrate --no-interaction -v
 #  - php artisan db:seed --no-interaction -v
-#  - vendor/bin/phpunit 
+#  - vendor/bin/phpunit
 
 #after_script:
 #  - php vendor/bin/codacycoverage clover build/logs/clover.xml -v
@@ -116,4 +118,3 @@ deploy:
 
 after_success:
   # - aws deploy create-deployment --ignore-application-stop-failures --application-name Satis-Repo --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name Prod --github-location repository=KWRI/satis,commitId=master --region us-east-1 --profile kellerwilliams
-

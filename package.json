@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha __test__"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +21,7 @@
   "devDependencies": {
     "eslint": "^3.15.0",
     "mocha": "^3.2.0",
-    "testdouble": "^1.11.1"
+    "testdouble": "^1.11.1",
+    "unit.js": "^2.0.0"
   }
 }
