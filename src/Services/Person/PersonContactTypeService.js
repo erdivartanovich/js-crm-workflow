@@ -21,6 +21,7 @@ class PersonContactTypeService extends BaseService {
                 })).into(this.tableName)
             })
         })
+
     }
 }
 
