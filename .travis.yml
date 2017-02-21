@@ -64,6 +64,7 @@ before_script:
   - git clone https://github.com/KWRI/hydrogen-crm resources/hydrogen-crm
   - php artisan vendor:publish --provider="App\Providers\HydrogenCrmServiceProvider"
   - composer dump-autoload -vvv
+  - npm install
 
 # Commands you want to run that will verify your build.
 # CANNOT DO ANY OF THESE YET
