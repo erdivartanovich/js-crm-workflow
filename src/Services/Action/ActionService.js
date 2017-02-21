@@ -9,18 +9,22 @@ class ActionService extends BaseService {
 	}
 
 	syncWorkFlows(action, workflows) {
-
+		//
 	}
 
 	syncRules(action, rules) {
 
 	}
 
-	getActionWorkflow(workflow, action) {
+	fireAction() {
 
 	}
 
-	getRuleActions(workflow, rules) {
+	getExecutor() {
+		
+	}
+
+	getActionWorkflow(workflow, action) {
 
 	}
 }
