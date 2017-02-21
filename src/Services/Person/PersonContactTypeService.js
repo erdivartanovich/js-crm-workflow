@@ -1,3 +1,5 @@
+'use strict'
+
 const BaseService = require('../BaseService')
 const knex = require('../../connection')
 
@@ -9,21 +11,16 @@ class PersonContactTypeService extends BaseService {
     }
 
     // TODO: Finish sync method
-    sync(person, ...contactType) {
-        return knex.transaction((trx) => {
-            trx.from(this.tableName)
-                .where('person_id', person.id)
-                .del()
-                .then(() => {
-                    const normalizedContactType = contactType.map((val) => {
-                        return val.person_id = person.id
-                    })
+    sync(person, contactTypes) {
+        return knex.transaction(trx => {
+            return trx.from(this.tableName).where('person_id', person.id).del().then(() => {
+                return trx.insert(contactTypes.map(type => {
+                    type.person_id = person.id
 
-                    return trx.into(this.tableName)
-                        .insert(normalizedContactType)
-                })
+                    return type
+                })).into(this.tableName)
+            })
         })
-
     }
 }
 
