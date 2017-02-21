@@ -1,12 +1,12 @@
 'use strict'
 
 const sourcePath = '../../../src'
-const ActionTriggerService = require(sourcePath + '/Services/Workflow/ActionTriggerService')
+const PersonLoginService = require(sourcePath + '/Services/Person/PersonLoginService')
 var tracker = require('mock-knex').getTracker()
 
-const testObj = new ActionTriggerService()
+const testObj = new PersonLoginService()
 
-describe('ActionTriggerService', () => {
+describe('PersonLoginService', () => {
 
 
 
@@ -25,7 +25,7 @@ describe('ActionTriggerService', () => {
 
     describe('#browse()' , () => {
         it('should return a valid query', (done) => {
-            const browseQuery = 'select * from `action_triggers` where `deleted_at` is null'
+            const browseQuery = 'select * from `person_logins` where `deleted_at` is null'
 
             testObj.browse(2).then(result => {
                 result.sql.should.equals(browseQuery)
@@ -38,7 +38,7 @@ describe('ActionTriggerService', () => {
 
     describe('#read()' , () => {
         it('should return a valid query', (done) => {
-            const readQuery = 'select * from `action_triggers` where `deleted_at` is null and `id` = ? limit ?'
+            const readQuery = 'select * from `person_logins` where `deleted_at` is null and `id` = ? limit ?'
             const readId = 5
             const limit = 1
 
@@ -55,16 +55,16 @@ describe('ActionTriggerService', () => {
 
     describe('#edit()' , () => {
         it('should return a valid query', (done) => {
-            const editQuery = 'update `action_triggers` set `action_id` = ?, `id` = ?, `updated_at` = ? where `id` = ?'
+            const editQuery = 'update `person_logins` set `id` = ?, `person_id` = ?, `updated_at` = ? where `id` = ?'
             const editObject = {
-                id: 1, 'action_id': 77
+                id: 2, 'person_id': 30
             }
 
             testObj.edit(editObject).then(result => {
                 result.sql.should.equals(editQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(editObject.action_id)
-                result.bindings[1].should.equals(editObject.id)
+                result.bindings[1].should.equals(editObject.person_id)
+                result.bindings[0].should.equals(editObject.id)
                 result.bindings[2].should.equals(testObj.getNow())
                 result.bindings[3].should.equals(editObject.id)
 
@@ -75,14 +75,14 @@ describe('ActionTriggerService', () => {
 
     describe('#add()' , () => {
         it('should return a valid query', (done) => {
-            const addQuery = 'insert into `action_triggers` (`action_id`, `created_at`, `updated_at`) values (?, ?, ?)'
-            const addPersonId = 10
+            const addQuery = 'insert into `person_logins` (`created_at`, `person_id`, `updated_at`) values (?, ?, ?)'
+            const addPersonId = 31
 
-            testObj.add({'action_id': addPersonId}).then(result => {
+            testObj.add({'person_id': addPersonId}).then(result => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
-                result.bindings[1].should.equals(testObj.getNow())
-                result.bindings[0].should.equals(addPersonId)
+                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[1].should.equals(addPersonId)
                 result.bindings[2].should.equals(testObj.getNow())
 
                 done()
@@ -92,7 +92,7 @@ describe('ActionTriggerService', () => {
 
     describe('#delete()' , () => {
         it('should return a valid query for soft delete', (done) => {
-            const deleteQuery = 'update `action_triggers` set `deleted_at` = ? where `id` = ?'
+            const deleteQuery = 'update `person_logins` set `deleted_at` = ? where `id` = ?'
             const deleteId = 12
 
             testObj.delete({'id': deleteId}).then(result => {
@@ -106,7 +106,7 @@ describe('ActionTriggerService', () => {
         })
 
         it('should return a valid query for forced delete', (done) => {
-            const deleteQuery = 'delete from `action_triggers` where `id` = ?'
+            const deleteQuery = 'delete from `person_logins` where `id` = ?'
             const deleteId = 12
 
             testObj.delete({'id': deleteId}, true).then(result => {
