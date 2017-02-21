@@ -1,3 +1,5 @@
+'use strict'
+
 const basePath = '../../../src'
 const PersonContactTypeService = require(basePath + '/Services/Person/PersonContactTypeService')
 var tracker = require('mock-knex').getTracker()
