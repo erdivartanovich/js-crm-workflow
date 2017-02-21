@@ -8,7 +8,7 @@ class BaseService {
      */
     constructor() {
         //set tablename to null, when extends need to intialize it with string value
-        //softDelete flag is set to default = true 
+        //softDelete flag is set to default = true
         this.tableName = null
         this.softDelete = true
     }
@@ -20,7 +20,7 @@ class BaseService {
     }
 
     read(id) {
-        //select from current table where table.id=id 
+        //select from current table where table.id=id
         return knex(this.tableName)
             .where('deleted_at', null)
             .where('id', id)
@@ -31,7 +31,7 @@ class BaseService {
         payload = this.editTimestamp(payload)
 
         return knex(this.tableName)
-            .where(this.id, payload[this.id])
+            .where('id', payload['id'])
             .update(payload)
     }
 
@@ -46,7 +46,7 @@ class BaseService {
     delete(payload, isForced) {
         //create query delete
         const query =  knex(this.tableName).where('id', payload['id'])
-        
+
         //if isForced and isSoftDelete then add deleted timestamp
         if ( ! isForced && this.softDelete) {
             return query.update({'deleted_at': this.getNow()})
@@ -74,7 +74,7 @@ class BaseService {
 
         return payload
     }
-    
+
     getNow() {
         return (new moment).format(DATEFORMAT)
     }
