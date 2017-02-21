@@ -53,16 +53,13 @@ before_script:
   - sleep 10
   - curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
   - sudo apt-get install -y nodejs
-  - openssl aes-256-cbc -K $encrypted_1e72b09029fe_key -iv $encrypted_1e72b09029fe_iv -in travis_set_composer_auth.sh.enc -out travis_set_composer_auth.sh -d
-  - source ./travis_set_composer_auth.sh
-  - echo $OAUTH_ACCESS_TOKEN
-  - git config --global url."https://$OAUTH_ACCESS_TOKEN:x-oauth-basic@github.com".insteadOf "https://github.com"
+  # - git config --global url."https://$OAUTH_ACCESS_TOKEN:x-oauth-basic@github.com".insteadOf "https://github.com"
   - cp .env.travis .env
   - mysql -u root -e 'CREATE DATABASE homestead_test;'
   - composer self-update -vvv
   - composer install --no-interaction  -vvv
   - composer update codacy/coverage --dev -vvv
-  - git clone https://github.com/refactory-id/kw-crm resources/kw-crm
+  - git clone git@github.com:KWRI/hydrogen-crm resources/hydrogen-crm
   - php artisan vendor:publish --provider="App\Providers\HydrogenCrmServiceProvider"
   - composer dump-autoload -vvv
   - npm install
