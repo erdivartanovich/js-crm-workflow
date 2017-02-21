@@ -59,7 +59,7 @@ before_script:
   - composer self-update -vvv
   - composer install --no-interaction  -vvv
   - composer update codacy/coverage --dev -vvv
-  - git clone git@github.com:KWRI/hydrogen-crm resources/hydrogen-crm
+  - git clone git@github.com:refactory-id/kw-crm resources/hydrogen-crm
   - php artisan vendor:publish --provider="App\Providers\HydrogenCrmServiceProvider"
   - composer dump-autoload -vvv
   - npm install
