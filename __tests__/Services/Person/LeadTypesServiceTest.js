@@ -5,27 +5,19 @@ const LeadTypeService = require(Path + 'Services/Person/LeadTypeService')
 const knex = require(Path + 'connection')
 const mockDB = require('mock-knex')
 
-
 var chai = require('chai')
 var should = chai.should()
 var chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
-
-
-const db = knex({
-    client: 'mysql'
-})
 
 const tracker = mockDB.getTracker()
 
 tracker.install()
 
 before(() => {
-    mockDB.mock(db)
 })
 
 after(() => {
-    mockDB.unmock(db)
     tracker.uninstall()
 })
 
