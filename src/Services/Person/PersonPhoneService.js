@@ -1,3 +1,4 @@
+'use strict'
 const knex = require('../../connection')
 const BaseService = require('../BaseService')
 
