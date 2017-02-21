@@ -1,3 +1,5 @@
+'use strict'
+
 const BaseService = require('../BaseService')
 
 class ActionTriggerService extends BaseService {
