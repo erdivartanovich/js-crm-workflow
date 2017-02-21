@@ -24,15 +24,23 @@ const expectedResults = [
 
 describe('PersonContactTypeService', () => {
 
-    beforeEach(() => {
+    before(() => {
         tracker.install()
 
-        tracker.on('query', function checkResult(query) {
-            query.response(expectedResults)
+        tracker.on('query', function checkResult(query, step) {
+          console.log('current step', step);
+          switch(step){
+            case 1:
+              query.response(expectedResults)
+              break
+            case 2:
+              query.response(expectedResults[2])
+              break
+          }
         })
     })
 
-    afterEach(() => {
+    after(() => {
         tracker.uninstall()
     })
 
