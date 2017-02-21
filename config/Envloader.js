@@ -1,3 +1,5 @@
+'use strict'
+
 const dotenv = require('dotenv').config()
 
 class Observer
@@ -7,7 +9,7 @@ class Observer
     }
 
     whenEmpty(defaultValue) {
-        return (typeof this.value == "undefined" ) ? defaultValue : this.value;
+        return (typeof this.value == 'undefined' ) ? defaultValue : this.value
     }
 }
 
