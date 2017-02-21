@@ -1,5 +1,8 @@
-language: php
-
+language: node
+branches:
+  only:
+    - develop
+    - master
 php:
   - 7.0.12
 node_js:
