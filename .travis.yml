@@ -1,8 +1,5 @@
-language: node_js
-branches:
-  only:
-    - develop
-    - master
+language: php
+
 php:
   - 7.0.12
 node_js:
@@ -15,12 +12,6 @@ addons:
     sources:
       - elasticsearch-2.x
     packages:
-      - php-7.0-cli
-      - php-7.0-common
-      - php-7.0-json
-      - php-7.0-mcrypt
-      - php-7.0-mbstring
-      - php-7.0-curl
       - mysql-server-5.6
       - mysql-client-core-5.6
       - mysql-client-5.6
