@@ -11,7 +11,7 @@ class PersonContactTypeService extends BaseService {
     // TODO: Finish sync method
     sync(person, contactTypes) {
         return knex.transaction(trx => {
-            return trx.from(this.tableName).where('person_id', person.id).del().then(() => {                
+            return trx.from(this.tableName).where('person_id', person.id).del().then(() => {
                 return trx.insert(contactTypes.map(type => {
                     type.person_id = person.id
 

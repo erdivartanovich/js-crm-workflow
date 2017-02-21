@@ -1,0 +1,2 @@
+--recursive
+--require ./__tests__/common.js
