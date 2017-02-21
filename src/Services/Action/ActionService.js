@@ -24,3 +24,5 @@ class ActionService extends BaseService {
 
 	}
 }
+
+module.exports = ActionService
