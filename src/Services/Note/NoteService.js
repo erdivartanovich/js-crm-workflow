@@ -1,9 +1,10 @@
 'use strict'
 
+const knex = require('../../connection')
 const BaseService = require('../BaseService')
 
 class NoteService extends BaseService {
-    constuctor() {
+    constructor() {
         super()
         this.tableName = 'notes'
     }
