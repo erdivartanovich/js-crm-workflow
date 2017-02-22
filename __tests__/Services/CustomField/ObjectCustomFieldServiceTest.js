@@ -62,7 +62,7 @@ describe('ObjectCustomFieldService', () => {
                 result.bindings[0].should.equals(editObject.custom_custom_field_id)
                 result.bindings[1].should.equals(editObject.id)
                 result.bindings[2].should.equals(editObject.object_type)
-                result.bindings[3].should.equals(testObj.getNow())
+                result.bindings[3].should.not.empty
                 result.bindings[4].should.equals(editObject.id)
                 done()
             }).catch(err => done(err))
@@ -79,10 +79,10 @@ describe('ObjectCustomFieldService', () => {
             testObj.add(addObject).then(result => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(addObject.custom_field_id)
                 result.bindings[2].should.equals(addObject.object_type)
-                result.bindings[3].should.equals(testObj.getNow())
+                result.bindings[3].should.not.empty
                 done()
             }).catch(err => done(err))
         })
@@ -96,7 +96,7 @@ describe('ObjectCustomFieldService', () => {
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(deleteId)
                 done()
             }).catch(err => done(err))
