@@ -89,19 +89,46 @@ describe('====== BaseServiceTest ========', () => {
         })
     })
 
-    // describe('#delete()' , () => {
-    //     it('should return a valid query for soft delete', (done) => {
-            
-    //     })
+    describe('#delete()' , () => {
+        it('should return a valid query for soft delete', (done) => {
+            const deleteQuery = 'update `' + tableName + '` set `deleted_at` = ? where `id` = ?'
+            const deleteId = 12
 
-    //     it('should return a valid query for forced delete', (done) => {
-            
-    //     })
+            testClass.delete({'id': deleteId}).then(result => {
+                result.sql.should.equals(deleteQuery)
+                result.method.should.equals('update')
+                result.bindings[0].should.equals(testClass.getNow())
+                result.bindings[1].should.equals(deleteId)
+                done()
+            }).catch(err => done(err))
+        })
 
-    //     it('should return a valid query for hard delete', (done) => {
-            
-    //     })
-    // })
+        it('should return a valid query for forced delete', (done) => {
+            const deleteQuery = 'delete from `' + tableName + '` where `id` = ?'
+            const deleteId = 12
+
+            testClass.delete({'id': deleteId}, true).then(result => {
+                result.sql.should.equals(deleteQuery)
+                result.method.should.equals('del')
+                result.bindings[0].should.equals(deleteId)
+                done()
+            }).catch(err => done(err))
+        })
+
+        it('should return a valid query for hard delete', (done) => {
+            const deleteQuery = 'delete from `' + tableName + '` where `id` = ?'
+            const deleteId = 12
+
+            testClass.softDelete = false
+
+            testClass.delete({'id': deleteId}).then(result => {
+                result.sql.should.equals(deleteQuery)
+                result.method.should.equals('del')
+                result.bindings[0].should.equals(deleteId)
+                done()
+            }).catch(err => done(err))
+        })
+    })
 
 
 })
