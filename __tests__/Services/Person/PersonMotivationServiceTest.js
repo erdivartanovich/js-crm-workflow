@@ -64,7 +64,7 @@ describe('PersonMotivationService', () => {
                 result.method.should.equals('update')
                 result.bindings[1].should.equals(editObject.person_id)
                 result.bindings[0].should.equals(editObject.id)
-                result.bindings[2].should.equals(testObj.getNow())
+                result.bindings[2].should.not.empty
                 result.bindings[3].should.equals(editObject.id)
 
                 done()
@@ -80,9 +80,9 @@ describe('PersonMotivationService', () => {
             testObj.add({'person_id': addPersonId}).then(result => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(addPersonId)
-                result.bindings[2].should.equals(testObj.getNow())
+                result.bindings[2].should.not.empty
 
                 done()
             }).catch(err => done(err))
@@ -97,7 +97,7 @@ describe('PersonMotivationService', () => {
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(deleteId)
 
                 done()

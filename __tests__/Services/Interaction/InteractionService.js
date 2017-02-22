@@ -64,7 +64,7 @@ describe('InteractionService', () => {
                 result.bindings[2].should.equals(editObject.interaction_type)
                 result.bindings[3].should.equals(editObject.person_id)
                 result.bindings[4].should.equals(editObject.phone_number)
-                result.bindings[5].should.equals(testObj.getNow())
+                result.bindings[5].should.not.empty
                 result.bindings[6].should.equals(editObject.user_id)
                 done()
             }).catch(err => done(err))
@@ -81,12 +81,12 @@ describe('InteractionService', () => {
             testObj.add(addObject).then(result => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(addObject.initiated_by)
                 result.bindings[2].should.equals(addObject.interaction_type)
                 result.bindings[3].should.equals(addObject.person_id)
                 result.bindings[4].should.equals(addObject.phone_number)
-                result.bindings[5].should.equals(testObj.getNow())
+                result.bindings[5].should.not.empty
                 result.bindings[6].should.equals(addObject.user_id)
                 done()
             }).catch(err => done(err))
@@ -101,7 +101,7 @@ describe('InteractionService', () => {
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(deleteId)
                 done()
             }).catch(err => done(err))

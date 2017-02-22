@@ -45,7 +45,7 @@ describe('StageService', () => {
                 result.method.should.equals('update')
                 result.bindings[0].should.equals(editObject.id)
                 result.bindings[1].should.equals(editObject.label)
-                result.bindings[2].should.equals(testObj.getNow())
+                result.bindings[2].should.not.empty
                 result.bindings[3].should.equals(editObject.user_id)
                 result.bindings[4].should.equals(editObject.id)
                 done()
@@ -77,8 +77,8 @@ describe('StageService', () => {
             testObj.add({'user_id': addPersonId}).then(result => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(testObj.getNow())
-                result.bindings[1].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
+                result.bindings[1].should.not.empty
                 result.bindings[2].should.equals(addPersonId)
                 done()
             }).catch(err => done(err))
@@ -93,7 +93,7 @@ describe('StageService', () => {
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(deleteId)
                 done()
             }).catch(err => done(err))

@@ -63,7 +63,7 @@ describe('PersonAddressService', () => {
                 result.bindings[1].should.equals(editObject.id)
                 result.bindings[2].should.equals(editObject.is_primary)
                 result.bindings[3].should.equals(editObject.person_id)
-                result.bindings[4].should.equals(testObj.getNow())
+                result.bindings[4].should.not.empty
                 result.bindings[5].should.equals(editObject.id)
                 done()
             }).catch(err => done(err))
@@ -81,10 +81,10 @@ describe('PersonAddressService', () => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
                 result.bindings[0].should.equals(addObject.address_line_1)
-                result.bindings[1].should.equals(testObj.getNow())
+                result.bindings[1].should.not.empty
                 result.bindings[2].should.equals(addObject.is_primary)
                 result.bindings[3].should.equals(addObject.person_id)
-                result.bindings[4].should.equals(testObj.getNow())
+                result.bindings[4].should.not.empty
                 done()
             }).catch(err => done(err))
         })
@@ -98,7 +98,7 @@ describe('PersonAddressService', () => {
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(deleteId)
                 done()
             }).catch(err => done(err))

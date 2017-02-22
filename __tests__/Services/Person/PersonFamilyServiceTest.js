@@ -93,7 +93,7 @@ describe('=== PersonFamilyServiceTest ===', () => {
             testClass.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testClass.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(deleteId)
                 done()
             }).catch(err => done(err))

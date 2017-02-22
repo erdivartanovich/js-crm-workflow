@@ -65,7 +65,7 @@ describe('PersonOpportunityService', () => {
                 result.bindings[0].should.equals(editObject.id)
                 result.bindings[1].should.equals(editObject.person_id)
                 result.bindings[2].should.equals(editObject.sale)
-                result.bindings[3].should.equals(testObj.getNow())
+                result.bindings[3].should.not.empty
                 result.bindings[4].should.equals(editObject.id)
                 done()
             }).catch(err => done(err))
@@ -80,9 +80,9 @@ describe('PersonOpportunityService', () => {
             testObj.add({'person_id': addPersonId}).then(result => {
                 result.sql.should.equals(expectQuery.add)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(addPersonId)
-                result.bindings[2].should.equals(testObj.getNow())
+                result.bindings[2].should.not.empty
                 done()
             }).catch(err => done(err))
         })
@@ -96,7 +96,7 @@ describe('PersonOpportunityService', () => {
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(expectQuery.del)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(deleteId)
                 done()
             }).catch(err => done(err))

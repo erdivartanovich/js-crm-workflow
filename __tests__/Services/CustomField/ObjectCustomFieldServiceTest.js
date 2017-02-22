@@ -1,13 +1,13 @@
-'use strict'
 
+'use strict'
 const basePath = '../../../src'
-const PersonSocialAccountService = require(basePath + '/Services/Person/PersonSocialAccountService')
+const ObjectCustomFieldService = require(basePath + '/Services/CustomField/ObjectCustomFieldService')
 var tracker = require('mock-knex').getTracker()
 
-const testObj = new PersonSocialAccountService()
-const tableName = 'person_social_accounts'
+const testObj = new ObjectCustomFieldService()
+const tableName = 'object_custom_fields'
 
-describe('PersonSocialAccountService', () => {
+describe('ObjectCustomFieldService', () => {
 
     before(() => {
         tracker.install()
@@ -25,7 +25,7 @@ describe('PersonSocialAccountService', () => {
         it('should return a valid query', (done) => {
             const browseQuery = 'select * from `' + tableName + '` where `deleted_at` is null'
 
-            testObj.browse(2).then(result => {
+            testObj.browse().then(result => {
                 result.sql.should.equals(browseQuery)
                 result.method.should.equals('select')
                 done()
@@ -35,14 +35,14 @@ describe('PersonSocialAccountService', () => {
 
     describe('#read()' , () => {
         it('should return a valid query', (done) => {
-            const readQuery = 'select * from `' + tableName + '` where `deleted_at` is null and `id` = ? limit ?'
-            const readId = 2
+            const query = 'select * from `' + tableName + '` where `deleted_at` is null and `id` = ? limit ?'
+            const id = 2
             const limit = 1
 
-            testObj.read(readId).then(result => {
-                result.sql.should.equals(readQuery)
+            testObj.read(id).then(result => {
+                result.sql.should.equals(query)
                 result.method.should.equals('first')
-                result.bindings[0].should.equals(readId)
+                result.bindings[0].should.equals(id)
                 result.bindings[1].should.equals(limit)
                 done()
             }).catch(err => done(err))
@@ -51,20 +51,19 @@ describe('PersonSocialAccountService', () => {
 
     describe('#edit()' , () => {
         it('should return a valid query', (done) => {
-            const editQuery = 'update `' + tableName + '` set `id` = ?, `identifier` = ?, `person_id` = ?, `social_network_id` = ?, `updated_at` = ? where `id` = ?'
+            const editQuery = 'update `' + tableName + '` set `custom_custom_field_id` = ?, `id` = ?, `object_type` = ?, `updated_at` = ? where `id` = ?'
             const editObject = {
-                id: 1, 'person_id': 57, 'identifier': 2, 'social_network_id': 4
+                custom_custom_field_id: 1, id: 2, object_type: 'persona'
             }
 
             testObj.edit(editObject).then(result => {
                 result.sql.should.equals(editQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(editObject.id)
-                result.bindings[1].should.equals(editObject.identifier)
-                result.bindings[2].should.equals(editObject.person_id)
-                result.bindings[3].should.equals(editObject.social_network_id)
-                result.bindings[5].should.equals(editObject.id)
-                result.bindings[4].should.not.empty
+                result.bindings[0].should.equals(editObject.custom_custom_field_id)
+                result.bindings[1].should.equals(editObject.id)
+                result.bindings[2].should.equals(editObject.object_type)
+                result.bindings[3].should.not.empty
+                result.bindings[4].should.equals(editObject.id)
                 done()
             }).catch(err => done(err))
         })
@@ -72,19 +71,18 @@ describe('PersonSocialAccountService', () => {
 
     describe('#add()' , () => {
         it('should return a valid query', (done) => {
-            const addQuery = 'insert into `' + tableName + '` (`created_at`, `identifier`, `person_id`, `social_network_id`, `updated_at`) values (?, ?, ?, ?, ?)'
+            const addQuery = 'insert into `' + tableName + '` (`created_at`, `custom_field_id`, `object_type`, `updated_at`) values (?, ?, ?, ?)'
             const addObject = {
-                'person_id': 57, 'identifier': 2, 'social_network_id': 4
+                custom_field_id: 2, object_type: 'persona'
             }
 
             testObj.add(addObject).then(result => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
                 result.bindings[0].should.not.empty
-                result.bindings[1].should.equals(addObject.identifier)
-                result.bindings[2].should.equals(addObject.person_id)
-                result.bindings[3].should.equals(addObject.social_network_id)
-                result.bindings[4].should.not.empty
+                result.bindings[1].should.equals(addObject.custom_field_id)
+                result.bindings[2].should.equals(addObject.object_type)
+                result.bindings[3].should.not.empty
                 done()
             }).catch(err => done(err))
         })
@@ -93,7 +91,7 @@ describe('PersonSocialAccountService', () => {
     describe('#delete()' , () => {
         it('should return a valid query for soft delete', (done) => {
             const deleteQuery = 'update `' + tableName + '` set `deleted_at` = ? where `id` = ?'
-            const deleteId = 12
+            const deleteId = 1
 
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
@@ -106,7 +104,7 @@ describe('PersonSocialAccountService', () => {
 
         it('should return a valid query for forced delete', (done) => {
             const deleteQuery = 'delete from `' + tableName + '` where `id` = ?'
-            const deleteId = 12
+            const deleteId = 1
 
             testObj.delete({'id': deleteId}, true).then(result => {
                 result.sql.should.equals(deleteQuery)
@@ -118,7 +116,7 @@ describe('PersonSocialAccountService', () => {
 
         it('should return a valid query for hard delete', (done) => {
             const deleteQuery = 'delete from `' + tableName + '` where `id` = ?'
-            const deleteId = 12
+            const deleteId = 1
 
             testObj.softDelete = false
 
@@ -130,4 +128,6 @@ describe('PersonSocialAccountService', () => {
             }).catch(err => done(err))
         })
     })
+
+
 })

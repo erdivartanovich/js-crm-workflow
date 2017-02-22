@@ -59,7 +59,7 @@ describe('CustomFieldService', () => {
                 result.method.should.equals('update')
                 result.bindings[0].should.equals(mockObject.field_id)
                 result.bindings[1].should.equals(mockObject.id)
-                result.bindings[2].should.equals(testClass.getNow())
+                result.bindings[2].should.not.empty
                 result.bindings[3].should.equals(mockObject.value)
                 result.bindings[4].should.equals(mockObject.id)
                 done()
@@ -75,10 +75,10 @@ describe('CustomFieldService', () => {
             testClass.add(mockObject).then(result => {
                 result.sql.should.equals(query)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(testClass.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(mockObject.field_id)
                 result.bindings[2].should.equals(mockObject.id)
-                result.bindings[3].should.equals(testClass.getNow())
+                result.bindings[3].should.not.empty
                 result.bindings[4].should.equals(mockObject.value)
 
                 done()
@@ -94,7 +94,7 @@ describe('CustomFieldService', () => {
             testClass.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testClass.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(deleteId)
                 done()
             }).catch(err => done(err))

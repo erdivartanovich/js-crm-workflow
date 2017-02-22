@@ -65,7 +65,7 @@ describe('CompanyService', () => {
         result.bindings[0].should.equals(editObject.address)
         result.bindings[1].should.equals(editObject.id)
         result.bindings[2].should.equals(editObject.name)
-        result.bindings[3].should.equals(testObj.getNow())
+        result.bindings[3].should.not.empty
         result.bindings[4].should.equals(editObject.id)
         done()
       }).catch(err => done(err))
@@ -84,9 +84,9 @@ describe('CompanyService', () => {
         result.sql.should.equals(expectQuery.add)
         result.method.should.equals('insert')
         result.bindings[0].should.equals(objCompany.address)
-        result.bindings[1].should.equals(testObj.getNow())
+        result.bindings[1].should.not.empty
         result.bindings[2].should.equals(objCompany.name)
-        result.bindings[3].should.equals(testObj.getNow())
+        result.bindings[3].should.not.empty
         done()
       }).catch(err => done(err))
     })
@@ -100,7 +100,7 @@ describe('CompanyService', () => {
       testObj.delete({'id': deleteId}).then(result => {
         result.sql.should.equals(expectQuery.del)
         result.method.should.equals('update')
-        result.bindings[0].should.equals(testObj.getNow())
+        result.bindings[0].should.not.empty
         result.bindings[1].should.equals(deleteId)
         done()
       }).catch(err => done(err))
