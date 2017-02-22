@@ -71,7 +71,7 @@ describe('RuleService', () => {
             }).catch(err => done(err))
         })
     })
-2
+
         })
 
         it('should return a valid query for forced delete', (done) => {
