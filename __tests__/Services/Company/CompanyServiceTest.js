@@ -1,13 +1,13 @@
 const basePath = '../../../src'
-const CompanyService = require(basePath + '/Services/Person/CompanyService')
+const CompanyService = require(basePath + '/Services/Company/CompanyService')
 var tracker = require('mock-knex').getTracker()
 
 const testObj = new CompanyService()
 const expectQuery = {
     browse: 'select * from `companies` where `deleted_at` is null',
     read: 'select * from `companies` where `deleted_at` is null and `id` = ? limit ?',
-    edit: 'update `companies` set `` = ?, `id` = ?, `person_id` = ?, `updated_at` = ? where `id` = ?',
-    add: 'insert into `companies` (`created_at`, `person_id`, `updated_at`) values (?, ?, ?)',
+    edit: 'update `companies` set `address` = ?, `id` = ?, `name` = ?, `updated_at` = ? where `id` = ?',
+    add: 'insert into `companies` (`address`, `created_at`, `name`, `updated_at`) values (?, ?, ?, ?)',
     del: 'update `companies` set `deleted_at` = ? where `id` = ?'
 }
 
@@ -56,15 +56,15 @@ describe('CompanyService', () => {
     describe('#edit()' , () => {
         it('should return a valid query', (done) => {
             const editObject = {
-                id: 1, 'person_id': 1, 'country_code': 'ID'
+                id: 1, name: 'Kemmer, Wintheiser and Jakubowski', address: 'Arizona street'
             }
 
             testObj.edit(editObject).then(result => {
                 result.sql.should.equals(expectQuery.edit)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(editObject.country_code)
+                result.bindings[0].should.equals(editObject.address)
                 result.bindings[1].should.equals(editObject.id)
-                result.bindings[2].should.equals(editObject.person_id)
+                result.bindings[2].should.equals(editObject.name)
                 result.bindings[3].should.equals(testObj.getNow())
                 result.bindings[4].should.equals(editObject.id)
                 done()
@@ -75,14 +75,18 @@ describe('CompanyService', () => {
 // add test which insert data to DB
     describe('#add()' , () => {
         it('should return a valid query', (done) => {
-            const addPersonId = 12
+            const objCompany = {
+              name: 'Kemmer, Wintheiser and Jakubowski',
+              address: 'Arizona street'
+            }
 
-            testObj.add({'person_id': addPersonId}).then(result => {
+            testObj.add(objCompany).then(result => {
                 result.sql.should.equals(expectQuery.add)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(testObj.getNow())
-                result.bindings[1].should.equals(addPersonId)
-                result.bindings[2].should.equals(testObj.getNow())
+                result.bindings[0].should.equals(objCompany.address)
+                result.bindings[1].should.equals(testObj.getNow())
+                result.bindings[2].should.equals(objCompany.name)
+                result.bindings[3].should.equals(testObj.getNow())
                 done()
             }).catch(err => done(err))
         })
@@ -114,4 +118,5 @@ describe('CompanyService', () => {
                 done()
             }).catch(err => done(err))
         })
-  opportunities
+    })
+})
