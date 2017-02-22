@@ -1,4 +1,4 @@
-const knex = require('../../connection')
+'use strict'
 
 const BaseService = require('../BaseService')
 
