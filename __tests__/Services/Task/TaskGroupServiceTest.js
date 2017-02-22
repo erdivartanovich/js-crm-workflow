@@ -34,7 +34,7 @@ describe('TaskGroupService', () =>{
     describe('#read', () => {
         it('Should return a valid query result', () => {
             const query = 'select * from `task_groups` where `deleted_at` is null and `id` = ? limit ?'
-            const resultObj = {id: 32}
+            const resultObj = {id: 52}
             return obj.read(resultObj).then((result) => {
                 result.sql.should.equals(query)
                 result.method.should.equals('first')
@@ -47,7 +47,7 @@ describe('TaskGroupService', () =>{
     describe('#edit', () => {
         it('Could edit a column or row using update query', () => {
             const query = 'update `task_groups` set `id` = ?, `updated_at` = ? where `id` = ?'
-            const resultObj = {id: 45}
+            const resultObj = {id: 21}
             return obj.edit(resultObj).then((result) => {
                 result.sql.should.equals(query)
                 result.method.should.equals('update')
@@ -61,7 +61,7 @@ describe('TaskGroupService', () =>{
     describe('#add', () => {
         it('Could insert a record to database table using insert query', () => {
             const query = 'insert into `task_groups` (`created_at`, `id`, `updated_at`) values (?, ?, ?)'
-            const resultObj = {id: 200, created_at: null ,updated_at: '2016-02-11 21:29:42'}
+            const resultObj = {id: 124, created_at: null ,updated_at: '2016-02-11 21:29:42'}
             return obj.add(resultObj).then((result) => {
                 result.sql.should.equals(query)
                 result.method.should.equals('insert')
@@ -75,7 +75,7 @@ describe('TaskGroupService', () =>{
     describe('#delete', () => {
         it('Could delete a record from database table using delete query', () => {
             const query = 'delete from `task_groups` where `id` = ?'
-            const resultObj = {id: 97}
+            const resultObj = {id: 65}
             return obj.delete(resultObj, true).then((result) => {
                 result.sql.should.equals(query)
                 result.method.should.equals('del')
