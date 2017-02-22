@@ -72,19 +72,20 @@ describe('RuleService', () => {
         })
     })
 
-        })
+    describe('#delete()' , () => {
+      it('should return a valid query for forced delete', (done) => {
+          const deleteQuery = 'delete from `rules` where `id` = ?'
+          const deleteId = 12
 
-        it('should return a valid query for forced delete', (done) => {
-            const deleteQuery = 'delete from `rules` where `id` = ?'
-            const deleteId = 12
+          testObj.delete({'id': deleteId}, true).then(result => {
+              result.sql.should.equals(deleteQuery)
+              result.method.should.equals('del')
+              result.bindings[0].should.equals(deleteId)
 
-            testObj.delete({'id': deleteId}, true).then(result => {
-                result.sql.should.equals(deleteQuery)
-                result.method.should.equals('del')
-                result.bindings[0].should.equals(deleteId)
-
-                done()
-            }).catch(err => done(err))
-        })
+              done()
+          }).catch(err => done(err))
+      })
     })
+
+
 })
