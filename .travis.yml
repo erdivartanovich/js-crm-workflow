@@ -2,8 +2,10 @@ language: php
 
 php:
   - 7.0.12
+node_js:
+  - 7
 
-dist: trusty 
+dist: trusty
 sudo: required
 addons:
   apt:
@@ -42,33 +44,36 @@ notifications:
 branches:
  only:
    - master
+   - develop
    - /\d+\.\d+\.\d+/
    - /\d+\.\d+/
 
 # Commands to be run before your environment runs.
 before_script:
   - sleep 10
-  - openssl aes-256-cbc -K $encrypted_1e72b09029fe_key -iv $encrypted_1e72b09029fe_iv -in travis_set_composer_auth.sh.enc -out travis_set_composer_auth.sh -d
-  - source ./travis_set_composer_auth.sh
-  - git config --global url."https://$OAUTH_ACCESS_TOKEN:x-oauth-basic@github.com".insteadOf "https://github.com"
+  - curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+  - sudo apt-get install -y nodejs
+  # - git config --global url."https://$OAUTH_ACCESS_TOKEN:x-oauth-basic@github.com".insteadOf "https://github.com"
   - cp .env.travis .env
   - mysql -u root -e 'CREATE DATABASE homestead_test;'
   - composer self-update -vvv
   - composer install --no-interaction  -vvv
   - composer update codacy/coverage --dev -vvv
-  - git clone https://github.com/KWRI/hydrogen-crm resources/hydrogen-crm
+  - git clone git@github.com:refactory-id/kw-crm resources/hydrogen-crm
   - php artisan vendor:publish --provider="App\Providers\HydrogenCrmServiceProvider"
   - composer dump-autoload -vvv
+  - npm install
 
 # Commands you want to run that will verify your build.
 # CANNOT DO ANY OF THESE YET
-#script:
+script:
+  - npm run test
 #  - php artisan migrate:install --no-interaction -v
 #  - php artisan migrate:refresh --no-interaction -v
 #  - php artisan es:install --no-interaction -v
 #  - php artisan es:migrate --no-interaction -v
 #  - php artisan db:seed --no-interaction -v
-#  - vendor/bin/phpunit 
+#  - vendor/bin/phpunit
 
 #after_script:
 #  - php vendor/bin/codacycoverage clover build/logs/clover.xml -v
