@@ -65,7 +65,7 @@ describe('MessageBankService', () => {
                 result.method.should.equals('update')
                 result.bindings[0].should.equals(editObject.id)
                 result.bindings[1].should.equals(editObject.message_type)
-                result.bindings[2].should.equals(testObj.getNow())
+                result.bindings[2].should.not.empty
                 result.bindings[3].should.equals(editObject.id)
 
                 done()
@@ -81,9 +81,9 @@ describe('MessageBankService', () => {
             testObj.add({'message_type': addPersonId}).then(result => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(addPersonId)
-                result.bindings[2].should.equals(testObj.getNow())
+                result.bindings[2].should.not.empty
 
                 done()
             }).catch(err => done(err))
@@ -98,7 +98,7 @@ describe('MessageBankService', () => {
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(deleteId)
 
                 done()

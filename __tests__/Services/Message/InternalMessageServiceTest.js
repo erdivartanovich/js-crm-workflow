@@ -61,7 +61,7 @@ describe('InternalMessageService', () => {
                 result.method.should.equals('update')
                 result.bindings[0].should.equals(editObject.id)
                 result.bindings[1].should.equals(editObject.message)
-                result.bindings[2].should.equals(testObj.getNow())
+                result.bindings[2].should.not.empty
                 result.bindings[3].should.equals(editObject.id)
                 done()
             }).catch(err => done(err))
@@ -81,12 +81,12 @@ describe('InternalMessageService', () => {
             testObj.add(newMessage).then(result => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(newMessage.from_user_id)
                 result.bindings[2].should.equals(newMessage.message)
                 result.bindings[3].should.equals(newMessage.status)
                 result.bindings[4].should.equals(newMessage.to_user_id)
-                result.bindings[5].should.equals(testObj.getNow())
+                result.bindings[5].should.not.empty
                 done()
             }).catch(err => done(err))
         })
@@ -100,7 +100,7 @@ describe('InternalMessageService', () => {
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(deleteId)
                 done()
             }).catch(err => done(err))

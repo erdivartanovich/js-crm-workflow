@@ -64,7 +64,7 @@ describe('RuleService', () => {
               result.method.should.equals('update')
               result.bindings[0].should.equals(editObject.action_id)
               result.bindings[1].should.equals(editObject.id)
-              result.bindings[2].should.equals(testObj.getNow())
+              result.bindings[2].should.not.empty
               result.bindings[3].should.equals(editObject.id)
 
                 done()

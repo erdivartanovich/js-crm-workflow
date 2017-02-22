@@ -64,7 +64,7 @@ describe('LogService', () => {
                 result.bindings[2].should.equals(editObject.info)
                 result.bindings[3].should.equals(editObject.status)
                 result.bindings[5].should.equals(editObject.user_id)
-                result.bindings[4].should.equals(testObj.getNow())
+                result.bindings[4].should.not.empty
                 result.bindings[6].should.equals(editObject.workflow_id)
                 done()
             }).catch(err => done(err))
@@ -82,10 +82,10 @@ describe('LogService', () => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
                 result.bindings[0].should.equals(addObject.action_id)
-                result.bindings[1].should.equals(testObj.getNow())
+                result.bindings[1].should.not.empty
                 result.bindings[2].should.equals(addObject.info)
                 result.bindings[3].should.equals(addObject.status)
-                result.bindings[4].should.equals(testObj.getNow())
+                result.bindings[4].should.not.empty
                 result.bindings[5].should.equals(addObject.user_id)
                 result.bindings[6].should.equals(addObject.workflow_id)
                 done()
@@ -101,7 +101,7 @@ describe('LogService', () => {
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(deleteId)
                 done()
             }).catch(err => done(err))

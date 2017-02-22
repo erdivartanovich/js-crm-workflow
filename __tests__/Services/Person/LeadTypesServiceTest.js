@@ -52,7 +52,7 @@ describe('LeadTypeService', () => {
                 result.sql.should.equals(query)
                 result.method.should.equals('update')
                 result.bindings[0].should.equals(2)
-                result.bindings[1].should.equals(obj.getNow())
+                result.bindings[1].should.not.empty
                 result.bindings[2].should.equals(2)
             })
         })
@@ -64,9 +64,9 @@ describe('LeadTypeService', () => {
             return obj.add({id: 1}).then((result) => {
                 result.sql.should.equals(query)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(obj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(1)
-                result.bindings[2].should.equals(obj.getNow())
+                result.bindings[2].should.not.empty
             })
         })
     })
