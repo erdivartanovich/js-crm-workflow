@@ -41,7 +41,7 @@ class BaseService {
     }
 
     add(payload) {
-	 //add timestamp before edit to payload
+        //add timestamp before edit to payload
         //insert payload to current table
         this.beforeAdd(payload)
         return knex(this.tableName)
