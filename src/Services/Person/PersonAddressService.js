@@ -1,4 +1,5 @@
-const knex = require('../../connection')
+'use strict'
+
 const BaseService = require('../BaseService')
 
 class PersonAddressService extends BaseService{
