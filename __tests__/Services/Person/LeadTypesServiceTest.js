@@ -2,12 +2,12 @@
 
 const Path = '../../../src/'
 const LeadTypeService = require(Path + 'Services/Person/LeadTypeService')
+
 const obj = new LeadTypeService()
 const tracker = mockDB.getTracker()
 
-
 describe('LeadTypeService', () => {
-    
+
     before(() => {
         // mockDB.mock(db)
         tracker.install()
