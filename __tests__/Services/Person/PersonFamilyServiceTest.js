@@ -1,18 +1,13 @@
 'use strict'
 
-const basePath = '../../src'
-const BaseService = require(basePath + '/Services/BaseService')
+const basePath = '../../../src'
+const PersonFamilyService = require(basePath + '/Services/Person/PersonFamilyService')
 var tracker = require('mock-knex').getTracker()
 
-const testClass = new BaseService()
-/**
- * should test the base-service against specifif table name, 
- * because base-service's table name is null by default
- */
-testClass.tableName = 'person_family'
+const testClass = new PersonFamilyService()
 const tableName = testClass.tableName
 
-describe('====== BaseServiceTest ========', () => {
+describe('=== PersonFamilyServiceTest ===', () => {
 
     before(() => {
         tracker.install()
@@ -29,11 +24,12 @@ describe('====== BaseServiceTest ========', () => {
     describe('#browse()' , () => {
         it('should return a valid query', (done) => {
             const query = 'select * from `' + tableName + '` where `deleted_at` is null'
+
             testClass.browse().then(result => {
                 result.sql.should.equals(query)
                 result.method.should.equals('select')
                 done()
-            }).catch(err => done(err))    
+            }).catch(err => done(err))
         })
     })
 
@@ -89,19 +85,45 @@ describe('====== BaseServiceTest ========', () => {
         })
     })
 
-    // describe('#delete()' , () => {
-    //     it('should return a valid query for soft delete', (done) => {
-            
-    //     })
+    describe('#delete()' , () => {
+        it('should return a valid query for soft delete', (done) => {
+            const deleteQuery = 'update `' + tableName + '` set `deleted_at` = ? where `id` = ?'
+            const deleteId = 12
 
-    //     it('should return a valid query for forced delete', (done) => {
-            
-    //     })
+            testClass.delete({'id': deleteId}).then(result => {
+                result.sql.should.equals(deleteQuery)
+                result.method.should.equals('update')
+                result.bindings[0].should.equals(testClass.getNow())
+                result.bindings[1].should.equals(deleteId)
+                done()
+            }).catch(err => done(err))
+        })
 
-    //     it('should return a valid query for hard delete', (done) => {
-            
-    //     })
-    // })
+        it('should return a valid query for forced delete', (done) => {
+            const deleteQuery = 'delete from `' + tableName + '` where `id` = ?'
+            const deleteId = 12
 
+            testClass.delete({'id': deleteId}, true).then(result => {
+                result.sql.should.equals(deleteQuery)
+                result.method.should.equals('del')
+                result.bindings[0].should.equals(deleteId)
+                done()
+            }).catch(err => done(err))
+        })
+
+        it('should return a valid query for hard delete', (done) => {
+            const deleteQuery = 'delete from `' + tableName + '` where `id` = ?'
+            const deleteId = 12
+
+            testClass.softDelete = false
+
+            testClass.delete({'id': deleteId}).then(result => {
+                result.sql.should.equals(deleteQuery)
+                result.method.should.equals('del')
+                result.bindings[0].should.equals(deleteId)
+                done()
+            }).catch(err => done(err))
+        })
+    })
 
 })
