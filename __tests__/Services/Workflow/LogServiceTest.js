@@ -1,13 +1,13 @@
 'use strict'
 
 const basePath = '../../../src'
-const PersonEmailService = require(basePath + '/Services/Person/PersonEmailService')
+const LogService = require(basePath + '/Services/Workflow/LogService')
 var tracker = require('mock-knex').getTracker()
 
-const testObj = new PersonEmailService()
-const tableName = 'person_emails'
+const testObj = new LogService()
+const tableName = 'action_logs'
 
-describe('PersonContactTypeService', () => {
+describe('LogService', () => {
 
     before(() => {
         tracker.install()
@@ -33,26 +33,6 @@ describe('PersonContactTypeService', () => {
         })
     })
 
-    describe('#edit()' , () => {
-        it('should return a valid query', (done) => {
-            const editQuery = 'update `' + tableName + '` set `contact_type_id` = ?, `id` = ?, `person_id` = ?, `updated_at` = ? where `id` = ?'
-            const editObject = {
-                id: 1, 'person_id': 1, 'contact_type_id': 1
-            }
-
-            testObj.edit(editObject).then(result => {
-                result.sql.should.equals(editQuery)
-                result.method.should.equals('update')
-                result.bindings[0].should.equals(editObject.contact_type_id)
-                result.bindings[1].should.equals(editObject.id)
-                result.bindings[2].should.equals(editObject.person_id)
-                result.bindings[3].should.equals(testObj.getNow())
-                result.bindings[4].should.equals(editObject.id)
-                done()
-            }).catch(err => done(err))
-        })
-    })
-
     describe('#read()' , () => {
         it('should return a valid query', (done) => {
             const readQuery = 'select * from `' + tableName + '` where `deleted_at` is null and `id` = ? limit ?'
@@ -69,17 +49,45 @@ describe('PersonContactTypeService', () => {
         })
     })
 
+    describe('#edit()' , () => {
+        it('should return a valid query', (done) => {
+            const editQuery = 'update `' + tableName + '` set `action_id` = ?, `id` = ?, `info` = ?, `status` = ?, `updated_at` = ?, `user_id` = ?, `workflow_id` = ? where `id` = ?'
+            const editObject = {
+                action_id: 1, id: 2, info: 'set set', status: 0, user_id: 1, workflow_id: 2
+            }
+
+            testObj.edit(editObject).then(result => {
+                result.sql.should.equals(editQuery)
+                result.method.should.equals('update')
+                result.bindings[0].should.equals(editObject.action_id)
+                result.bindings[1].should.equals(editObject.id)
+                result.bindings[2].should.equals(editObject.info)
+                result.bindings[3].should.equals(editObject.status)
+                result.bindings[5].should.equals(editObject.user_id)
+                result.bindings[4].should.equals(testObj.getNow())
+                result.bindings[6].should.equals(editObject.workflow_id)
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
     describe('#add()' , () => {
         it('should return a valid query', (done) => {
-            const addQuery = 'insert into `' + tableName + '` (`created_at`, `person_id`, `updated_at`) values (?, ?, ?)'
-            const addPersonId = 12
+            const addQuery = 'insert into `' + tableName + '` (`action_id`, `created_at`, `info`, `status`, `updated_at`, `user_id`, `workflow_id`) values (?, ?, ?, ?, ?, ?, ?)'
+            const addObject = {
+                action_id: 4, info: 'alert', status: 'alert', user_id: 2, workflow_id: 3
+            }
 
-            testObj.add({'person_id': addPersonId}).then(result => {
+            testObj.add(addObject).then(result => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(testObj.getNow())
-                result.bindings[1].should.equals(addPersonId)
-                result.bindings[2].should.equals(testObj.getNow())
+                result.bindings[0].should.equals(addObject.action_id)
+                result.bindings[1].should.equals(testObj.getNow())
+                result.bindings[2].should.equals(addObject.info)
+                result.bindings[3].should.equals(addObject.status)
+                result.bindings[4].should.equals(testObj.getNow())
+                result.bindings[5].should.equals(addObject.user_id)
+                result.bindings[6].should.equals(addObject.workflow_id)
                 done()
             }).catch(err => done(err))
         })
@@ -88,7 +96,7 @@ describe('PersonContactTypeService', () => {
     describe('#delete()' , () => {
         it('should return a valid query for soft delete', (done) => {
             const deleteQuery = 'update `' + tableName + '` set `deleted_at` = ? where `id` = ?'
-            const deleteId = 12
+            const deleteId = 8
 
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
@@ -101,7 +109,7 @@ describe('PersonContactTypeService', () => {
 
         it('should return a valid query for forced delete', (done) => {
             const deleteQuery = 'delete from `' + tableName + '` where `id` = ?'
-            const deleteId = 12
+            const deleteId = 8
 
             testObj.delete({'id': deleteId}, true).then(result => {
                 result.sql.should.equals(deleteQuery)
@@ -113,7 +121,7 @@ describe('PersonContactTypeService', () => {
 
         it('should return a valid query for hard delete', (done) => {
             const deleteQuery = 'delete from `' + tableName + '` where `id` = ?'
-            const deleteId = 12
+            const deleteId = 8
 
             testObj.softDelete = false
 

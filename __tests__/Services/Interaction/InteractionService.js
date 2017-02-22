@@ -1,13 +1,13 @@
 'use strict'
 
 const basePath = '../../../src'
-const PersonEmailService = require(basePath + '/Services/Person/PersonEmailService')
+const InteractionService = require(basePath + '/Services/Interaction/InteractionService')
 var tracker = require('mock-knex').getTracker()
 
-const testObj = new PersonEmailService()
-const tableName = 'person_emails'
+const testObj = new InteractionService()
+const tableName = 'interactions'
 
-describe('PersonContactTypeService', () => {
+describe('InteractionService', () => {
 
     before(() => {
         tracker.install()
@@ -33,26 +33,6 @@ describe('PersonContactTypeService', () => {
         })
     })
 
-    describe('#edit()' , () => {
-        it('should return a valid query', (done) => {
-            const editQuery = 'update `' + tableName + '` set `contact_type_id` = ?, `id` = ?, `person_id` = ?, `updated_at` = ? where `id` = ?'
-            const editObject = {
-                id: 1, 'person_id': 1, 'contact_type_id': 1
-            }
-
-            testObj.edit(editObject).then(result => {
-                result.sql.should.equals(editQuery)
-                result.method.should.equals('update')
-                result.bindings[0].should.equals(editObject.contact_type_id)
-                result.bindings[1].should.equals(editObject.id)
-                result.bindings[2].should.equals(editObject.person_id)
-                result.bindings[3].should.equals(testObj.getNow())
-                result.bindings[4].should.equals(editObject.id)
-                done()
-            }).catch(err => done(err))
-        })
-    })
-
     describe('#read()' , () => {
         it('should return a valid query', (done) => {
             const readQuery = 'select * from `' + tableName + '` where `deleted_at` is null and `id` = ? limit ?'
@@ -69,17 +49,45 @@ describe('PersonContactTypeService', () => {
         })
     })
 
+    describe('#edit()' , () => {
+        it('should return a valid query', (done) => {
+            const editQuery = 'update `' + tableName + '` set `id` = ?, `initiated_by` = ?, `interaction_type` = ?, `person_id` = ?, `phone_number` = ?, `updated_at` = ?, `user_id` = ? where `id` = ?'
+            const editObject = {
+                id: 1, initiated_by: 3, interaction_type: 3, person_id: 57, phone_number: '080808080', user_id: 5
+            }
+
+            testObj.edit(editObject).then(result => {
+                result.sql.should.equals(editQuery)
+                result.method.should.equals('update')
+                result.bindings[0].should.equals(editObject.id)
+                result.bindings[1].should.equals(editObject.initiated_by)
+                result.bindings[2].should.equals(editObject.interaction_type)
+                result.bindings[3].should.equals(editObject.person_id)
+                result.bindings[4].should.equals(editObject.phone_number)
+                result.bindings[5].should.equals(testObj.getNow())
+                result.bindings[6].should.equals(editObject.user_id)
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
     describe('#add()' , () => {
         it('should return a valid query', (done) => {
-            const addQuery = 'insert into `' + tableName + '` (`created_at`, `person_id`, `updated_at`) values (?, ?, ?)'
-            const addPersonId = 12
+            const addQuery = 'insert into `' + tableName + '` (`created_at`, `initiated_by`, `interaction_type`, `person_id`, `phone_number`, `updated_at`, `user_id`) values (?, ?, ?, ?, ?, ?, ?)'
+            const addObject = {
+                initiated_by: 4, interaction_type: 4, person_id: 57, phone_number: '07232153245', user_id: 3
+            }
 
-            testObj.add({'person_id': addPersonId}).then(result => {
+            testObj.add(addObject).then(result => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
                 result.bindings[0].should.equals(testObj.getNow())
-                result.bindings[1].should.equals(addPersonId)
-                result.bindings[2].should.equals(testObj.getNow())
+                result.bindings[1].should.equals(addObject.initiated_by)
+                result.bindings[2].should.equals(addObject.interaction_type)
+                result.bindings[3].should.equals(addObject.person_id)
+                result.bindings[4].should.equals(addObject.phone_number)
+                result.bindings[5].should.equals(testObj.getNow())
+                result.bindings[6].should.equals(addObject.user_id)
                 done()
             }).catch(err => done(err))
         })
