@@ -52,7 +52,7 @@ describe('TagService', () => {
         })
     })
 
-// edit test that change country_code value
+// edit test that change tag value
     describe('#edit()' , () => {
         it('should return a valid query', (done) => {
             const editObject = {
@@ -64,7 +64,7 @@ describe('TagService', () => {
                 result.method.should.equals('update')
                 result.bindings[0].should.equals(editObject.id)
                 result.bindings[1].should.equals(editObject.tag)
-                result.bindings[2].should.equals(testObj.getNow())
+                result.bindings[2].should.to.exist
                 result.bindings[3].should.equals(editObject.id)
                 done()
             }).catch(err => done(err))
@@ -79,9 +79,9 @@ describe('TagService', () => {
             testObj.add({'tag': addTag}).then(result => {
                 result.sql.should.equals(expectQuery.add)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.to.exist
                 result.bindings[1].should.equals(addTag)
-                result.bindings[2].should.equals(testObj.getNow())
+                result.bindings[2].should.to.exist
                 done()
             }).catch(err => done(err))
         })
@@ -95,7 +95,7 @@ describe('TagService', () => {
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(expectQuery.del)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.to.exist
                 result.bindings[1].should.equals(deleteId)
                 done()
             }).catch(err => done(err))
