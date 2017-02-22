@@ -135,4 +135,54 @@ describe('UserService', () => {
             }).catch(err => done(err))
         })
     })
+
+    describe('#retrieveByToken()', () => {
+        it('should return a valid query', (done) => {
+            const token = 'testToken'
+            const id = 1
+            const query = 'select * from `users` where `deleted_at` is null and `id` = ? and `remember_token` = ? limit ?'
+
+            testObj.retrieveByToken(id, token).then(result => {
+                result.sql.should.equals(query)
+                result.method.should.equals('first')
+                result.bindings[0].should.equals(id)
+                result.bindings[1].should.equals(token)
+                result.bindings[2].should.equals(1)
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
+    describe('#retrieveByCredentials()', () => {
+        it('should return a valid query', (done) => {
+            const query = 'select * from `users` where `email` = ? and `deleted_at` is null limit ?'
+            const credentials = {
+                email: 'test@example.com'
+            }
+
+            testObj.retrieveByCredentials(credentials).then(result => {
+                result.sql.should.equals(query)
+                result.method.should.equals('first')
+                result.bindings[0].should.equals(credentials.email)
+                result.bindings[1].should.equals(1)
+                done()
+            }).catch(err => done(err))
+        })
+
+        it('should return a valid query when password passed', (done) => {
+            const query = 'select * from `users` where `email` = ? and `deleted_at` is null limit ?'
+            const credentials = {
+                email: 'test@example.com',
+                password: 'passwordIsIgnored',
+            }
+
+            testObj.retrieveByCredentials(credentials).then(result => {
+                result.sql.should.equals(query)
+                result.method.should.equals('first')
+                result.bindings[0].should.equals(credentials.email)
+                result.bindings[1].should.equals(1)
+                done()
+            }).catch(err => done(err))
+        })
+    })
 })

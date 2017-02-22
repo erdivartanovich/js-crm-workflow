@@ -1,6 +1,7 @@
 'use strict'
 
 const BaseService = require('../BaseService')
+const knex = require('../../connection')
 
 class UserService extends BaseService {
 
@@ -10,25 +11,25 @@ class UserService extends BaseService {
     }
 
     retrieveByToken(id, token) {
-        // TODO: implements retrieveByToken
-    }
-
-    validateCredentials(user, credentials) {
-        // TODO: implements validateCredentials
+        return this.read(id).where('remember_token', token)
     }
 
     retrieveByCredentials(credentials) {
-        // TODO: implements retrieveByCredentials
-    }
+        if (typeof credentials == 'undefined' || credentials.length == 0) {
+            return undefined
+        }
 
-    changePassword(user, password) {
-        // TODO: implements changePassword
+        let checkingCredentials = {}
 
-        // generate hash for password
-        const generatedPassword = password
+        for (const key in credentials) {
+            if (key == 'password') {
+                continue
+            }
 
-        // Assign newly added password into user
-        return super.edit({id: user.id, password: generatedPassword})
+            checkingCredentials[key] = credentials[key]
+        }
+
+        return knex(this.tableName).where(checkingCredentials).where('deleted_at', null).first()
     }
 }
 
