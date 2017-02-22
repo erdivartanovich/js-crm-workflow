@@ -66,7 +66,7 @@ describe('UserService', () => {
                 result.bindings[1].should.equals(editObject.first_name)
                 result.bindings[2].should.equals(editObject.id)
                 result.bindings[3].should.equals(editObject.last_name)
-                result.bindings[4].should.equals(testObj.getNow())
+                result.bindings[4].should.not.empty
                 result.bindings[5].should.equals(editObject.id)
                 done()
             }).catch(err => done(err))
@@ -85,11 +85,11 @@ describe('UserService', () => {
             testObj.add(testUser).then(result => {
                 result.sql.should.equals(insertQuery)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(testUser.email)
                 result.bindings[2].should.equals(testUser.first_name)
                 result.bindings[3].should.equals(testUser.last_name)
-                result.bindings[4].should.equals(testObj.getNow())
+                result.bindings[4].should.not.empty
                 done()
             }).catch(err => done(err))
         })
@@ -103,7 +103,7 @@ describe('UserService', () => {
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(deleteId)
                 done()
             }).catch(err => done(err))

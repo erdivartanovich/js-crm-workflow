@@ -49,7 +49,7 @@ describe('NoteService', () => {
                 result.sql.should.equals(query)
                 result.method.should.equals('update')
                 result.bindings[0].should.equals(resultObj.id)
-                result.bindings[1].should.equals(obj.getNow())
+                result.bindings[1].should.not.empty
                 result.bindings[2].should.equals(resultObj.id)
             })
         })
@@ -62,9 +62,9 @@ describe('NoteService', () => {
             return obj.add(resultObj).then((result) => {
                 result.sql.should.equals(query)
                 result.method.should.equals('insert')
-                result.bindings[0].should.equals(obj.getNow())
+                result.bindings[0].should.not.empty
                 result.bindings[1].should.equals(resultObj.id)
-                result.bindings[2].should.equals(obj.getNow())
+                result.bindings[2].should.not.empty
             })
         })
     })
