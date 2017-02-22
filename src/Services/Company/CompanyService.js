@@ -26,7 +26,7 @@ class CompanyService extends BaseService {
    * inverse of isEqual()
    */
   isNotEqual(company, other) {
-    return !isEqual(company, other)
+    return !this.isEqual(company, other)
   }
 
 }
