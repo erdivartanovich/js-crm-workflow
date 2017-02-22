@@ -2,26 +2,41 @@
 
 const Path = '../../../src/'
 const LeadTypeService = require(Path + 'Services/Person/LeadTypeService')
-const obj = new LeadTypeService()
+const knex = require(Path + 'connection')
+const mockDB = require('mock-knex')
+
+
+var chai = require('chai')
+var should = chai.should()
+var chaiAsPromised = require('chai-as-promised')
+chai.use(chaiAsPromised)
+
+
+const db = knex({
+    client: 'mysql'
+})
+
 const tracker = mockDB.getTracker()
 
+tracker.install()
+
+before(() => {
+    mockDB.mock(db)
+})
+
+after(() => {
+    mockDB.unmock(db)
+    tracker.uninstall()
+})
+
+const obj = new LeadTypeService()
+
+tracker.on('query', function checkResult(query) {
+  query.response(query)
+
+})
 
 describe('LeadTypeService', () => {
-    
-    before(() => {
-        // mockDB.mock(db)
-        tracker.install()
-        tracker.on('query', function checkResult(query) {
-        query.response(query)
-
-        })
-    })
-
-    after(() => {
-        // mockDB.unmock(db)
-        tracker.uninstall()
-    })
-
     describe('#browse', () => {
         const query = 'select * from `lead_types` where `deleted_at` is null'
         it('Should return valid query results', () => {
