@@ -10,6 +10,7 @@ class LeadTypeService extends BaseService{
     this.tableName = 'lead_types'
   }
 
+
 }
 
 module.exports = LeadTypeService
