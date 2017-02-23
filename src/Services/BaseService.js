@@ -107,6 +107,15 @@ class BaseService {
             return Promise.resolve(related_service.add(entity).returning('id'))
         }
     }
+
+    readBy(field_name, value) {
+        //select from current table where table.field_name=field_name
+        return knex(this.tableName)
+            .where('deleted_at', null)
+            .where(field_name, value)
+            .first()
+    }
+    
 }
 
 module.exports = BaseService

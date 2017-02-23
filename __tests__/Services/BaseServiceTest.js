@@ -152,4 +152,21 @@ describe('====== BaseServiceTest ========', () => {
         })
     })
 
+    describe('#readBy(field_name, value)' , () => {
+        it('should return a valid query', (done) => {
+            const field_name = 'stage_id'
+            const value = 2
+            const limit = 1
+            const query = 'select * from `' + tableName + '` where `deleted_at` is null and `'+ field_name +'` = ? limit ?'
+
+            testClass.readBy(field_name, value).then(result => {
+                result.sql.should.equals(query)
+                result.method.should.equals('first')
+                result.bindings[0].should.equals(value)
+                result.bindings[1].should.equals(limit)
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
 })
