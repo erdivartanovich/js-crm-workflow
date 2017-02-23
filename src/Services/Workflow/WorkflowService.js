@@ -5,7 +5,7 @@ const knex = require('../../connection')
 
 class WorkflowService extends BaseService {
 
-    constructor(rule, object, action, task) {
+    constructor(rule, action, task) {
         super()
         this.tableName = 'workflows'
         this.objectTableName = 'workflow_objects'
@@ -98,6 +98,26 @@ class WorkflowService extends BaseService {
             workflow_id: workflow.id,
             action_id: action.id
         }).del()
+    }
+
+    listRules(workflow) {
+        return this.services.rule.browse().where('workflow_id', workflow.id)
+    }
+
+    getRules(workflow) {
+        return this.listRules(workflow)
+    }
+
+    listObjects(workflow) {
+        return knex(this.objectTableName).where('workflow_id', workflow.id)
+    }
+
+    listActions(workflow) {
+        return this.services.action.browse().where('workflow_id', workflow.id)
+    }
+
+    getByIds(ids) {
+        return this.browse().whereIn('id', ids)
     }
 }
 
