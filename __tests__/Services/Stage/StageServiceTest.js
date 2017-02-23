@@ -125,4 +125,19 @@ describe('StageService', () => {
             }).catch(err => done(err))
         })
     })
+
+    describe('#listsDefaults()', () => {
+        it('it should return all user_id that equal to NULL and user_id that you input as parameter', (done) => {
+            const listDefaultQuery = 'select * from `' + tableName + '` where `user_id` is null or `user_id` = ?'
+            const user_id = 3
+
+            testObj.listsDefaults(user_id).then(result => {
+                result.sql.should.equals(listDefaultQuery)
+                result.method.should.equals('select')
+                result.bindings[0].should.equals(user_id)
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
 })
