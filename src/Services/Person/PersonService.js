@@ -1,3 +1,5 @@
+'use strict'
+
 //knex query builder
 const knex = require('../../connection')
 
