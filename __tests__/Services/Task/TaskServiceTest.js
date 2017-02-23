@@ -87,7 +87,7 @@ describe('TaskService', () => {
                 result.bindings[9].should.equals(taskObject.status)
                 result.bindings[10].should.equals(taskObject.task_action)
                 result.bindings[11].should.equals(taskObject.task_type)
-                result.bindings[12].should.equals(testObj.getNow())
+                result.bindings[12].should.not.empty
                 result.bindings[13].should.equals(taskObject.updated_by)
                 result.bindings[14].should.equals(taskObject.user_id)
                 result.bindings[15].should.equals(taskObject.id)
@@ -116,7 +116,7 @@ describe('TaskService', () => {
                 result.bindings[10].should.equals(taskObject.status)
                 result.bindings[11].should.equals(taskObject.task_action)
                 result.bindings[12].should.equals(taskObject.task_type)
-                result.bindings[13].should.equals(testObj.getNow())
+                result.bindings[13].should.should.not.empty
                 result.bindings[14].should.equals(taskObject.updated_by)
                 result.bindings[15].should.equals(taskObject.user_id)
                 done()
@@ -132,7 +132,7 @@ describe('TaskService', () => {
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(expectQuery.del)
                 result.method.should.equals('update')
-                result.bindings[0].should.equals(testObj.getNow())
+                result.bindings[0].should.should.not.empty
                 result.bindings[1].should.equals(deleteId)
                 done()
             }).catch(err => done(err))
