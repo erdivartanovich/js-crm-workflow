@@ -119,6 +119,41 @@ class WorkflowService extends BaseService {
     getByIds(ids) {
         return this.browse().whereIn('id', ids)
     }
+
+    copy(workflow, newOwner) {
+        workflow.user_id = newOwner.id
+
+        this.add(workflow).then(newWorkflow => {
+            return new Promise((resolve, reject) => {
+                if (typeof newWorkflow == 'undefined') {
+                    reject(newWorkflow)
+                }
+
+                resolve(newWorkflow)
+            })
+        })
+            .then((newWorkflow) => {
+                return this.listActions(workflow).then(actions => {
+                    this.copyActions(actions, newOwner).then(copiedAction => {
+                        this.syncActions(newWorkflow, copiedAction)
+                    })
+                    return newWorkflow
+                })
+            })
+            .then((newWorkflow) => {
+                return this.listObjects(workflow).then(objects => {
+                    objects.map(object => {
+                        object.user_id = newWorkflow.id
+                        this.add(object)
+                    })
+                })
+            })
+            .then(() => {
+                //TODO
+                //Get only root rules
+            })
+            .catch(err => {})
+    }
 }
 
 module.exports = WorkflowService
