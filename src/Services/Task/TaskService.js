@@ -17,15 +17,28 @@ class TaskService extends BaseService {
   /**
   * additional function: active
   */
-  activate() {
-    // fix me
+  activate(payload) {
+    return knex(this.tableName)
+          .where('id', payload['id'])
+          .update({
+            status: 1,
+            updated_by: payload['updated_by'],
+            updated_at: this.getNow()
+          })
   }
 
   /**
   * additional function: deactivate
+  * to
   */
-  deactivate() {
-    // fix me
+  deactivate(payload) {
+    return knex(this.tableName)
+          .where('id', payload['id'])
+          .update({
+            status: 0,
+            updated_by: payload['updated_by'],
+            updated_at: this.getNow()
+          })
   }
 
   /**
@@ -52,15 +65,21 @@ class TaskService extends BaseService {
   /**
   * additional function: markCompleted
   */
-  markCompleted() {
+  markCompleted(payload) {
     // fix me
   }
 
   /**
   * additional function: markNotCompleted
   */
-  markNotCompleted() {
-    // fix me
+  markNotCompleted(payload) {
+    return knex(this.tableName)
+          .where('id', payload['id'])
+          .update({
+            is_completed: 0,
+            updated_by: payload['updated_by'],
+            updated_at: this.getNow()
+          })
   }
 
   /**
