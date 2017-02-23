@@ -31,87 +31,98 @@ class PersonService extends BaseService {
         this.lead_type = new LeadTypeService
     }
 
-    getUser(user_id) {
-        return this.user.read(user_id)
-    }
-
-    ensureUser(user) {
+    ensureUser(user_id) {
         return new Promise((resolve, reject) => {
-            if (typeof user !== 'undefined') {
-                resolve(user.id)
-            } else {
-                reject('user not found')
-            }
+            this.user.read(user_id).then ((user) => {
+                if (typeof user !== 'undefined') {
+                    resolve({'user_id' : user.id})
+                } else {
+                    reject('user not found')
+                }
+            })
         })
     }
 
     findOrAddStage(stage) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             if (typeof stage === 'undefined' || typeof stage.id === 'undefined') {
-                reject(stage)
+                this.stage.add(stage).returning('id').then(stage_id => resolve({'stage_id': Number(stage_id.join())}))
             } else {
                 this.stage.read(stage.id)
                 .then((result) => {
                     if (typeof result != 'undefined') {
-                        resolve(result.id)
+                        resolve({'stage_id': Number(result.id.join())})
                     } else {
-                        reject(stage)
+                        this.stage.add(stage).returning('id').then(stage_id => resolve({'stage_id': Number(stage_id.join())}))
                     }
                 })
             }
-        })
-        .catch ((stage) => {
-            this.stage.add(stage).returning('id')
-            .then((result) => result)
         })
     }
     
     findOrAddLeadType(lead_type) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             if (typeof lead_type === 'undefined' || typeof lead_type.id === 'undefined') {
-                reject(lead_type)
+                this.lead_type.add(lead_type).returning('id').then((lead_type_id) => resolve({'lead_type_id': Number(lead_type_id.join())}))
             } else {
                 this.lead_type.read(lead_type.id)
                 .then((result) => {
                     if (typeof result != 'undefined') {
-                        resolve(result.id)
+                        resolve({'lead_type_id': Number(result.id.join())})
                     } else {
-                        reject(lead_type)
+                        this.lead_type.add(lead_type).returning('id').then((lead_type_id) => resolve({'lead_type_id': Number(lead_type_id.join()) }))                        
                     }
                 })
             }
-        })
-        .catch ((lead_type) => {
-            this.lead_type.add(lead_type).returning('id')
-            .then((result) => result)
         })
     }
     
     add(person) {
        
         /**
-         * then Find user enitity of the person
-         */ 
-        //get user 
-        this.getUser(person.user_id) 
-            // got the user but maybe undefined
-            .then ((user) => 
-                //ensure user is valid
-                this.ensureUser(user)) 
-            
-        // Find or insert related stage of the person
-        .then(() => this.findOrAddStage(person.stage))
+         * 
+         * Inject User Service here
+         *  -- Find or insert related user of person
+         */
 
-        // Find or insert related LeadType of the person 
-        .then(() => this.findOrAddLeadType)
+        /**
+         * Inject Stage Service
+         * -- Find or insert related stage of the person
+         */
 
-        //add person
-        //super.add(person)
+        /**
+         * Inject LeadType service
+         * -- Find or insert related LeadType of the person 
+         */
+
+        //Set user_id, stage_id and lead_type_id
+        //add person 
+        return new Promise ((resolve, reject) => {
+            Promise.all (
+                [
+                    this.ensureUser(person.user_id),
+                    this.findOrAddStage(person.stage),
+                    this.findOrAddLeadType(person.lead_type)
+                ]
+            )
+            .then((result) => {
+                person['user_id'] = result[0].user_id
+                person['stage_id'] = result[1].user_id
+                person['lead_type_id'] = result[2].lead_type_id
+                
+                delete person.lead_type
+                delete person.stage
+
+                //add person
+                resolve(super.add(person))
+            })
+            .catch((errorWhy) => reject(errorWhy))
+        })
     }
 
     update(person) {
         /**
-         * ***** WAIT FOR THIS SERVICES AVAILABLE *****
+         * 
          * Inject User Service here
          *  -- Find or insert related user of person
          */
@@ -128,7 +139,27 @@ class PersonService extends BaseService {
 
         //Set user_id, stage_id and lead_type_id
         //add person
-        super.apdate(person)
+        return new Promise ((resolve, reject) => {
+            Promise.all (
+                [
+                    this.ensureUser(person.user_id),
+                    this.findOrAddStage(person.stage),
+                    this.findOrAddLeadType(person.lead_type)
+                ]
+            )
+            .then((result) => {
+                person['user_id'] = result[0].user_id
+                person['stage_id'] = result[1].user_id
+                person['lead_type_id'] = result[2].lead_type_id
+                
+                delete person.lead_type
+                delete person.stage
+
+                //add person
+                resolve(super.update(person))
+            })
+            .catch((errorWhy) => reject(errorWhy))
+        })
     }
 }
 
