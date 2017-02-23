@@ -88,6 +88,29 @@ class BaseService {
         return (new moment).format(DATEFORMAT)
     }
 
+    //method for ensure relation/ foreign key, it will process find-> if none -> add -> return newly added entityID
+    findOrAddRelated(related_service, entity) {
+        //ensure passed entity is valid object
+        if (typeof entity != 'undefined' && typeof entity.id !== 'undefined') {
+
+            //find entity in related_service
+            Promise.resolve(related_service.read(entity.id))
+            .then(function(obj){
+                if (typeof obj != 'undefined') { //if get one then return the ID
+                    return obj.id
+                } else { //if none then add and return the ID
+                    Promise.resolve(related_service.add(entity).returning('id')).then(function(entity_id) { 
+                        return entity_id
+                    })    
+                }
+            })
+        } else { //if passed entity not valid, it means it has to be added and return the ID
+            Promise.resolve(related_service.add(entity).returning('id')).then(function(entity_id) {
+                return entity_id
+            })
+        }
+    }
+    
 }
 
 module.exports = BaseService
