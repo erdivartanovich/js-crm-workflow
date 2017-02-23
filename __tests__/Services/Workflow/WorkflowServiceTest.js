@@ -8,8 +8,6 @@ const testObj = new WorkflowService()
 
 describe('WorkflowService', () => {
 
-
-
     before(() => {
 
         tracker.install()
