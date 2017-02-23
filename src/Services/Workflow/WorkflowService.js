@@ -61,7 +61,6 @@ class WorkflowService extends BaseService {
             .where('workflow_id', workflow.id)
             .first().then(result => {
                 if (typeof result !== 'undefined') {
-                    console.log('sudah ada')
                     return result
                 }
 
@@ -72,13 +71,6 @@ class WorkflowService extends BaseService {
                     })
                     .returning(['action_id', 'workflow_id'])
             })
-    }
-
-    withdrawnAction(workflow, action) {
-        return knex(this.pivots.action).where({
-            workflow_id: workflow.id,
-            action_id: action.id
-        }).del()
     }
 
     syncActions(workflow, actions) {
@@ -95,12 +87,18 @@ class WorkflowService extends BaseService {
             return knex(this.pivots.action).insert(workFlowActions)
         })
     }
+
+    syncRuleActions(workflow, actions)
+    {
+        return this.syncActions(workflow, actions)
+    }
+
+    withdrawnAction(workflow, action) {
+        return knex(this.pivots.action).where({
+            workflow_id: workflow.id,
+            action_id: action.id
+        }).del()
+    }
 }
 
 module.exports = WorkflowService
-
-const workflowService = new WorkflowService()
-
-workflowService.syncActions({id: 10}, [
-    {id: 2}, {id: 3}
-]).then(result => console.log(result))
