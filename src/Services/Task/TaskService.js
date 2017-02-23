@@ -17,92 +17,111 @@ class TaskService extends BaseService {
   /**
   * additional function: active
   */
-  activate() {
-    // fix me
+  activate(payload) {
+    return knex(this.tableName)
+          .where('id', payload['id'])
+          .update({
+            status: 1,
+            updated_by: payload['updated_by'],
+            updated_at: this.getNow()
+          })
   }
 
   /**
   * additional function: deactivate
+  * to
   */
-  deactivate() {
-
+  deactivate(payload) {
+    return knex(this.tableName)
+          .where('id', payload['id'])
+          .update({
+            status: 0,
+            updated_by: payload['updated_by'],
+            updated_at: this.getNow()
+          })
   }
 
   /**
   * additional function: attachTags
   */
   attachTags() {
-
+    // fix me
   }
 
   /**
   * additional function: detachTags
   */
   detachTags() {
-
+    // fix me
   }
 
   /**
   * additional function: syncTags
   */
   syncTags() {
-
+    // fix me
   }
 
   /**
   * additional function: markCompleted
   */
-  markCompleted() {
-
+  markCompleted(payload) {
+    // fix me
   }
 
   /**
   * additional function: markNotCompleted
   */
-  markNotCompleted() {
-
+  markNotCompleted(payload) {
+    return knex(this.tableName)
+          .where('id', payload['id'])
+          .update({
+            is_completed: 0,
+            updated_by: payload['updated_by'],
+            updated_at: this.getNow()
+          })
   }
 
   /**
   * additional function: assignTo
   */
   assignTo() {
-
+    // fix me
   }
 
   /**
   * additional function: restore
   */
   restore() {
-
+    // fix me
   }
 
   /**
   * additional function: clone
   */
   clone() {
-
+    // fix me
   }
 
   /**
   * additional function: isTaskStarredBy
   */
   isTaskStarredBy() {
-
+    // fix me
   }
 
   /**
   * additional function: starTaskBy
   */
   starTaskBy() {
-
+    // fix me
   }
 
   /**
   * additional function: unstarTaskBy
   */
   unstarTaskBy() {
-
+    // fix me
   }
 }
 /**
