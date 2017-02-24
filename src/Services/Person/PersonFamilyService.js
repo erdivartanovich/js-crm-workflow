@@ -93,12 +93,13 @@ class PersonFamilyService extends BaseService {
         return oppositeFamily
     }
 
-    getOppositeRelativeType(familyRelativeType) {
+    getOppositeRelativeType(familyRelativeType, all=false) {
         const oppositeFamilyType = RELATIVE_OPPOSITE_MAP[familyRelativeType]
-        if (oppositeFamilyType instanceof Array) {
-            return oppositeFamilyType[0]
+        if (all) {
+            if (oppositeFamilyType instanceof Array) {
+                return oppositeFamilyType[0]
+            }
         }
-
         return oppositeFamilyType
     }
 
@@ -107,7 +108,42 @@ class PersonFamilyService extends BaseService {
         return this.add(oppositeFamily)
     }
 
-    
+    updateRelatedFamily(family) {
+        const old_family = this.read(family.id)
+        var relatedFamily = null
+        const oppositeTypes = this.getOppositeRelativeType(old_family['relative_type'], true)
+        relatedFamily = Promise.resolve(knex(this.tableName)
+            .where({
+                deleted_at: null,
+                person_id: old_family.related_to,
+                related_to: old_family.person_id
+            })
+            .whereIn('relative_type', oppositeTypes)
+            .first())
+        const oppositeFamily = this.oppositeFamilyRelation(family)
+        if (typeof relatedFamily === 'undefined') {
+            //don't have relation yet
+            return this.add(oppositeFamily)
+        }
+        relatedFamily['relative_type'] = oppositeFamily['relative_type']
+        relatedFamily['label'] = oppositeFamily['label']
+        relatedFamily['person_id'] = oppositeFamily['person_id']
+        relatedFamily['related_to'] = oppositeFamily['related_to']
+        return this.edit(relatedFamily)
+    }
+
+    deleteRelated(family) {
+        const oppositeTypes = this.getOppositeRelativeType(family['relative_type'], true)
+        return Promise.resolve(knex(this.tableName)
+            .where({
+                person_id: family['related_to'],
+                related_to: family['person_id'],
+            })
+            .wherein('relative_type', oppositeTypes)    
+            .del()    
+        )
+    }
+
 }
 
 module.exports = PersonFamilyService
