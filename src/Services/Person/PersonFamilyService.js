@@ -93,7 +93,7 @@ class PersonFamilyService extends BaseService {
         return oppositeFamily
     }
 
-    getOppositeRelativeType(familyRelativeType, all=false) {
+    getOppositeRelativeType(familyRelativeType, all) {
         const oppositeFamilyType = RELATIVE_OPPOSITE_MAP[familyRelativeType]
         if (oppositeFamilyType instanceof Array) {
             if (all) {
