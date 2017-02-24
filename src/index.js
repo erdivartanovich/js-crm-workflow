@@ -37,7 +37,7 @@ class Factory {
         return this.attributes.actions
     }
 
-    setActions(actions) {
+    setAction(actions) {
         this.attributes.actions = actions
     }
 
@@ -52,7 +52,27 @@ const run = (workflow_id, action_id) => {
     // get workflow
     .then((workflow) => {
         factory.setWorkflow(workflow)
-        return workflowService.listObjects(workflow)
+        return workflowService.listActions(workflow)
+    })
+    // get actions
+    .then(actions => {
+        return new Promise((resolve, reject) => {
+            const msg = 'action is not listed in workflow'
+            if (typeof actions == 'undefined') {
+                reject(msg)
+            }
+
+            const action = actions.filter(act => {
+                return act.id == action_id
+            })
+
+            if (action.length > 0) {
+                factory.setAction(action[0])
+                resolve(workflowService.listObjects(factory.getWorkflow()))
+            } else {
+                reject(msg)
+            }
+        })
     })
     // get workflow object results
     .then((objects) => {
@@ -62,6 +82,16 @@ const run = (workflow_id, action_id) => {
     // get workflow rule results
     .then((rules) => {
         factory.setRules(rules)
+    })
+    // Execute!
+    .then(() => {
+        console.log(factory)
+    })
+    .catch(err => {
+        if (typeof err == 'string') {
+            console.log(err)
+            process.exit()
+        }
     })
     .finally(knex.destroy)
 }

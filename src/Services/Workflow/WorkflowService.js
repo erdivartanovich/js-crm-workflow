@@ -40,7 +40,7 @@ class WorkflowService extends BaseService {
         return knex(this.objectTableName).insert(object)
     }
 
-    updateObject(object)
+    editObject(object)
     {
         return knex(this.objectTableName).update(object).where('id', object.id)
     }
@@ -113,7 +113,11 @@ class WorkflowService extends BaseService {
     }
 
     listActions(workflow) {
-        return this.services.action.browse().where('workflow_id', workflow.id)
+        return knex(this.pivots.action).where('workflow_id', workflow.id).then(actionWorkflows => {
+            const ids = actionWorkflows.map(actionWorkflow => actionWorkflow.action_id)
+
+            return this.services.action.browse().whereIn('id', ids)
+        })
     }
 
     getByIds(ids) {
