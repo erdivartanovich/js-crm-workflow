@@ -95,41 +95,56 @@ class PersonFamilyService extends BaseService {
 
     getOppositeRelativeType(familyRelativeType, all=false) {
         const oppositeFamilyType = RELATIVE_OPPOSITE_MAP[familyRelativeType]
-        if (all) {
-            if (oppositeFamilyType instanceof Array) {
-                return oppositeFamilyType[0]
+        if (oppositeFamilyType instanceof Array) {
+            if (all) {
+                //if get all opposites
+                return oppositeFamilyType
+            } else {
+                return oppositeFamilyType[0]   
             }
+        } else {
+            return oppositeFamilyType
         }
-        return oppositeFamilyType
     }
+
 
     createRelatedFamily(family) {
         const oppositeFamily = this.oppositeFamilyRelation(family)
-        return this.add(oppositeFamily)
+        return Promise.resolve(this.add(oppositeFamily))
     }
 
     updateRelatedFamily(family) {
-        const old_family = this.read(family.id)
-        var relatedFamily = null
-        const oppositeTypes = this.getOppositeRelativeType(old_family['relative_type'], true)
-        relatedFamily = Promise.resolve(knex(this.tableName)
+        const old_family = family
+        const oppositeTypes = this.getOppositeRelativeType(old_family['relative_type'], true) //add all opposite types
+        Promise.resolve(knex(this.tableName)
             .where({
                 deleted_at: null,
                 person_id: old_family.related_to,
                 related_to: old_family.person_id
             })
             .whereIn('relative_type', oppositeTypes)
-            .first())
-        const oppositeFamily = this.oppositeFamilyRelation(family)
-        if (typeof relatedFamily === 'undefined') {
-            //don't have relation yet
-            return this.add(oppositeFamily)
-        }
-        relatedFamily['relative_type'] = oppositeFamily['relative_type']
-        relatedFamily['label'] = oppositeFamily['label']
-        relatedFamily['person_id'] = oppositeFamily['person_id']
-        relatedFamily['related_to'] = oppositeFamily['related_to']
-        return this.edit(relatedFamily)
+            .first()).then(function(result) {return result})
+            .then((relatedFamily) => {
+                //we get RelatedFamily
+                const oppositeFamily = this.oppositeFamilyRelation(family)
+                if (typeof relatedFamily === 'undefined') {
+                    //don't have relation yet
+                    this.add(oppositeFamily).then(function(opposite) {
+                        if (typeof opposite !== 'undefined') {
+                            relatedFamily['relative_type'] = opposite['relative_type']
+                            relatedFamily['label'] = opposite['label']
+                            relatedFamily['person_id'] = opposite['person_id']
+                            relatedFamily['related_to'] = opposite['related_to']  
+                            return Promise.resolve(this.edit(relatedFamily))      
+                        }
+                    })
+                }
+                relatedFamily['relative_type'] = oppositeFamily['relative_type']
+                relatedFamily['label'] = oppositeFamily['label']
+                relatedFamily['person_id'] = oppositeFamily['person_id']
+                relatedFamily['related_to'] = oppositeFamily['related_to']
+                return Promise.resolve(this.edit(relatedFamily))      
+            })
     }
 
     deleteRelatedFamily(family) {
