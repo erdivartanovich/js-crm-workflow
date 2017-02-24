@@ -32,8 +32,14 @@ class Factory {
     getRules() {
         return this.attributes.rules
     }
+    
+    getActions() {
+        return this.attributes.actions
+    }
 
-
+    setActions(actions) {
+        this.attributes.actions = actions
+    }
 
 }
 const factory = new Factory
@@ -41,7 +47,9 @@ const factory = new Factory
 const workflowService = di.container['WorkflowService']
 
 const run = (workflow_id, action_id) => {
+
     workflowService.read(workflow_id)
+    // get workflow
     .then((workflow) => {
         factory.setWorkflow(workflow)
         return workflowService.listObjects(workflow)
