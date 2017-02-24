@@ -1,7 +1,6 @@
 'use strict'
 
 const sourcePath = '../../../src'
-const WorkflowService = require(sourcePath + '/Services/Workflow/WorkflowService')
 var tracker = require('mock-knex').getTracker()
 
 const di = require(sourcePath + '/di')
@@ -167,8 +166,12 @@ describe('WorkflowService', () => {
             object_class: 'persons.target_id',
             object_type: 4,
         }
-        testObj.editRule(object).then(query => {
-            console.log(query)
+
+        it('should return a valid query', done => {
+            testObj.editRule(object).then(query => {
+                query.sql.should.equals('update `rules` set `id` = ?, `object_class` = ?, `object_type` = ?, `updated_at` = ?, `workflow_id` = ? where `id` = ?')
+                done()
+            }).catch(err => done(err))
         })
     })
 })

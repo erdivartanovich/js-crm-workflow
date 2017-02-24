@@ -31,7 +31,7 @@ class WorkflowService extends BaseService {
     }
 
     editRule(object) {
-        return this.services.object.edit(object)
+        return this.services.rule.edit(object)
     }
 
     addObject(workflow, object) {
