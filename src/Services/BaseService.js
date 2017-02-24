@@ -38,6 +38,10 @@ class BaseService {
         return knex(this.tableName)
             .where('id', payload['id'])
             .update(payload)
+        .then(result => {
+            // result.setTask(payload.getTask())
+            return result
+        })
     }
 
     add(payload) {

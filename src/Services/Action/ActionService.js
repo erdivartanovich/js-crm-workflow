@@ -32,14 +32,12 @@ class ActionService extends BaseService {
 	}
 
 	fireAction(isRunnableOnce, workflow, action, objects, rules) {
-		//TODO
 		this.executor = new ActionExecutor(workflow, action, objects, rules)
 
 		return isRunnableOnce? this.executor.runnableOnce().execute() : this.executor.execute()
 	}
 
 	getExecutor() {
-		//TODO
 		 return this.executor
 	}
 

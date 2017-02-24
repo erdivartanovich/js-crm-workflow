@@ -34,7 +34,8 @@ class ActionExecutor {
 	  //           this.objects,
 	  //           ...$rules
 			// )
-			console.log(rules)
+			return rules
+			// console.log(rules)
 		})
 		// .then(resourceFinder => {
 		// 	this.resourceFinder = resourceFinder
