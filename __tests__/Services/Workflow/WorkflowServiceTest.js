@@ -4,7 +4,9 @@ const sourcePath = '../../../src'
 const WorkflowService = require(sourcePath + '/Services/Workflow/WorkflowService')
 var tracker = require('mock-knex').getTracker()
 
-const testObj = new WorkflowService()
+const di = require(sourcePath + '/di')
+
+const testObj = di.container['WorkflowService']
 
 describe('WorkflowService', () => {
 
@@ -114,6 +116,59 @@ describe('WorkflowService', () => {
 
                 done()
             }).catch(err => done(err))
+        })
+    })
+
+    describe('#addRule', () => {
+        it('should return a valid query', done => {
+            const expectedQuery = 'insert into `rules` (`created_at`, `id`, `updated_at`, `workflow_id`) values (?, ?, ?, ?)'
+
+            testObj.addRule({id: 1}, {id: 10}).then(result => {
+                result.sql.should.equals(expectedQuery)
+                result.bindings[0].should.not.empty
+                result.bindings[1].should.equals(10)
+                result.bindings[2].should.not.empty
+                result.bindings[3].should.equals(1)
+                result.method.should.equals('insert')
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
+    describe('#deleteRule', () => {
+        it('should return a valid query for forced', done => {
+            const expectedQuery = 'delete from `rules` where `id` = ?'
+
+            testObj.deleteRule({id: 1}, true).then(result => {
+                result.sql.should.equals(expectedQuery)
+                result.bindings[0].should.equals(1)
+                result.method.should.equals('del')
+                done()
+            }).catch(err => done(err))
+        })
+
+        it('should return a valid query for not forced', done => {
+            const expectedQuery = 'update `rules` set `deleted_at` = ? where `id` = ?'
+
+            testObj.deleteRule({id: 1}).then(result => {
+                result.sql.should.equals(expectedQuery)
+                result.bindings[0].should.not.empty
+                result.bindings[1].should.equals(1)
+                result.method.should.equals('update')
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
+    describe('#editRule', () => {
+        const object = {
+            id: 5,
+            workflow_id: 3,
+            object_class: 'persons.target_id',
+            object_type: 4,
+        }
+        testObj.editRule(object).then(query => {
+            console.log(query)
         })
     })
 })
