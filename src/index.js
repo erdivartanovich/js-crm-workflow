@@ -2,6 +2,7 @@
 
 const knex = require('./connection')
 const program = require('commander')
+const di = require('./di')
 
 class Factory {
     constructor() {
@@ -37,27 +38,22 @@ class Factory {
 }
 const factory = new Factory
 
+const workflowService = di.container['WorkflowService']
+
 const run = (workflow_id, action_id) => {
-    knex.select()
-    .from('workflows')
-    .where('workflows.id', workflow_id)
-    .first()
+    workflowService.read(workflow_id)
     .then((workflow) => {
         factory.setWorkflow(workflow)
-        // initialize workflow object
-        return knex.from('workflow_objects')
-            .whereIn('workflow_objects.workflow_id', [workflow.id])
+        return workflowService.listObjects(workflow)
     })
     // get workflow object results
     .then((objects) => {
         factory.setObjects(objects)
-        return knex.from('rules').whereIn('rules.workflow_id', [factory.getWorkflow().id])
+        return workflowService.listRules(factory.getWorkflow())
     })
     // get workflow rule results
     .then((rules) => {
         factory.setRules(rules)
-        
-
     })
     .finally(knex.destroy)
 }

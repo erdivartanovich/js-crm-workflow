@@ -101,7 +101,7 @@ class WorkflowService extends BaseService {
     }
 
     listRules(workflow) {
-        return this.services.rule.browse().where('workflow_id', workflow.id)
+        return this.services.rule.browse().whereIn('workflow_id', [workflow.id])
     }
 
     getRules(workflow) {
@@ -109,7 +109,7 @@ class WorkflowService extends BaseService {
     }
 
     listObjects(workflow) {
-        return knex(this.objectTableName).where('workflow_id', workflow.id)
+        return knex(this.objectTableName).whereIn('workflow_id', [workflow.id])
     }
 
     listActions(workflow) {
