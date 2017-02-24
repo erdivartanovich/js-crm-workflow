@@ -132,7 +132,7 @@ class PersonFamilyService extends BaseService {
         return this.edit(relatedFamily)
     }
 
-    deleteRelated(family) {
+    deleteRelatedFamily(family) {
         const oppositeTypes = this.getOppositeRelativeType(family['relative_type'], true)
         return Promise.resolve(knex(this.tableName)
             .where({
