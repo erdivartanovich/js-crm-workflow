@@ -1,5 +1,8 @@
 'use strict'
 
+//TODO
+//instead use lot of require, use dependency method
+
 //knex query builder
 const knex = require('../../connection')
 
@@ -14,6 +17,9 @@ const StageService = require('../Stage/StageService')
 
 //require LeadTypeService dependency
 const LeadTypeService = require('../Person/LeadTypeService')
+
+//require PersonProfessionService
+const PersonProfessionService = require('../Person/PersonProfessionService')
 
 var _ = require('lodash')
 
@@ -34,11 +40,16 @@ class PersonService extends BaseService {
         //inject LeadTypeService here
         this.lead_type = new LeadTypeService
 
+        //personProfession service
+        this.profession = new PersonProfessionService
+
         this.referralSourcesMap = {
             'persons': this,
             'users': this.userService,
             'sources': this.sourceService
         }
+
+        
         this.relationLists = {
             person_addresses: {'persons.id': 'person_addresses.person_id'},
             person_contact_types: {'persons.id': 'person_contact_types.person_id'},
@@ -231,6 +242,14 @@ class PersonService extends BaseService {
         }).update({
             is_primary: 0
         })
+    }
+
+    setupCompanyAndProfession(person, result) {
+        //get person company
+        this.profession.readBy('person_id', person.id)
+            .then((company_id) => {
+                this.findOrAddRelated()
+            })        
     }
 
 }
