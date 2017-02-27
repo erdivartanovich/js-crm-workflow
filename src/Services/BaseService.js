@@ -42,8 +42,6 @@ class BaseService {
 
     add(payload) {
         //add timestamp before edit to payload
-        this.beforeAdd(payload)
-
         //insert payload to current table
         this.beforeAdd(payload)
         return knex(this.tableName)
@@ -90,6 +88,35 @@ class BaseService {
         return (new moment).format(DATEFORMAT)
     }
 
+    //method for ensure relation/ foreign key, it will process find-> if none -> add -> return newly added entityID
+    findOrAddRelated(related_service, entity) {
+        //ensure passed entity is valid object
+        if (typeof entity != 'undefined' && typeof entity.id !== 'undefined') {
+            //find entity in related_service
+            return Promise.resolve(related_service.read(entity.id))
+            .then(function(obj){
+                //if get one then return the ID
+                if (typeof obj != 'undefined') {                    
+                    return Promise.resolve(obj.id)
+                } else { //if none then add and return the ID
+                    return Promise.resolve(related_service.add(entity).returning('id'))
+                }
+            })
+        //if passed entity not valid, it means it has to be added and return the ID
+        } else {                                                    
+            return Promise.resolve(related_service.add(entity).returning('id'))
+        }
+    }
+
+    readBy(field_name, value) {
+        //select from current table where table.field_name=field_name
+        return knex(this.tableName)
+            .where('deleted_at', null)
+            .where(field_name, value)
+            .first()
+    }
+    
 }
 
 module.exports = BaseService
+
