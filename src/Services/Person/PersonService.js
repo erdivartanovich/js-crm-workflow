@@ -9,44 +9,29 @@ const knex = require('../../connection')
 //require BaseService
 const BaseService = require('../BaseService')
 
-//require UserService dependency
-const UserService = require('../User/UserService')
-
-//require StageService dependency
-const StageService = require('../Stage/StageService')
-
-//require LeadTypeService dependency
-const LeadTypeService = require('../Person/LeadTypeService')
-
-//require PersonProfessionService
-const PersonProfessionService = require('../Person/PersonProfessionService')
-
-var _ = require('lodash')
+//require Lodash
+const _ = require('lodash')
 
 class PersonService extends BaseService {
     /**
      * Constructor
      */
-    constructor() {
+    constructor(user, stage, lead_type, profession, company) {
         super()
+
+        //dependency injection
+        this.user = user
+        this.stage = stage
+        this.lead_type = lead_type
+        this.profession = profession
+        this.company = company
+        
         this.tableName = 'persons'
-
-        //Inject User Service here
-        this.user = new UserService
-
-        //inject StageService here
-        this.stage = new StageService
-
-        //inject LeadTypeService here
-        this.lead_type = new LeadTypeService
-
-        //personProfession service
-        this.profession = new PersonProfessionService
 
         this.referralSourcesMap = {
             'persons': this,
-            'users': this.userService,
-            'sources': this.sourceService
+            'users': this.user,
+            'sources': this.sourceService //TODO: user service not exist yet
         }
 
         
@@ -248,8 +233,8 @@ class PersonService extends BaseService {
         //get person company
         this.profession.readBy('person_id', person.id)
             .then((company_id) => {
-                this.findOrAddRelated()
-            })        
+                console.log(company_id)            
+            })       
     }
 
 }
