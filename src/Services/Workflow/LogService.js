@@ -63,8 +63,8 @@ class LogService extends BaseService{
     		})
     		return this.attachRules(log, rules)
     	})
-    	.then(({log, result}) => {
-			// console.log(log.id)
+    	.then(test => {
+			console.log(test.log.id)
 			return log
 		})
     }
