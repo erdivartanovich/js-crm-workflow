@@ -32,66 +32,33 @@ class Factory {
     getRules() {
         return this.attributes.rules
     }
-    
-    getActions() {
-        return this.attributes.actions
-    }
 
-    setAction(actions) {
-        this.attributes.actions = actions
-    }
+
 
 }
 const factory = new Factory
 
-const workflowService = di.container['WorkflowService']
-
 const run = (workflow_id, action_id) => {
-
-    workflowService.read(workflow_id)
-    // get workflow
+    knex.select()
+    .from('workflows')
+    .where('workflows.id', workflow_id)
+    .first()
     .then((workflow) => {
         factory.setWorkflow(workflow)
-        return workflowService.listActions(workflow)
-    })
-    // get actions
-    .then(actions => {
-        return new Promise((resolve, reject) => {
-            const msg = 'action is not listed in workflow'
-            if (typeof actions == 'undefined') {
-                reject(msg)
-            }
-
-            const action = actions.filter(act => {
-                return act.id == action_id
-            })
-
-            if (action.length > 0) {
-                factory.setAction(action[0])
-                resolve(workflowService.listObjects(factory.getWorkflow()))
-            } else {
-                reject(msg)
-            }
-        })
+        // initialize workflow object
+        return knex.from('workflow_objects')
+            .whereIn('workflow_objects.workflow_id', [workflow.id])
     })
     // get workflow object results
     .then((objects) => {
         factory.setObjects(objects)
-        return workflowService.listRules(factory.getWorkflow())
+        return knex.from('rules').whereIn('rules.workflow_id', [factory.getWorkflow().id])
     })
     // get workflow rule results
     .then((rules) => {
         factory.setRules(rules)
-    })
-    // Execute!
-    .then(() => {
-        console.log(factory)
-    })
-    .catch(err => {
-        if (typeof err == 'string') {
-            console.log(err)
-            process.exit()
-        }
+        
+
     })
     .finally(knex.destroy)
 }
