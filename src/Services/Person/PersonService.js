@@ -15,6 +15,8 @@ const StageService = require('../Stage/StageService')
 //require LeadTypeService dependency
 const LeadTypeService = require('../Person/LeadTypeService')
 
+var _ = require('lodash');
+
 class PersonService extends BaseService {
     /**
      * Constructor
@@ -31,6 +33,12 @@ class PersonService extends BaseService {
 
         //inject LeadTypeService here
         this.lead_type = new LeadTypeService
+
+        this.referralSourcesMap = {
+            'persons': this,
+            'users': this.userService,
+            'sources': this.sourceService
+        };
     }
 
     ensureUser(user_id) {
@@ -163,6 +171,42 @@ class PersonService extends BaseService {
             .catch((errorWhy) => reject(errorWhy))
         })
     }
+
+    
+    syncReferrals(person, compositeSourcesIds) {
+        
+        let promises = []
+
+        _.map(compositeSourcesIds, (carry, compositeId) => {
+            const {table, id} = compositeId.split('-')
+
+            if (typeof id !== 'undefined') {
+                promises.push(this.referralSourcesMap[table].read(id))                
+            }
+        })
+
+        return Promise.all(promises).then(results => {
+            return _.reduce(results, (carry, result) => {
+                if (result) {
+                    return carry.push(result)
+                }
+
+                return carry
+            }, [])
+        })
+        //TODO need to write referralService to execute below, referralService not exist yet
+        // .then((sources) => this.referralService.sync(person, sources))
+    }
+
+    //TODO attachProfilePhoto
+    attachProfilePhoto(person, digitalAsset) {
+    }
+
+    //TODO updateInitialContactDate
+    updateInitialContactDate(person, date = null) {
+    }
+
+   
 }
 
 module.exports = PersonService
