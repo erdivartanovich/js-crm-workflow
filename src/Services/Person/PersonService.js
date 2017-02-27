@@ -224,7 +224,15 @@ class PersonService extends BaseService {
         return this.relationLists
     }
 
-   
+    resetIsPrimary(person) {
+        return knex(this.tableName).where({
+            id: person['id'],
+            is_primary:  1
+        }).update({
+            is_primary: 0
+        })
+    }
+
 }
 
 module.exports = PersonService
