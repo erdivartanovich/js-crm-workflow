@@ -46,13 +46,7 @@ class ReferralService extends BaseService {
 			}).first()
 		.then(result => {
 			if(typeof result ===  'undefined') {
-				this.add(newObject)
-					.then(() => {
-						return knex(this.tableName).orderBy('id', 'desc').first()
-					})
-					.then(result => {
-						return result
-					})
+				this.addNew(source, referrer, newObject)
 			}
 			// console.log(result)
 			return result
@@ -61,6 +55,28 @@ class ReferralService extends BaseService {
 
 	setAsPrimary(referral) {
 		//reset current is_primary
+		return this.resetPrimary(referral)
+		.then(() => {
+			return knex(this.tableName)
+				.where('id', referral.id)
+				.update('is_primary', 1)
+		})
+		.then(result => {
+			return result
+		})
+	}
+
+	addNew(source, referrer, newObject) {
+		return this.add(newObject)
+			.then(() => {
+				return knex(this.tableName).orderBy('id', 'desc').first()
+			})
+			.then(result => {
+				return result
+			})
+	}
+
+	resetPrimary(referral) {
 		return knex(this.tableName)
 			.where({
 				referrerable_id: referral.referrerable_id,
@@ -68,11 +84,6 @@ class ReferralService extends BaseService {
 				is_primary: 1
 			})
 			.update('is_primary', 0)
-		.then(() => {
-			return knex(this.tableName)
-				.where('id', referral.id)
-				.update('is_primary', 1)
-		})
 	}
 }
 
