@@ -166,4 +166,39 @@ describe('LogService', () => {
             }).catch(err => done(err))
         })
     })
+
+    describe('#doLog()' , () => {
+        it('should return a valid query', (done) => {
+            const addQuery = 'select * from `action_logs` order by `id` desc limit ?'
+            const rules = [
+                {
+                    'id': 1
+                }
+                ,
+                {
+                    'id': 2
+                }
+            ]
+            const workflow = {
+                id: 5,
+                user_id: 11
+            }
+            const action = {
+                id: 3
+            }
+            const info = 'alert'
+            const loggableType = 'persons'
+            const loggableId = 3
+            const status = 0
+
+            testObj.doLog(workflow, action, rules, status, info, loggableType, loggableId).then(result => {
+                result.sql.should.equals(addQuery)
+                result.method.should.equals('first')
+                result.bindings[0].should.equals(1)
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
+
 })
