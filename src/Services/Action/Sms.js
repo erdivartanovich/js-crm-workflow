@@ -17,7 +17,7 @@ class Sms {
 
     send(workflow, action, person, message) {
 
-        //FIXME
+        //FIXME with communication template Service.
         const communicationTemplate = action.getTemplate()
         if (communicationTemplate) {
             const message = communicationTemplate.setTemplateData(person, workflow.user_id)
@@ -54,7 +54,7 @@ class Sms {
         this.phoneService.browse().where({is_primary: 1, person_id: person.id}).first().then(data => {
             const phone = data
             if (phone) {
-                const res = this.api.communication().sendText(phone.number, message)
+                const res = this.api.communication().sendText(phone.getNumber(), message)
 
                 if (!res.isError()) {
                     const INITIATED_BY_USER = 1
