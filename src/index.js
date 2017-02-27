@@ -37,7 +37,7 @@ class Factory {
 }
 const factory = new Factory
 
-const run = (workflow_id, action_id) => {
+run = (workflow_id, action_id) => {
     knex.select()
     .from('workflows')
     .where('workflows.id', workflow_id)
