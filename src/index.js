@@ -2,6 +2,7 @@
 
 const knex = require('./connection')
 const program = require('commander')
+const di = require('./di')
 
 class Factory {
     constructor() {
@@ -65,6 +66,7 @@ const run = (workflow_id, action_id) => {
 program
 .option('-w, --workflow =<n>', 'Workflow id')
 .option('-a, --action <n>', 'Action id')
+.option('-o, --once', 'Runnable once')
 .on('--help', () => {
     console.log('  Examples:')
     console.log()
@@ -72,6 +74,8 @@ program
     console.log()
 })
 .parse(process.argv)
+
+console.log(program.once)
 
 run(program.workflow, program.action)
 

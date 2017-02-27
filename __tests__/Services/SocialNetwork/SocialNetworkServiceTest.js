@@ -1,13 +1,13 @@
 'use strict'
 
 const basePath = '../../../src'
-const StageService = require(basePath + '/Services/Stage/StageService')
+const SocialNetworkService = require(basePath + '/Services/SocialNetwork/SocialNetworkService')
 var tracker = require('mock-knex').getTracker()
 
-const testObj = new StageService()
-const tableName = 'stages'
+const testObj = new SocialNetworkService()
+const tableName = 'social_networks'
 
-describe('StageService', () => {
+describe('SocialNetworkService', () => {
 
     before(() => {
         tracker.install()
@@ -37,7 +37,7 @@ describe('StageService', () => {
         it('should return a valid query', (done) => {
             const editQuery = 'update `' + tableName + '` set `id` = ?, `label` = ?, `updated_at` = ?, `user_id` = ? where `id` = ?'
             const editObject = {
-                id: 2, user_id: 1, label: 'papaoy'
+                id: 19, label: 'google', user_id: 1 
             }
 
             testObj.edit(editObject).then(result => {
@@ -56,7 +56,7 @@ describe('StageService', () => {
     describe('#read()' , () => {
         it('should return a valid query', (done) => {
             const readQuery = 'select * from `' + tableName + '` where `deleted_at` is null and `id` = ? limit ?'
-            const readId = 2
+            const readId = 19
             const limit = 1
 
             testObj.read(readId).then(result => {
@@ -71,15 +71,18 @@ describe('StageService', () => {
 
     describe('#add()' , () => {
         it('should return a valid query', (done) => {
-            const addQuery = 'insert into `' + tableName + '` (`created_at`, `updated_at`, `user_id`) values (?, ?, ?)'
-            const addPersonId = 2
+            const addQuery = 'insert into `' + tableName + '` (`created_at`, `label`, `updated_at`, `user_id`) values (?, ?, ?, ?)'
+            const addObject = {
+                label : 'facebook', user_id: 2
+            }
 
-            testObj.add({'user_id': addPersonId}).then(result => {
+            testObj.add(addObject).then(result => {
                 result.sql.should.equals(addQuery)
                 result.method.should.equals('insert')
                 result.bindings[0].should.not.empty
-                result.bindings[1].should.not.empty
-                result.bindings[2].should.equals(addPersonId)
+                result.bindings[1].should.equals(addObject.label)
+                result.bindings[2].should.not.empty
+                result.bindings[3].should.equals(addObject.user_id)
                 done()
             }).catch(err => done(err))
         })
@@ -88,7 +91,7 @@ describe('StageService', () => {
     describe('#delete()' , () => {
         it('should return a valid query for soft delete', (done) => {
             const deleteQuery = 'update `' + tableName + '` set `deleted_at` = ? where `id` = ?'
-            const deleteId = 8
+            const deleteId = 19
 
             testObj.delete({'id': deleteId}).then(result => {
                 result.sql.should.equals(deleteQuery)
@@ -129,7 +132,7 @@ describe('StageService', () => {
     describe('#listsDefaults()', () => {
         it('should return all user_id that equals to NULL and user_id that you input as parameter', (done) => {
             const listsDefaultQuery = 'select * from `' + tableName + '` where `user_id` is null or `user_id` = ?'
-            const user_id = 3
+            const user_id = 18
 
             testObj.listsDefaults({'user_id' : user_id}).then(result => {
                 result.sql.should.equals(listsDefaultQuery)
