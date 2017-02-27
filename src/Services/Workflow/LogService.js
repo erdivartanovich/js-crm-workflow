@@ -1,12 +1,31 @@
 'use strict'
 
 const BaseService = require('../BaseService')
+const knex = require('../../connection')
 
 class LogService extends BaseService{
 
     constructor(){
         super()
         this.tableName = 'action_logs'
+    }
+
+    attachRules(log, rules) {
+
+    	let attach = {}
+    	let ids = []
+
+    	rules.map((rule) => {
+    		attach.action_log_id = log.id,
+    		attach.rule_id =  rule.id
+
+    		ids.push(attach)
+    		attach = {}
+    	})
+    	
+    	return knex.insert(ids.map(item => {
+    		return item
+    	})).into('action_log_rules')
     }
 
     doLog(workflow, action, rules, status, info, loggableType, loggableId) {
@@ -40,6 +59,8 @@ class LogService extends BaseService{
     		return log
     	})
     }
+
+
 
 }
 
