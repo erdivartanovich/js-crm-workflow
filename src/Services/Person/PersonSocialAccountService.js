@@ -22,6 +22,7 @@ class PersonSocialAccountService extends BaseService{
                         throw 'Person Social Account need valid social network id.'
                     }
 
+                    this.beforeAdd(socialAccount)
                     return knex(this.tableName).insert(socialAccount)
                 })
     }
@@ -38,6 +39,7 @@ class PersonSocialAccountService extends BaseService{
                         throw 'Person Social Account need valid social network id.'
                     }
 
+                    this.beforeEdit(socialAccount)
                     return knex(this.tableName).where('id', socialAccount['id']).update(socialAccount)
                 })
     }
