@@ -1,3 +1,4 @@
+'use strict'
 
 const basePath = '../../../src'
 const RuleCriteriaFactory = require(basePath + '/Infrastructures/Rule/RuleCriteriaFactory')
