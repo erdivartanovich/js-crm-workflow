@@ -136,6 +136,9 @@ class PersonService extends BaseService {
                 //add person
                 resolve(super.add(person))
             })
+            .then((new_person) => {
+                setupCompanyAndProfession(person, new_person)
+            })
             .catch((errorWhy) => reject(errorWhy))
         })
     }
@@ -260,8 +263,6 @@ class PersonService extends BaseService {
                     }
                 } else {
                     //if it exist return the enew one from person_result
-                    console.log('toUpdate: ', person_profession)
-                    
                     if (person_result['profession']['company'] != 'undefined') {
                         return this.company_service.readBy('name', person_result['profession']['company']['name'])
                     } else {
@@ -270,8 +271,6 @@ class PersonService extends BaseService {
                 }
             })
             .then((company) => {
-                console.log('toUpdate: ', company)
-                
                 return knex('person_professions')
                 .where('person_id', person_result.id)
                 .update({
@@ -283,10 +282,6 @@ class PersonService extends BaseService {
             //profession not defined
             console.log(person_result, ' -> profession/company not defined')  
         }
-        
-
-        
-        
     }
 
 }
