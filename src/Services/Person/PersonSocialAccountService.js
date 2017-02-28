@@ -11,6 +11,10 @@ class PersonSocialAccountService extends BaseService{
         this.socialNetworkServiceTable = knex('social_networks')
     }
 
+    /**
+     * checking social_network_id first before adding data
+     * throw an exception if social_network_id doesn't exist 
+     */
     add(socialAccount){
         return this.socialNetworkServiceTable.where('id', socialAccount.social_network_id).first()
                 .then(result => {
@@ -22,6 +26,11 @@ class PersonSocialAccountService extends BaseService{
                 })
     }
 
+
+    /**
+     * checking social_network_id first before updating data
+     * throw an exception if social_network_id doesn't exist 
+     */
     edit(socialAccount){
         return this.socialNetworkServiceTable.where('id', socialAccount.social_network_id).first()
                 .then(result => {
