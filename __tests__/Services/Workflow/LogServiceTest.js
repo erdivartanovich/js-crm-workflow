@@ -133,4 +133,72 @@ describe('LogService', () => {
             }).catch(err => done(err))
         })
     })
+
+    describe('#attachRules()' , () => {
+        it('should return a valid query', (done) => {
+            const addQuery = 'insert into `' + 'action_log_rules' + '` (`action_log_id`, `rule_id`) values (?, ?), (?, ?), (?, ?)'
+            const log = {
+                id: 6
+            }
+            const rule = [
+                {
+                    id: 1,    
+                },
+                {
+                    id: 2,    
+                },
+                {
+                    id: 3    
+                },
+            ]
+
+
+            testObj.attachRules(log, rule).then(result => {
+                result.sql.should.equals(addQuery)
+                result.method.should.equals('insert')
+                result.bindings[0].should.equals(log.id)
+                result.bindings[1].should.equals(rule[0].id)
+                result.bindings[2].should.equals(log.id)
+                result.bindings[3].should.equals(rule[1].id)
+                result.bindings[4].should.equals(log.id)
+                result.bindings[5].should.equals(rule[2].id)
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
+    describe('#doLog()' , () => {
+        it('should return a valid query', (done) => {
+            const addQuery = 'select * from `action_logs` order by `id` desc limit ?'
+            const rules = [
+                {
+                    'id': 1
+                }
+                ,
+                {
+                    'id': 2
+                }
+            ]
+            const workflow = {
+                id: 5,
+                user_id: 11
+            }
+            const action = {
+                id: 3
+            }
+            const info = 'alert'
+            const loggableType = 'persons'
+            const loggableId = 3
+            const status = 0
+
+            testObj.doLog(workflow, action, rules, status, info, loggableType, loggableId).then(result => {
+                result.sql.should.equals(addQuery)
+                result.method.should.equals('first')
+                result.bindings[0].should.equals(1)
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
+
 })

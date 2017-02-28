@@ -1,13 +1,14 @@
 'use strict'
 
 const Path = '../../../src/'
-const LeadTypeService = require(Path + 'Services/Person/LeadTypeService')
+const CommunicationTemplateService = require(Path + 'Services/CommunicationTemplate/CommunicationTemplateService')
 
-const obj = new LeadTypeService()
+const obj = new CommunicationTemplateService()
 const tracker = mockDB.getTracker()
 
-describe('LeadTypeService', () => {
-      before(() => {
+describe('0o0======|- CommunicationTemplateService -|======0o0', () => {
+
+    before(() => {
         // mockDB.mock(db)
         tracker.install()
         tracker.on('query', function checkResult(query) {
@@ -20,9 +21,9 @@ describe('LeadTypeService', () => {
         // mockDB.unmock(db)
         tracker.uninstall()
     })
-  
+
     describe('#browse', () => {
-        const query = 'select * from `lead_types` where `deleted_at` is null'
+        const query = 'select * from `communication_templates` where `deleted_at` is null'
         it('Should return valid query results', () => {
             return obj.browse().then((result) => {
                 result.sql.should.equals(query)
@@ -34,7 +35,7 @@ describe('LeadTypeService', () => {
 
     describe('#read', () => {
         it('Should return a valid query result', () => {
-            const query = 'select * from `lead_types` where `deleted_at` is null and `id` = ? limit ?'
+            const query = 'select * from `communication_templates` where `deleted_at` is null and `id` = ? limit ?'
             return obj.read(2).then((result) => {
                 result.sql.should.equals(query)
                 result.method.should.equals('first')
@@ -46,7 +47,7 @@ describe('LeadTypeService', () => {
 
     describe('#edit', () => {
         it('Could edit a column or row using update query', () => {
-            const query = 'update `lead_types` set `id` = ?, `updated_at` = ? where `id` = ?'
+            const query = 'update `communication_templates` set `id` = ?, `updated_at` = ? where `id` = ?'
             return obj.edit({id: 2}).then((result) => {
                 result.sql.should.equals(query)
                 result.method.should.equals('update')
@@ -59,7 +60,7 @@ describe('LeadTypeService', () => {
 
     describe('#add', () => {
         it('Could add a record to database table using insert query', () => {
-            const query ='insert into `lead_types` (`created_at`, `id`, `updated_at`) values (?, ?, ?)'
+            const query ='insert into `communication_templates` (`created_at`, `id`, `updated_at`) values (?, ?, ?)'
             return obj.add({id: 1}).then((result) => {
                 result.sql.should.equals(query)
                 result.method.should.equals('insert')
@@ -72,7 +73,7 @@ describe('LeadTypeService', () => {
 
     describe('#delete', () => {
         it('Could delete a record from database table using delete query', () => {
-            const query = 'delete from `lead_types` where `id` = ?'
+            const query = 'delete from `communication_templates` where `id` = ?'
             return obj.delete({id: 2}, true).then((result) => {
                 result.sql.should.equals(query)
                 result.method.should.equals('del')
