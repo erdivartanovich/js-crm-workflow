@@ -21,7 +21,7 @@ class BaseCriteriaFactory {
         return this.substrReplace(columnName, '', columnName.indexOf('.'), columnName.length)
     }
 
-    substrReplace (str, replace, start, length) {
+    substrReplace(str, replace, start, length) {
         if (start < 0) {
             start = start + str.length + 1
         }
