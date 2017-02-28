@@ -37,6 +37,15 @@ class BaseService {
         return this
     }
 
+    whereNotIn(field, values) {
+        const operator = '!='
+        _.map(values, (value) => {
+            this.whereClauses.push({field, operator, value})
+        })
+
+        return this
+    }
+
     resetWhere() {
         this.whereClauses = []
     }
