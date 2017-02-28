@@ -219,7 +219,7 @@ class PersonService extends BaseService {
     }
 
     //TODO updateInitialContactDate
-    updateInitialContactDate(person, date = null) {
+    updateInitialContactDate(person. date) {
     }
 
     getRelationLists() {
