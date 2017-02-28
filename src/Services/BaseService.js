@@ -31,8 +31,16 @@ class BaseService {
         return []
     }
 
-    join(tableName, relation) {
-        this.joinClauses.push({tableName, relation})
+    having(table, have, map) {
+        this.havingSegments.push({table, have, map})
+    }
+
+    join(tableName, relation, type) {
+        if (typeof type == 'undefined') {
+            type = ''
+        }
+
+        this.joinClauses.push({tableName, relation, type})
 
         return this
     }
@@ -41,23 +49,59 @@ class BaseService {
         this.whereClauses = []
     }
 
+    resetHaving() {
+        this.havingSegments = []
+    }
+
     resetJoin() {
         this.joinClauses = []
     }
 
     applyConditions(entities) {
-        _.map(this.whereClauses, (val) => {
+        const tableName = this.tableName
+        _.map(this.whereClauses, val => {
             entities.whereRaw(val.field + ' '  + val.operator + ' ?', [val.value])
         })
 
-        _.map(this.joinClauses, (val) => {
-            entities.join(val.tableName, val.relation)
+        _.map(this.joinClauses, val => {
+            let jointing = true
+            switch (val.type) {
+            case '':
+                entities.join(val.tableName, val.relation)
+                break
+            case 'left outer':
+                entities.leftOuterJoin(val.tableName, val.relation)
+                break
+            default:
+                jointing = false
+            }
+
+            if (jointing) {
+                entities.select(knex.raw(val.tableName + '.*'))
+            }
         })
+
+        _.map(this.havingSegments, val => {
+            entities.join(val.map[1], function () {
+                _.mapValues(val.have, id => {
+                    // Check id on morphable relationship
+                    this.on(val.map[2] + '_id', tableName + '.id')
+                    // Check type on morphable relationship
+                    this.on(val.map[2] + '_type', knex.raw(`'${tableName}'`))
+                    // Filter id
+                    this.on(val.map[1] + '.' + val.map[0], id)
+
+                })
+            })
+        })
+
+        entities.select(knex.raw(this.tableName + '.*'))
     }
 
     resetConditions() {
         this.resetWhere()
         this.resetJoin()
+        this.resetHaving()
     }
 
     browse() {

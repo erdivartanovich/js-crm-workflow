@@ -4,8 +4,12 @@ const Filter = require('../Adapter/Filter')
 
 class BaseCriteriaFactory {
 
-    setJoin(model, table, relation) {
-        return model.join(table, relation)
+    setJoin(model, table, relation, type) {
+        if (typeof type == 'undefined') {
+            type = ''
+        }
+
+        return model.join(table, relation, type)
     }
 
     toFilter(condition) {
