@@ -50,7 +50,7 @@ class Sms extends communicationTemplateService{
     }
 
     sendPrimary(workflow, action, person, message) {
-        // FIXME
+        // FIXME with add KWApi
 
         this.communicationTemplateService.read(action.template_id).then(response => {
             const communicationTemplate = response 
