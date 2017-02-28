@@ -7,7 +7,6 @@ const BaseCriteriaFactory = require(basePath + '/Infrastructures/Rule/BaseCriter
 const Filter = require(basePath + '/Infrastructures/Adapter/Filter')
 let baseCriteriaFactory
 
-
 describe('BaseCriteriaFactory', () => {
     before(() =>  {
         baseCriteriaFactory = new BaseCriteriaFactory
