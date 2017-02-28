@@ -287,6 +287,76 @@ class PersonService extends BaseService {
         }
     }
 
+    function setupMotivation(person) {
+        var motivations = []
+
+        /**
+         * for each person.motivations
+         * - search for default first
+         * - if motivation == null 
+         * - - create for current user
+         * 
+         * @param person = {
+         *      id: x,
+         *      name: xxx,
+         *      motivations: [
+         *          {label: 'somthing'},
+         *          ...
+         *      ]
+         *      user: {id: x}
+         * }
+         * 
+         */
+
+        _.forEach(person.motivations, (item) => {
+            motivations.push(item.label)
+        })
+        console.log('1:', motivations)
+        //ensure motivations
+        const fn = function promise(label) {
+            let sql = 'delete from motivations where label = ? and user_id = ?'
+            return knex.raw(sql, [label, person.user.id]);
+        }
+        let promises = motivations.map(fn)
+        const createOrReplace = Promise.all(promises)
+        createOrReplace.then(function() {
+            const fn = function promise(label) {
+                return knex('motivations').returning('id').insert({
+                    label: label,
+                    user_id: person.user.id
+                })
+            }
+            let promises = motivations.map(fn)
+            const replace = Promise.all(promises)
+            return replace    
+        })
+        //update relational person_motivations
+        .then((motiv_ids) => {
+            //delete existing
+            const motivations_ids = _.flatten(motiv_ids)
+            return knex('person_motivations')
+                .where('person_id', person.id)
+                .del()
+                .then(() => {
+                    return Promise.resolve(motivations_ids)
+                })
+        })
+        .then((motivations_ids) => {
+            //insert new person_motivations
+            const fn = function promise(id) {
+                return knex('person_motivations').returning('id').insert({
+                    person_id: person.id,
+                    motivation_id: id
+                })
+            }
+            let promises = motivations_ids.map(fn)
+            const insertNew = Promise.all(promises)
+            return insertNew
+        })
+        .catch(console.log.bind(console))
+    }
+
+
 }
 
 module.exports = PersonService
