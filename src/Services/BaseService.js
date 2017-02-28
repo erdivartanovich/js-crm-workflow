@@ -4,6 +4,8 @@ const knex = require('../connection')
 const moment = require('moment')
 const DATEFORMAT = 'YYYY-MM-DD HH:mm:ss'
 
+const _ = require('lodash')
+
 class BaseService {
     /**
      * Constructor
@@ -15,12 +17,35 @@ class BaseService {
         //softDelete flag is set to default = true
         this.tableName = null
         this.softDelete = true
+
+        this.resetWhere()
+    }
+
+    whereNotIn(field, values) {
+        operator = '!='
+        _.map(values, (value) => {
+            this.whereClauses.push({field, operator, value})
+        })
+
+        return this        
+    }
+
+    resetWhere() {
+        this.whereClauses = []
     }
 
     browse() {
         //delete from current table where deleted at = null
-        return knex(this.tableName)
+        const entity = knex(this.tableName)
             .where('deleted_at', null)
+
+        _.map(this.whereClauses, (val) => {
+            entity.whereRaw(val.field + ' ' + val.operator + ' ?', [val.value])
+        })
+
+        this.resetWhere()
+
+        return entity
     }
 
     read(id) {
