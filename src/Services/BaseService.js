@@ -27,6 +27,10 @@ class BaseService {
         return this
     }
 
+    getRelationLists() {
+        return []
+    }
+
     join(tableName, relation) {
         this.joinClauses.push({tableName, relation})
 
