@@ -4,7 +4,11 @@ const _ = require('lodash')
 
 class Filter {
 
-    constructor(columnName, value, operator = 'is') {
+    constructor(columnName, value, operator) {
+        if (typeof operator == 'undefined') {
+            operator = 'is'
+        }
+
         this.columnName = columnName
         this.value = value
         this.operator = operator
