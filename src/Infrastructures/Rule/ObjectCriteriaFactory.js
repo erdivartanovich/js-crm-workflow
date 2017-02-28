@@ -75,35 +75,3 @@ class ObjectCriteriaFactory extends BaseCriteriaFactory {
 }
 
 module.exports = ObjectCriteriaFactory
-
-const PersonService = require('../../Services/Person/PersonService')
-
-const obj = new ObjectCriteriaFactory([
-    {
-        object_class: 'tags.id',
-        object_type: 10
-    },
-])
-
-const model = new PersonService
-
-model.getRelationLists = () => {
-    return {
-        'person_addresses': {'persons.id': 'person_addresses.person_id'},
-        'person_contact_types': {'persons.id': 'person_contact_types.person_id'},
-        'person_contexts': {'persons.id': 'person_contexts.person_id'},
-        'person_emails': {'persons.id': 'person_emails.person_id'},
-        'person_family': {'persons.id': 'person_family.person_id'},
-        'person_identifiers': {'persons.id': 'person_identifiers.person_id'},
-        'person_motivations': {'persons.id': 'person_motivations.person_id'},
-        'person_phones': {'persons.id': 'person_phones.person_id'},
-        'person_preferences': {'persons.id': 'person_preferences.person_id'},
-        'person_professions': {'persons.id': 'person_professions.person_id'},
-        'person_scores': {'persons.id': 'person_scores.person_id'},
-        'person_social_accounts': {'persons.id': 'person_social_accounts.person_id'},
-    }
-}
-
-obj.apply(model)
-
-model.browse().then(rows => {console.log(rows)})
