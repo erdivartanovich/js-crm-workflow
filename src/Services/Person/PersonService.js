@@ -137,7 +137,7 @@ class PersonService extends BaseService {
                 resolve(super.add(person))
             })
             .then((new_person) => {
-                setupCompanyAndProfession(person, new_person)
+                this.setupCompanyAndProfession(person, new_person)
             })
             .catch((errorWhy) => reject(errorWhy))
         })
@@ -180,6 +180,9 @@ class PersonService extends BaseService {
 
                 //add person
                 resolve(super.update(person))
+            })
+            .then((new_person) => {
+                this.setupCompanyAndProfession(person, new_person)
             })
             .catch((errorWhy) => reject(errorWhy))
         })
