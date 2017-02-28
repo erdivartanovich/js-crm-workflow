@@ -4,6 +4,8 @@ const knex = require('../connection')
 const moment = require('moment')
 const DATEFORMAT = 'YYYY-MM-DD HH:mm:ss'
 
+const _ = require('lodash')
+
 class BaseService {
     /**
      * Constructor
@@ -15,12 +17,58 @@ class BaseService {
         //softDelete flag is set to default = true
         this.tableName = null
         this.softDelete = true
+
+        this.resetConditions()
+    }
+
+    where(field, operator, value) {
+        this.whereClauses.push({field, operator, value})
+
+        return this
+    }
+
+    join(tableName, relation) {
+        this.joinClauses.push({tableName, relation})
+
+        return this
+    }
+
+    resetWhere() {
+        this.whereClauses = []
+    }
+
+    resetJoin() {
+        this.joinClauses = []
+    }
+
+    applyConditions(entities) {
+        _.map(this.whereClauses, (val) => {
+            entities.whereRaw(val.field + ' '  + val.operator + ' ?', [val.value])
+        })
+
+        _.map(this.joinClauses, (val) => {
+            entities.join(val.tableName, val.relation)
+        })
+    }
+
+    resetConditions() {
+        this.resetWhere()
+        this.resetJoin()
     }
 
     browse() {
+        const deletedColumn = 
+            this.joinClauses.length > 0 ? this.tableName + '.deleted_at' : 'deleted_at'
+
         //delete from current table where deleted at = null
-        return knex(this.tableName)
-            .where('deleted_at', null)
+        const entities = knex(this.tableName)
+            .where(deletedColumn, null)
+
+        this.applyConditions(entities)
+
+        this.resetConditions()
+
+        return entities
     }
 
     read(id) {
@@ -119,4 +167,3 @@ class BaseService {
 }
 
 module.exports = BaseService
-

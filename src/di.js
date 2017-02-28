@@ -10,4 +10,6 @@ bottle.service('TaskService', require('./Services/Task/TaskService'))
 bottle.service('WorkflowService', require('./Services/Workflow/WorkflowService'),
     'RuleService', 'ActionService', 'TaskService')
 
+bottle.service('PersonService', require('./Services/Person/PersonService'))
+
 module.exports = bottle
