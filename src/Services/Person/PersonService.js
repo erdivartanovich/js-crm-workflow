@@ -194,10 +194,10 @@ class PersonService extends BaseService {
         let promises = []
 
         _.map(compositeSourcesIds, (carry, compositeId) => {
-            const {table, id} = compositeId.split('-')
+            const comps = compositeId.split('-')
 
-            if (typeof id !== 'undefined') {
-                promises.push(this.referralSourcesMap[table].read(id))                
+            if (typeof comps.id !== 'undefined') {
+                promises.push(this.referralSourcesMap[comps.table].read(comps.id))                
             }
         })
 
