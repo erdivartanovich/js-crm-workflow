@@ -22,7 +22,7 @@ class BaseService {
     }
 
     whereNotIn(field, values) {
-        operator = '!='
+        const operator = '!='
         _.map(values, (value) => {
             this.whereClauses.push({field, operator, value})
         })

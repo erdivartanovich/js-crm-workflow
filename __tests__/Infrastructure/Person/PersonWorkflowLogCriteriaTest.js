@@ -29,7 +29,7 @@ describe('PersonWorkflowLogCriteria', () => {
 
     describe('#getExistLog()' , () => {
         it('should return a valid query', (done) => {
-            const browseQuery = 'select * from `' + tableName + '` where `workflow_id` = ? and `action_id` = ? and `status` = ?'
+            const browseQuery = 'select `id` from `' + tableName + '` where `workflow_id` = ? and `action_id` = ? and `status` = ?'
 
             testObj.getExistLog().then(result => {
                 result.sql.should.equals(browseQuery)
