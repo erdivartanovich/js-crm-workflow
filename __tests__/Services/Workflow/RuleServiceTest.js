@@ -87,5 +87,36 @@ describe('RuleService', () => {
       })
     })
 
+    describe('#syncActions()', () => {
+        it('should return valid query for syncActions', (done) => {
+            const rule = {
+                id: 1
+            }
+            const action = [
+            {
+                    id: 3
+                },
+                {
+                    id: 4
+                },
+                {
+                    id: 5    
+                }
+            ]
 
+            const deleteQuery = 'insert into `rule_action` (`id`, `rule_id`) values (?, ?), (?, ?), (?, ?)'
+            testObj.syncActions(rule, action).then(result => {
+                result.sql.should.equals(deleteQuery)
+                result.method.should.equals('insert')
+                result.bindings[1].should.equals(rule.id)
+                result.bindings[0].should.equals(action[0].id)
+                result.bindings[3].should.equals(rule.id)
+                result.bindings[2].should.equals(action[1].id)
+                result.bindings[5].should.equals(rule.id)
+                result.bindings[4].should.equals(action[2].id)
+
+                done()
+            }).catch(err => done(err))
+        })
+    })
 })
