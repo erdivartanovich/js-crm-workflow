@@ -139,6 +139,12 @@ class PersonService extends BaseService {
             .then((new_person) => {
                 this.setupCompanyAndProfession(person, new_person)
             })
+            .then(() => {
+                this.setupMotivation(person)
+            })
+            .then(() => {
+                this.setupContactTypes(person)
+            })
             .catch((errorWhy) => reject(errorWhy))
         })
     }
@@ -183,6 +189,12 @@ class PersonService extends BaseService {
             })
             .then((new_person) => {
                 this.setupCompanyAndProfession(person, new_person)
+            })
+            .then(() => {
+                this.setupMotivation(person)
+            })
+            .then(() => {
+                this.setupContactTypes(person)
             })
             .catch((errorWhy) => reject(errorWhy))
         })
@@ -287,7 +299,7 @@ class PersonService extends BaseService {
         }
     }
 
-    function setupMotivation(person) {
+    setupMotivation(person) {
         var motivations = []
 
         /**
@@ -311,7 +323,6 @@ class PersonService extends BaseService {
         _.forEach(person.motivations, (item) => {
             motivations.push(item.label)
         })
-        console.log('1:', motivations)
         //ensure motivations
         const fn = function promise(label) {
             let sql = 'delete from motivations where label = ? and user_id = ?'
@@ -356,6 +367,73 @@ class PersonService extends BaseService {
         .catch(console.log.bind(console))
     }
 
+    setupContactTypes(person) {
+        var contact_types = []
+
+        /**
+         * for each person.contact_types
+         * - search for default first
+         * - if motivation == null 
+         * - - create for current user
+         * 
+         * @param person = {
+         *      id: x,
+         *      name: xxx,
+         *      contact_types: [
+         *          {label: 'somthing'},
+         *          ...
+         *      ]
+         *      user: {id: x}
+         * }
+         * 
+         */
+
+        _.forEach(person.contact_types, (item) => {
+            contact_types.push(item.label)
+        })
+        //ensure contact_types
+        const fn = function promise(label) {
+            let sql = 'delete from contact_types where label = ? and user_id = ?'
+            return knex.raw(sql, [label, person.user.id]);
+        }
+        let promises = contact_types.map(fn)
+        const createOrReplace = Promise.all(promises)
+        createOrReplace.then(function() {
+            const fn = function promise(label) {
+                return knex('contact_types').returning('id').insert({
+                    label: label,
+                    user_id: person.user.id
+                })
+            }
+            let promises = contact_types.map(fn)
+            const replace = Promise.all(promises)
+            return replace    
+        })
+        //update relational person_contact_types
+        .then((motiv_ids) => {
+            //delete existing
+            const contact_types_ids = _.flatten(motiv_ids)
+            return knex('person_contact_types')
+                .where('person_id', person.id)
+                .del()
+                .then(() => {
+                    return Promise.resolve(contact_types_ids)
+                })
+        })
+        .then((contact_types_ids) => {
+            //insert new person_contact_types
+            const fn = function promise(id) {
+                return knex('person_contact_types').returning('id').insert({
+                    person_id: person.id,
+                    motivation_id: id
+                })
+            }
+            let promises = contact_types_ids.map(fn)
+            const insertNew = Promise.all(promises)
+            return insertNew
+        })
+        .catch(console.log.bind(console))
+    }
 
 }
 
