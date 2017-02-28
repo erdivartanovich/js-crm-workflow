@@ -20,17 +20,17 @@ class PersonService extends BaseService {
         super()
 
         //dependency injection
-        this.user = user
-        this.stage = stage
-        this.lead_type = lead_type
-        this.profession = profession
-        this.company = company
+        this.user_service = user
+        this.stage_service = stage
+        this.lead_type_service = lead_type
+        this.profession_service = profession
+        this.company_service = company
         
         this.tableName = 'persons'
 
         this.referralSourcesMap = {
             'persons': this,
-            'users': this.user,
+            'users': this.user_service,
             'sources': this.sourceService //TODO: user service not exist yet
         }
 
@@ -53,7 +53,7 @@ class PersonService extends BaseService {
 
     ensureUser(user_id) {
         return new Promise((resolve, reject) => {
-            this.user.read(user_id).then ((user) => {
+            this.user_service.read(user_id).then ((user) => {
                 if (typeof user !== 'undefined') {
                     resolve({'user_id' : user.id})
                 } else {
@@ -66,14 +66,14 @@ class PersonService extends BaseService {
     findOrAddStage(stage) {
         return new Promise((resolve) => {
             if (typeof stage === 'undefined' || typeof stage.id === 'undefined') {
-                this.stage.add(stage).returning('id').then(stage_id => resolve({'stage_id': Number(stage_id.join())}))
+                this.stage_service.add(stage).returning('id').then(stage_id => resolve({'stage_id': Number(stage_id.join())}))
             } else {
-                this.stage.read(stage.id)
+                this.stage_service.read(stage.id)
                 .then((result) => {
                     if (typeof result != 'undefined') {
                         resolve({'stage_id': Number(result.id.join())})
                     } else {
-                        this.stage.add(stage).returning('id').then(stage_id => resolve({'stage_id': Number(stage_id.join())}))
+                        this.stage_service.add(stage).returning('id').then(stage_id => resolve({'stage_id': Number(stage_id.join())}))
                     }
                 })
             }
@@ -83,14 +83,14 @@ class PersonService extends BaseService {
     findOrAddLeadType(lead_type) {
         return new Promise((resolve) => {
             if (typeof lead_type === 'undefined' || typeof lead_type.id === 'undefined') {
-                this.lead_type.add(lead_type).returning('id').then((lead_type_id) => resolve({'lead_type_id': Number(lead_type_id.join())}))
+                this.lead_type_service.add(lead_type).returning('id').then((lead_type_id) => resolve({'lead_type_id': Number(lead_type_id.join())}))
             } else {
-                this.lead_type.read(lead_type.id)
+                this.lead_type_service.read(lead_type.id)
                 .then((result) => {
                     if (typeof result != 'undefined') {
                         resolve({'lead_type_id': Number(result.id.join())})
                     } else {
-                        this.lead_type.add(lead_type).returning('id').then((lead_type_id) => resolve({'lead_type_id': Number(lead_type_id.join()) }))                        
+                        this.lead_type_service.add(lead_type).returning('id').then((lead_type_id) => resolve({'lead_type_id': Number(lead_type_id.join()) }))                        
                     }
                 })
             }
@@ -229,12 +229,64 @@ class PersonService extends BaseService {
         })
     }
 
-    setupCompanyAndProfession(person, result) {
-        //get person company
-        this.profession.readBy('person_id', person.id)
-            .then((company_id) => {
-                console.log(company_id)            
-            })       
+    setupCompanyAndProfession(person, person_result) {
+        //person = old_value, person_result = new_value
+        //for person.add method, those two values will be equals
+        
+        if ((typeof person_result['profession'] != 'undefined')) {
+            return knex('person_professions')
+            .where('person_id', person_result.id)
+            .then((person_profession) => {
+                if (person_profession.length <= 0) {
+                    return this.profession_service.add({
+                        person_id: person_result.id,
+                        title: person_result.title 
+                    })
+                    .then((person_profession) => Promise.resolve(person_profession))
+                } else {
+                    return Promise.resolve(person_profession)
+                }
+            })
+            .then((person_profession) => {
+                if (person_profession.company_id === null) {
+                    //if company_id not exist then add it into company from person_result.company
+                    // but check if person_result.company is defined
+                    if (typeof person_result['profession']['company'] != 'undefined') {
+                        return this.company_service.add({
+                            name: person_result.company.name
+                        })
+                    } else {
+                        return Promise.resolve({id: null})
+                    }
+                } else {
+                    //if it exist return the enew one from person_result
+                    console.log('toUpdate: ', person_profession)
+                    
+                    if (person_result['profession']['company'] != 'undefined') {
+                        return this.company_service.readBy('name', person_result['profession']['company']['name'])
+                    } else {
+                        return Promise.resolve({id: null})
+                    }
+                }
+            })
+            .then((company) => {
+                console.log('toUpdate: ', company)
+                
+                return knex('person_professions')
+                .where('person_id', person_result.id)
+                .update({
+                    company_id: company.id,
+                    title: person_result.profession.title
+                })
+            })
+        } else {
+            //profession not defined
+            console.log(person_result, ' -> profession/company not defined')  
+        }
+        
+
+        
+        
     }
 
 }
