@@ -18,7 +18,7 @@ describe('--||=======SMSAction=======>', () => {
         action = {
             action_type: 3,
             task_id: '',
-            template_id: '',
+            template_id: 1,
             target_class: 'sms',
             target_field: 'sendPrimary',
             value: 'Hey, You are promoted to hot lead.',
@@ -26,6 +26,7 @@ describe('--||=======SMSAction=======>', () => {
             deleted_at: ''            
         }
         person = {
+            id: 2,
             first_name: 'Arigi',
             middle_name: '',
             last_name: 'Wiratama',
@@ -60,7 +61,7 @@ describe('--||=======SMSAction=======>', () => {
             subject = new Sms(sendPrimarySms)
         })
         it('should send SMS to primary person phone', () => {
-            subject.sendPrimary()
+            subject.sendPrimary(workflow, action, person)
         })
     })
 })
