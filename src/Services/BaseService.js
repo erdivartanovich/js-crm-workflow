@@ -17,6 +17,7 @@ class BaseService {
         //softDelete flag is set to default = true
         this.tableName = null
         this.softDelete = true
+        this.relationLists = []
 
         this.resetConditions()
     }
@@ -28,7 +29,8 @@ class BaseService {
     }
 
     getRelationLists() {
-        return []
+        return this.relationLists
+
     }
 
     having(table, have, map) {
