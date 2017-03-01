@@ -75,6 +75,8 @@ class ActionResourcesJob {
         if(!action) {
             return this.log(resource, 0, 'No action applied')
         }
+
+        return action
     }
 
     actionUpdate(resource) {
@@ -214,7 +216,8 @@ class ActionResourcesJob {
     getActionResource(resource) {
         const target = this.action.target_class
         let model = resource
-        const relationMaps = resource.getRelationLists()
+        // const relationMaps = resource.getRelationLists()
+        const relationMaps = resource.getRelationLists //for testing only
 
         // TODO: implement isJoined method
         // return this.isJoined(model, target)
@@ -250,10 +253,10 @@ class ActionResourcesJob {
             if(typeof value === 'object') {
                 onKey = Object.keys(value)[0]
                 onValue = value[onKey]
-                return model.leftJoin(key, onKey, '=', onValue)
+                return model.leftJoin(key, onKey, onValue)
             }
             else {
-                return model.leftJoin(target, key, '=', value)
+                return model.leftJoin(target, key, value)
             }
         })
     }
@@ -271,13 +274,13 @@ class ActionResourcesJob {
     }
 
     log(resource, status, loginfo) {
-        return this.LogService.doLog(
+        return this.logService.doLog(
             this.workflow,
             this.action,
             this.rules,
             status,
             loginfo,
-            resource.getLoggableType(),
+            resource.tableName,
             resource.id
         )
     }

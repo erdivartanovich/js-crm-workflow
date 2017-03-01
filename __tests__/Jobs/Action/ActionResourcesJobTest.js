@@ -2,12 +2,14 @@
 
 const basePath = '../../../src'
 const ActionResourcesJob = require(basePath + '/Jobs/Action/ActionResourcesJob')
+const PersonService = require(basePath + '/Services/Person/PersonService')
+const LogService = require(basePath + '/Services/Workflow/LogService')
 
 var tracker = require('mock-knex').getTracker()
 var td = require('testdouble')
 
 const workflow = {id: 4}
-const action = {id: 7, task_id: 5}
+const action = {id: 7, task_id: 5, type: 5}
 const resources = [{}]
 const rules = [{}]
 
@@ -43,6 +45,35 @@ describe('ActionResourcesJob', () => {
             }).catch(err => done(err))
         })
     })
+
+    describe('#processResource()', () => {
+        const resource = td.object(PersonService)
+        it('should return a valid object', () => {
+            testObj.runnableOnce = true
+            testObj.logService = new LogService()
+            testObj.processResource(resource).should.be.empty
+        })
+    })
+
+    describe('#applyAction()', () => {
+        const resource = td.object(PersonService)
+
+        it('should return a valid object', () => {
+            testObj.logService = new LogService()
+            testObj.applyAction(resource).should.be.instanceOf(Object)
+        })
+    })
+
+    describe('#actionUpdate()', () => {
+        const resource = td.object(PersonService)
+
+        it('should return a valid object', () => {
+            testObj.logService = new LogService()
+            testObj.actionUpdate(resource).should.be.instanceOf(Object)
+        })
+    })
+
+
 
     //  describe('#apply()', () => {
     //     model = td.object(WorkflowService)

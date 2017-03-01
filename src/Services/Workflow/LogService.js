@@ -69,6 +69,13 @@ class LogService extends BaseService{
         })
     }
 
+// FIXME: need to implement this method
+    isRunned(workflow, action, resource) {
+        const result = 1
+
+        return Promise.resolve(result > 0)
+    }
+
 
 
 }
