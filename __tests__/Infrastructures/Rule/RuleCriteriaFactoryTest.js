@@ -74,7 +74,7 @@ describe('RuleCriteriaFactory', () => {
 
             const appliedService = ruleCriteriaFactory.apply(personService)
 
-            appliedService.should.be.an.object
+            appliedService.should.be.an('object')
         })
     })
 })

@@ -104,7 +104,9 @@ class BaseService {
             })
         })
 
-        entities.select(knex.raw(this.tableName + '.*'))
+        if (this.joinClauses.length > 0) {
+            entities.select(knex.raw(this.tableName + '.*'))
+        }
     }
 
     resetConditions() {

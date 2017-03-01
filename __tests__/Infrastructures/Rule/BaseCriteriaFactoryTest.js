@@ -17,24 +17,14 @@ describe('BaseCriteriaFactory', () => {
             let model = td.object(PersonService)
             let table = 'person_addresses'
             let relation = {'persons.id': 'person_addresses.person_id'}
-            td.when(model.join(table, relation)).thenReturn(model)
-            baseCriteriaFactory.setJoin(model, table, relation).should.be.an.object
+            td.when(model.join(table, relation, '')).thenReturn(model)
+            const retVal = baseCriteriaFactory.setJoin(model, table, relation)
+
+            retVal.should.be.an('object')
         })
     })
 
-    describe('#setJoin()', () => {
-        it('should be chainable', () => {
-            const condition = {
-                operator: 'is',
-                value: '5',
-                field_name: 'persons.date_of_birth',
-            }
-            
-            baseCriteriaFactory.toFilter(condition).should.be.an.instanceOf(Filter)
-        })
-    })
-    
-    describe('#setJoin()', () => {
+    describe('#toFilter()', () => {
         it('should be chainable', () => {
             const condition = {
                 operator: 'is',

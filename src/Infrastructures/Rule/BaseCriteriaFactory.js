@@ -20,8 +20,7 @@ class BaseCriteriaFactory {
         this.columnName = name
     }
 
-    getResourceName(columnName)
-    {
+    getResourceName(columnName) {
         return this.substrReplace(columnName, '', columnName.indexOf('.'), columnName.length)
     }
 

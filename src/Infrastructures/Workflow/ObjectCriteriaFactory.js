@@ -1,13 +1,12 @@
 'use strict'
 
-const BaseCriteriaFactory = require('./BaseCriteriaFactory')
+const BaseCriteriaFactory = require('./../Rule/BaseCriteriaFactory')
 const _ = require('lodash')
 
 class ObjectCriteriaFactory extends BaseCriteriaFactory {
 
     constructor(objects) {
         super()
-
         this.objects = objects
         this.relations = []
         this.sorts = []
@@ -29,8 +28,7 @@ class ObjectCriteriaFactory extends BaseCriteriaFactory {
         return havingMap[resourceName]
     }
 
-    apply(model)
-    {
+    apply(model) {
         const relations = {}
         const relationMaps = model.getRelationLists()
         const having = {}
