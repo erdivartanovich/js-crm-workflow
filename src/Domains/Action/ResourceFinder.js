@@ -18,6 +18,27 @@ class ResourceFinder {
 
         this.runnableOnce = false
     }
+
+    prepareCriteria() {
+        const ruleCriteria = new RuleCriteriaFactory(this.rules)
+        const objectCriteria = new ObjectCriteriaFactory(this.objects)
+
+        this.limit = 100
+        this.offset = 0
+
+        /** @todo add filter for userContext Here */
+
+        let builder = this.personService
+            .resetConditions()
+            .pushCriteria(ruleCriteria)
+            .pushCriteria(objectCriteria)
+
+        if (this.runnableOnce) {
+            /** @todo Only query non exists on action_logs table resource if runnableOnce is true */
+        }
+        
+        return builder
+    }
 }
 
 module.exports = ResourceFinder
