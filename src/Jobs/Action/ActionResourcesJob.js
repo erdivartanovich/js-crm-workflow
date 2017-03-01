@@ -1,6 +1,9 @@
 'use strict'
 
 const _ = require('lodash')
+const knex = require('../../connection')
+const moment = require('moment')
+const DATEFORMAT = 'YYYY-MM-DD'
 
 class ActionResourcesJob {
     constructor(workflow, action, resources, rules) {
@@ -11,7 +14,7 @@ class ActionResourcesJob {
     }
 
     runnableOnce(runnableOnce) {
-        this.runnableOnce = runnableOnce
+        return this.runnableOnce = runnableOnce
     }
 
     handle(taskService, logService, ruleService) {
@@ -28,19 +31,20 @@ class ActionResourcesJob {
     }
 
     processResource(resource) {
-        this.logService.isRunned(this.workflow, this.action, resource)
+        return this.logService.isRunned(this.workflow, this.action, resource)
         .then(exist => {
             //1. check run once
             if(exist && this.runnableOnce) {
                 return false
             }
+            else{
+                //process action
+                return this.applyAction(resource)
+            }
 
             // TODO:
             //2. check priority
             //3. check dependency rules
-
-            //process action
-            return this.applyAction(resource)
         })
     }
 
@@ -69,64 +73,137 @@ class ActionResourcesJob {
         }
 
         if(!action) {
-            this.log(resource, 0, 'No action applied')
+            return this.log(resource, 0, 'No action applied')
         }
     }
 
     actionUpdate(resource) {
         // console.log('Update')
-        this.getActionResource(resource)
+        return this.getActionResource(resource)
         .then(target => {
-            target.setAttribute(this.action.getTargetField(), this.action.getValue())
+            return target.setAttribute(this.action.target_field, this.action.value)
         })
         .then(target => {
-            this.service.update(target)
+            return this.service.update(target)
         })
         .then(result => {
             if(result) {
-                this.log(resource, 1, 'Target updated')
+                return this.log(resource, 1, 'Target updated')
                 .then(() => {
                     return true
                 })
             }
-            this.log(resource, 0, 'Target updated failed')
-            .then(() => {
-                return false
-            })
+            else {
+                return this.log(resource, 0, 'Target updated failed')
+                .then(() => {
+                    return false
+                })
+            }
         })
     }
 
     actionExecute(resource) {
-        // console.log('Execute');
+        // console.log('Execute')
         let message = 'Action '+this.action.target_field+' on '+this.action.target_class+' not found !'
 
         if(typeof this.service[this.action.target_field] == 'function') {
-            this.getExecuteParams(resource)
+            return this.getExecuteParams(resource)
             .then(params => {
-                this.service[this.action.target_field].apply(undefined, params)
+                return this.service[this.action.target_field].apply(undefined, params)
             })
             .then(result => {
                 if(result) {
-                    this.log(resource, 1, 'Action '+this.action.name+' executed')
+                    return this.log(resource, 1, 'Action '+this.action.name+' executed')
                     .then(() => {
                         return true
                     })
                 }
-                this.log(resource, 0, 'Action '+this.action.target_field+' on '+this.action.target_class+' failed!')
+                else {
+                    return this.log(resource, 0, 'Action '+this.action.target_field+' on '+this.action.target_class+' failed!')
+                }
+
             })
         }
-        this.log(resource, 0, message)
-        .then(() => {
-            return false
-        })
+        else {
+            return this.log(resource, 0, message)
+            .then(() => {
+                return false
+            })
+        }
     }
 
     actionClone(resource) {
         // console.log('Clone')
+        const date = (new moment).add(5, 'days')
+        return this.taskService.clone(this.getTask(this.action))
+        .then(task => {
+            task.user_id = this.workflow.user_id
+            task.person_id = resource
+            task.created_by = this.workflow.user_id
+            task.updated_by = this.workflow.user_id
+            task.due_date = date.format(DATEFORMAT)
+            task.is_completed = 0
+            task.status = 1
+
+            return task
+        })
+        .then(task => {
+            return this.taskService.add(task)
+        })
+        .then(result => {
+            if(result) {
+                return this.log(resource, 1, 'Task cloned.')
+                .then(() => {
+                    return true
+                })
+            }
+            else {
+                return this.log(resource, 0, 'Task clone failed!')
+                .then(() => {
+                    return false
+                })
+            }
+        })
     }
 
     actionAssign(resource) {
         // console.log('Resource')
+        const date = (new moment).add(5, 'days')
+        let task = ({})
+        return this.getTask(this.action)
+        .then(result => {
+            result.user_id = this.workflow.user_id
+            result.updated_by = this.workflow.user_id
+            result.due_date = date.format(DATEFORMAT)
+            result.is_completed = 0
+            result.status = 1
+
+            task = result
+            return result
+        })
+        .then(task => {
+            return this.taskService.edit(task)
+        })
+        .then(result => {
+            if(result) {
+                return this.log(resource, 1, 'Task '+task.task_action+' assigned')
+                .then(() => {
+                    return true
+                })
+            }
+            else {
+                return this.log(resource, 0, 'Task assign failed!')
+                .then(() => {
+                    return false
+                })
+            }
+        })
+    }
+
+    getTask(action) {
+        return knex('tasks')
+        .where('id', action.task_id)
+        .first()
     }
 
     log(resource, status, loginfo) {
