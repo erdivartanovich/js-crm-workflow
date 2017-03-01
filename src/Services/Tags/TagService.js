@@ -10,7 +10,18 @@ class TagService extends BaseService {
     }
 
     attach(object, user, tags) {
-        return this.attach(object, user, tags)
+        let ids = []
+        for (let tag of tags) {
+            ids[tag.id] = {'user_id': user.id}
+        }
+        object.tags().attach(ids)
+
+        this.triggerUpdatedEvent(object)
+        
+        for(let tag of tags) {
+            (new TagObserver).updated(tag)
+        }
+        return true
     }
 
     detach(object, user, tags) {
