@@ -30,6 +30,21 @@ class SourceService extends BaseService {
   
     deleteUnused() {
         //return delete unused
+        const usedSource = function () {
+            knex(this.tableName)
+            .join('referrals', 'referrals.source_id', 'sources.id')
+            .where('referrals.source_type', 'sources')
+            .select('source_id')
+        }
+        usedSource.then((result) => result)
+        
+
+        // $usedSources = $this->persistenceStorage()
+        //     ->join('referrals', 'referrals.source_id', '=', 'sources.id')
+        //     ->where('referrals.source_type', '=', 'sources')
+        //     ->lists('source_id');
+
+        // return $this->persistenceStorage()->whereNotIn('id', $usedSources)->delete();
     }
 
    
@@ -49,3 +64,10 @@ class SourceService extends BaseService {
         // return this.listsDefaults(user)
     }
 }
+
+const source = new SourceService()
+source.deleteUnused()
+
+module.exports = SourceService
+
+

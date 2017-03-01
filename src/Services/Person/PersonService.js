@@ -373,7 +373,7 @@ class PersonService extends BaseService {
         /**
          * for each person.contact_types
          * - search for default first
-         * - if motivation == null 
+         * - if contact_types == null 
          * - - create for current user
          * 
          * @param person = {
