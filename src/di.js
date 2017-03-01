@@ -19,7 +19,8 @@ bottle.service('CompanyService', require('./Services/Company/CompanyService'))
 bottle.service('PersonService', require('./Services/Person/PersonService'),
     'UserService', 'StageService', 'LeadTypeService', 'PersonProfessionService', 'CompanyService')
 
-bootle.service('TagService', require('./Services/Tags/TagService'))
-bootle.service('Tagger', require('./Infrastructures/Target/Tagger'), 'TagService')
+bottle.service('TagService', require('./Services/Tags/TagService'))
+
+bottle.service('Tagger', require('./Infrastructures/Target/Tagger'), 'TagService')
 
 module.exports = bottle
