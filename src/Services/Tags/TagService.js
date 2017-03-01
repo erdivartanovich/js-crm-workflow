@@ -57,18 +57,56 @@ class TagService extends BaseService {
         return knex('taggables').whereIn('tag_id', tag_ids).where(payloads).del()
     }
 
+    /**
+     * Function transform request to collection of tags. Creates tag on the fly if id is not provided
+     */
     getInstances(tagsData) {
-        let tags = new Set()     
+        let tagIds = []   
+        let tags = []
+        let promises1 = []
+        let promises2 = []
 
-        for (let tag of tagsData) {
+        //Build the promise from iteration of tagsData
+        _.map(tagsData, tag => {
             if (typeof tag['id'] != 'undefined') {
-                tags.set(this.find(tag['id']))
+                //select 
+                promises1.push(
+                  knex(this.tableName).where('id', tag['id'])
+                ) 
+                //store the tag_ids
+                tagIds.push(tag['id'])
             } else if (typeof tag['tag'] != 'undefined') {
-                tags.set(this.firstOrCreate({'tag': tag['tag'].trim().toLowerCase()}))
+                //firstOrCreate
+                const sql = 'INSERT INTO ' + this.tableName + ' (tag) ' +
+                            'SELECT * FROM (SELECT ?) AS tmp ' +
+                            ' WHERE NOT EXISTS ( ' +
+                            '   SELECT tag FROM '+ this.tableName +' WHERE tag = ? ' +
+                            ') LIMIT 1'
+                promises2.push(
+                    knex.raw(sql, [tag['tag'], tag['tag']])
+                )    
+                //store the tag for later select
+                tags.push(tag['tag'])            
             }
-        }
+        })
 
-        return tags
+        return Promise.all(promises1)
+          .then(() => {
+              return Promise.all(promises2)
+          })
+          .then(() => {
+              //select id from tags where tag in [tags] => array of stored tags
+              return knex(this.tableName).whereIn('tag', tags).select('id')
+          })
+          .then(objIds => {
+              _.map(objIds, id => {
+                  tagIds.push(id.id)
+              })
+              //select all based on tagIds
+              // return array of tags object              
+              return knex(this.tableName).whereIn('id', tagIds)              
+          })
+        
     }
 }
 
