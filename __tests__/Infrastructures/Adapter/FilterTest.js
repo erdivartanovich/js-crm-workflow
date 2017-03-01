@@ -20,7 +20,7 @@ describe('Infrastructures/Adapter/Filter', () => {
 
     describe('#getOperatorMutatorMap()', () => {
         it('should return mutator map', () => {
-            filter.getOperatorMutatorMap().should.be.an.object
+            filter.getOperatorMutatorMap().should.be.an('object')
         })
     })
 
