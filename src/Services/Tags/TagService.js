@@ -1,56 +1,39 @@
-/**
-* declare any required file
-*/
 'use strict'
 const knex = require('../../connection')
 const BaseService = require('../BaseService')
 
 class TagService extends BaseService {
-  /**
-  * TagService constructor
-  */
-  constructor() {
-    super()
-    this.tableName = 'tags'
-  }
-  /**
-  * additional function for attach tags with object
-  */
-  attach() {
-    // fix me:
-  }
 
-  /**
-   * additional function for deattach
-   */
-   detach() {
-     // fix me:
-   }
-
-   /**
-    * additional function for sync
-    */
-    sync() {
-      // fix me:
+    constructor() {
+        super()
+        this.tableName = 'tags'
     }
 
-    /**
-     * additional function trigger update event for object
-     */
-     triggerUpdatedEvent() {
-      //  fix me:
+    attach(object, user, tags) {
+        return this.attach(object, user, tags)
+    }
 
-     }
+    detach(object, user, tags) {
+        return this.detach(object, user, tags)
+    }
 
-     /**
-      * additional function apply search adapter
-      * set criteria
-      */
-      applySearchAdapter() {
-        // fix me:
-      }
+    getTag(tag) {
+        return this.findWhere({'tag': tag})
+    }
+
+    getInstances(tagsData) {
+        let tags = new Set()     
+
+        for (let tag of tagsData) {
+            if (typeof tag['id'] != 'undefined') {
+                tags.set(this.find(tag['id']))
+            } else if (typeof tag['tag'] != 'undefined') {
+                tags.set(this.firstOrCreate({'tag': tag['tag'].trim().toLowerCase()}))
+            }
+        }
+
+        return tags
+    }
 }
-/**
-* export module
-*/
+
 module.exports = TagService
