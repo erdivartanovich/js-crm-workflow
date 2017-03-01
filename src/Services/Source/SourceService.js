@@ -3,6 +3,9 @@
 const knex = require('../../connection')
 const BaseService = require('../BaseService')
 
+//require Lodash
+const _ = require('lodash')
+
 class LeadTypeService extends BaseService{
 
   constructor() {
@@ -30,21 +33,24 @@ class SourceService extends BaseService {
   
     deleteUnused() {
         //return delete unused
-        const usedSource = function () {
-            knex(this.tableName)
+        const usedSource = () => {
+            return knex(this.tableName)
             .join('referrals', 'referrals.source_id', 'sources.id')
             .where('referrals.source_type', 'sources')
             .select('source_id')
         }
-        usedSource.then((result) => result)
-        
+        usedSource().then((result) => {
+            //the result will be array of object [{source_id: x}, ...]
+            //get array of source_ids from result object
+            
+            let source_ids = result.map((item) => {return item.source_id})
+            
+            //delete from sources where id not in source_ids
 
-        // $usedSources = $this->persistenceStorage()
-        //     ->join('referrals', 'referrals.source_id', '=', 'sources.id')
-        //     ->where('referrals.source_type', '=', 'sources')
-        //     ->lists('source_id');
-
-        // return $this->persistenceStorage()->whereNotIn('id', $usedSources)->delete();
+            return knex(this.tableName)
+                .whereNotIn('id', source_ids)
+                .del()
+        })
     }
 
    
@@ -69,5 +75,5 @@ const source = new SourceService()
 source.deleteUnused()
 
 module.exports = SourceService
-
+ 
 
