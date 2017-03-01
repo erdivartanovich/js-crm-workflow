@@ -200,6 +200,63 @@ class ActionResourcesJob {
         })
     }
 
+    getExecuteParams(resource) {
+        let params = []
+
+        params.push(this.workflow)
+        params.push(this.action)
+        params.push(resource)
+        params.push(this.action.value)
+
+        return params
+    }
+
+    getActionResource(resource) {
+        const target = this.action.target_class
+        let model = resource
+        const relationMaps = resource.getRelationLists()
+
+        return this.isJoined(model, target)
+        .then(join => {
+            return new Promise((resolve, reject) => {
+                if(!join){
+                    const relation = relationMaps[target]
+                    model = this.setJoin(target, model, relation)
+                }
+                resolve(model)
+            })
+        })
+        .then(model => {
+            return model
+                .where('persons.id', '=', resource.id)
+                .where('persons.user_id', '=', this.workflow.user_id)
+        })
+        .then(model =>{
+            return model.browse.select(target + '.*').first()
+        })
+        .then(result => {
+            return this.service.read(result.id)
+        })
+    }
+
+    setJoin(target, model, relation) {
+        let onKey
+        let onValue
+
+        _.forEach(relation, (key, value) =>{
+            if(typeof value === 'object') {
+                onKey = Object.keys(value)[0]
+                onValue = value[onKey]
+                return model.leftJoin(key, onKey, '=', onValue)
+            }
+            else {
+                return model.leftJoin(target, key, '=', value)
+            }
+        })
+    }
+
+    
+
     getTask(action) {
         return knex('tasks')
         .where('id', action.task_id)
