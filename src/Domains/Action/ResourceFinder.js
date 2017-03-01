@@ -19,6 +19,27 @@ class ResourceFinder {
         this.runnableOnce = false
     }
 
+    get() {
+        return this.personService.browse()
+    }
+
+    /**
+     * @todo Finish this method
+     */
+    setUserContext(user) {
+        return this
+    }
+
+    runnableOnce(runnableOnce) {
+        if (typeof runnableOnce == 'undefined') {
+            runnableOnce = true
+        }
+
+        this.runnableOnce = runnableOnce
+
+        return this
+    }
+
     prepareCriteria() {
         const ruleCriteria = new RuleCriteriaFactory(this.rules)
         const objectCriteria = new ObjectCriteriaFactory(this.objects)
