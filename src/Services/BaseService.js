@@ -117,6 +117,10 @@ class BaseService {
         this.resetHaving()
     }
 
+    applyCriteria(criteria) {
+        return criteria.apply(this)
+    }
+
     browse() {
         const deletedColumn = 
             this.joinClauses.length > 0 ? this.tableName + '.deleted_at' : 'deleted_at'
