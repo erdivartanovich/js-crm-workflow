@@ -39,15 +39,18 @@ class SourceService extends BaseService {
             .where('referrals.source_type', 'sources')
             .select('source_id')
         }
-        usedSource().then((result) => {
-            //the result will be array of object [{source_id: x}, ...]
-            //get array of source_ids from result object
-            
-            let source_ids = result.map((item) => {return item.source_id})
-            
+        usedSource().then(function(source_id_results) {
+            //the source_id_results will be array of object [{source_id: x}, ...]
+            //get array of source_ids from source_id_results object
+
+            let source_ids = []
+            _.forEach(source_id_results, function(source) {
+                source_ids.push(source.source_id)
+            })
+                        
             //delete from sources where id not in source_ids
 
-            return knex(this.tableName)
+            return knex('sources')
                 .whereNotIn('id', source_ids)
                 .del()
         })
@@ -107,9 +110,6 @@ class SourceService extends BaseService {
     }
 
 }
-
-const source = new SourceService()
-source.deleteUnused()
 
 module.exports = SourceService
  
