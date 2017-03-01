@@ -44,7 +44,7 @@ class RuleService extends BaseService {
 
     getParent(rule) {
         if(! rule.parent_id) {
-            return null
+            return Promise.resolve(null)
         }
 
         return this.read(rule.parent_id)
@@ -63,13 +63,17 @@ class RuleService extends BaseService {
 
     // getDependentRules() method using elasticsearch
     getRuleThatHasAction(workflow, action) {
-        return knex()
-            .where('workflow_id', workflow.id)
-            .insert(workflow.id)
-            .then(() => {
-                return knex(this.ruleActionName)
-                .where('action_id', action.id)
-                .insert(action.id)
+        return knex(this.ruleActionName)
+            .where('action_id', action.id)
+            .then( result => {
+                const ids = []
+                result.map(res => {
+                    ids.push(res.rule_id)
+                })
+
+                return knex(this.tableName)
+                    .where('workflow_id', workflow.id)
+                    .whereIn('id', ids)
             })
     }
 

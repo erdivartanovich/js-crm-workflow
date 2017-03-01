@@ -10,10 +10,17 @@ describe('RuleService', () => {
 
 
     before(() => {
-
         tracker.install()
-        tracker.on('query', function checkResult(query) {
-            query.response(query)
+        tracker.on('query', function checkResult(query, step) {
+            if(step == 9) {
+                query.response([{
+                    rule_id: 10,
+                },{
+                    rule_id: 11,
+                }])
+            } else {
+                query.response(query)
+            }
         })
 
     })
@@ -119,4 +126,53 @@ describe('RuleService', () => {
             }).catch(err => done(err))
         })
     })
+
+    describe('#getRuleThatHasAction()', () => {
+        it('Should return valid query for getRuleThatHasAction', (done) => {
+            const workflow = {
+                id: 1
+            }
+            const action = {
+                id: 2
+            }
+            
+            const addQuery = 'select * from `rules` where `workflow_id` = ? and `id` in (?, ?)'
+            testObj.getRuleThatHasAction(workflow, action).then(result => {
+                result.sql.should.equals(addQuery)
+
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
+    describe('#getParent()', () => {
+        it('Should return valid query', (done) => {
+            const query = 'select * from `rules` where `deleted_at` is null and `id` = ? limit ?'
+            testObj.getParent({
+                id: 1,
+                parent_id: 1, 
+                workflow_id: 1
+            }).then(result => {
+                result.sql.should.equals(query)
+
+                done()
+            }).catch(err => done(err))
+        })
+
+        it('Should return null', (done) => {
+
+            testObj.getParent({
+                id: 1,
+                parent_id: null, 
+                workflow_id: 1
+            }).then(result => {
+                if (result !== null) {
+                    done(new Error('It returns something else than null'))
+                } else {
+                    done()
+                }
+            }).catch(err => done(err))
+        })
+    })
+
 })
