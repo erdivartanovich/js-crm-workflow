@@ -216,16 +216,19 @@ class ActionResourcesJob {
         let model = resource
         const relationMaps = resource.getRelationLists()
 
-        return this.isJoined(model, target)
-        .then(join => {
-            return new Promise((resolve, reject) => {
-                if(!join){
-                    const relation = relationMaps[target]
-                    model = this.setJoin(target, model, relation)
-                }
-                resolve(model)
-            })
-        })
+        // TODO: implement isJoined method
+        // return this.isJoined(model, target)
+        // .then(join => {
+        //     return new Promise((resolve, reject) => {
+        //         if(!join){
+        //             const relation = relationMaps[target]
+        //             model = this.setJoin(target, model, relation)
+        //         }
+        //         resolve(model)
+        //     })
+        // })
+        const relation = relationMaps[target]
+        return this.setJoin(target, model, relation)
         .then(model => {
             return model
                 .where('persons.id', '=', resource.id)
@@ -255,7 +258,11 @@ class ActionResourcesJob {
         })
     }
 
-    
+    isJoined(model, table) {
+        return knex('users')
+            .join('contacts', 'users.id', '=', 'contacts.user_id')
+            .select('users.id', 'contacts.phone').toSQL()
+    }
 
     getTask(action) {
         return knex('tasks')
