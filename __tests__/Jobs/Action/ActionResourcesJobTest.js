@@ -4,6 +4,8 @@ const basePath = '../../../src'
 const ActionResourcesJob = require(basePath + '/Jobs/Action/ActionResourcesJob')
 const PersonService = require(basePath + '/Services/Person/PersonService')
 const LogService = require(basePath + '/Services/Workflow/LogService')
+const WorkflowService = require(basePath + '/Services/Workflow/WorkflowService')
+const TaskService = require(basePath + '/Services/Task/TaskService')
 
 var tracker = require('mock-knex').getTracker()
 var td = require('testdouble')
@@ -64,14 +66,63 @@ describe('ActionResourcesJob', () => {
         })
     })
 
-    describe('#actionUpdate()', () => {
+    // TODO: need to implement model.leftJoin
+    // describe('#actionUpdate()', () => {
+    //     const resource = td.object(PersonService)
+    //
+    //     it('should return a valid object', () => {
+    //         testObj.logService = new LogService()
+    //         testObj.actionUpdate(resource).should.be.instanceOf(Object)
+    //     })
+    // })
+
+    describe('#actionExecute()', () => {
         const resource = td.object(PersonService)
 
         it('should return a valid object', () => {
             testObj.logService = new LogService()
-            testObj.actionUpdate(resource).should.be.instanceOf(Object)
+            testObj.service = new WorkflowService()
+            testObj.actionExecute(resource).should.be.instanceOf(Object)
         })
     })
+
+    describe('#actionClone()', () => {
+        const resource = td.object(PersonService)
+
+        it('should return a valid object', () => {
+            testObj.logService = new LogService()
+            testObj.taskService = new TaskService()
+            testObj.actionClone(resource).should.be.instanceOf(Object)
+        })
+    })
+
+    describe('#actionAssign()', () => {
+        const resource = td.object(PersonService)
+
+        it('should return a valid object', () => {
+            testObj.logService = new LogService()
+            testObj.actionAssign(resource).should.be.instanceOf(Object)
+        })
+    })
+
+    describe('#getExecuteParams()', () => {
+        const resource = td.object(PersonService)
+
+        it('should return a valid object', () => {
+            testObj.logService = new LogService()
+            testObj.getExecuteParams(resource).should.be.instanceOf(Object)
+        })
+    })
+
+    describe('#log()', () => {
+        const resource = td.object(PersonService)
+
+        it('should return a valid object', () => {
+            testObj.log(resource, 1, 'Log info').should.be.instanceOf(Object)
+        })
+    })
+
+
 
 
 

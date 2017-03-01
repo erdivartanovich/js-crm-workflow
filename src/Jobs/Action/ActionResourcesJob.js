@@ -261,11 +261,12 @@ class ActionResourcesJob {
         })
     }
 
-    isJoined(model, table) {
-        return knex('users')
-            .join('contacts', 'users.id', '=', 'contacts.user_id')
-            .select('users.id', 'contacts.phone').toSQL()
-    }
+    // TODO:
+    // isJoined(model, table) {
+    //     return knex('users')
+    //         .join('contacts', 'users.id', '=', 'contacts.user_id')
+    //         .select('users.id', 'contacts.phone').toSQL()
+    // }
 
     getTask(action) {
         return knex('tasks')
