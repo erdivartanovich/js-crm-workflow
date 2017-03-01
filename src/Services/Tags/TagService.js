@@ -1,6 +1,7 @@
 'use strict'
 const knex = require('../../connection')
 const BaseService = require('../BaseService')
+const _ = require('lodash')
 
 class TagService extends BaseService {
 
@@ -108,6 +109,7 @@ class TagService extends BaseService {
           })
         
     }
+
 }
 
 module.exports = TagService
