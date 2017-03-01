@@ -8,10 +8,10 @@ const _ = require('lodash')
 
 class LeadTypeService extends BaseService{
 
-  constructor() {
-    super()
-    this.tableName = 'lead_types'
-  }
+    constructor() {
+        super()
+        this.tableName = 'lead_types'
+    }
 
 
 }
@@ -56,19 +56,56 @@ class SourceService extends BaseService {
    
     getInstances(labels, user) {
         //labels should be an array
-        const instances = new Collection();
+        const instances = []
 
-        labels.forEach((label) => {
-            //instances.push(this.getByLabel(trim(label), user))
+        _.forEach(labels, (label) => {
+            instances.push(this.getByLabel(label.trim(), user))
         })
-
-        return instances;
+        return instances
     }
 
     
     listsDefaults(user) {
-        // return this.listsDefaults(user)
+        return knex(this.tableName)
+            .whereNull('user_id')
+            .orWhere('user_id', user.id)
     }
+
+    getByLabel(label, user) {
+        const findLabel = () => {
+            return knex(this.tableName)
+                .where({
+                    label: label, user_id: null
+                })
+                .first()
+        }
+        findLabel().then((labelObj) => {
+            let resource = labelObj
+            if (resource) {
+                return Promise.resolve(resource) 
+            } else {
+                return Promise.resolve() //just skipped to next then
+            }
+        })
+        .then(() => {
+            const getFirst = () => {
+                return knex(this.tableName)
+                    .where({label: label, user_id: user.id})
+                    .first()
+            }
+            getFirst().then((sources) => {
+                if (typeof sources == 'undefined') {
+                    //create new one
+                    return knex(this.tableName)
+                        .insert({label: label, user_id: user.id})
+                } else {
+                    //return sources
+                    return Promise.resolve(sources)
+                }
+            })
+        })
+    }
+
 }
 
 const source = new SourceService()
