@@ -28,20 +28,20 @@ class ActionResourcesJob {
     }
 
     processResource(resource) {
-        //1. check run once
-        if(this.runnableOnce && this.logService.isRunned(this.workflow, this.action, resource)) {
-            //log already run once
-            this.log(resource, 0, 'Already run once !')
+        this.logService.isRunned(this.workflow, this.action, resource)
+        .then(exist => {
+            //1. check run once
+            if(exist && this.runnableOnce) {
+                return false
+            }
 
-            return false
-        }
+            // TODO:
+            //2. check priority
+            //3. check dependency rules
 
-        // TODO:
-        //2. check priority
-        //3. check dependency rules
-
-        //process action
-        return this.applyAction(resource)
+            //process action
+            return this.applyAction(resource)
+        })
     }
 
     applyAction(resource) {
@@ -74,19 +74,59 @@ class ActionResourcesJob {
     }
 
     actionUpdate(resource) {
-        console.log('Update')
+        // console.log('Update')
+        this.getActionResource(resource)
+        .then(target => {
+            target.setAttribute(this.action.getTargetField(), this.action.getValue())
+        })
+        .then(target => {
+            this.service.update(target)
+        })
+        .then(result => {
+            if(result) {
+                this.log(resource, 1, 'Target updated')
+                .then(() => {
+                    return true
+                })
+            }
+            this.log(resource, 0, 'Target updated failed')
+            .then(() => {
+                return false
+            })
+        })
     }
 
     actionExecute(resource) {
-        console.log('Execute');
+        // console.log('Execute');
+        let message = 'Action '+this.action.target_field+' on '+this.action.target_class+' not found !'
+
+        if(typeof this.service[this.action.target_field] == 'function') {
+            this.getExecuteParams(resource)
+            .then(params => {
+                this.service[this.action.target_field].apply(undefined, params)
+            })
+            .then(result => {
+                if(result) {
+                    this.log(resource, 1, 'Action '+this.action.name+' executed')
+                    .then(() => {
+                        return true
+                    })
+                }
+                this.log(resource, 0, 'Action '+this.action.target_field+' on '+this.action.target_class+' failed!')
+            })
+        }
+        this.log(resource, 0, message)
+        .then(() => {
+            return false
+        })
     }
 
     actionClone(resource) {
-        console.log('Clone')
+        // console.log('Clone')
     }
 
     actionAssign(resource) {
-        console.log('Resource')
+        // console.log('Resource')
     }
 
     log(resource, status, loginfo) {
