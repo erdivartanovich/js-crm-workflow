@@ -11,40 +11,61 @@ class SocialNetworkService extends BaseService{
         this.model = knex(this.tableName)
     }
     
+    /**
+     * Applies the given where conditions to the model
+     * this mehod used by firstOrCreate method 
+     * 
+     * @param object attributes
+     */
     applyConditions(attributes){
         for(var value in attributes){
             if(Array.isArray(attributes[value])){
                 let field, condition, val
                 [field, condition, val] = attributes[value]
-    
-                return this.model.where(field, condition, val).first().then(result => {
-                    this.model = result
-                })
-            
+                this.model =  this.model.where(field, condition, val)
             }else{
-                
-                return this.model.where(value, attributes[value]).first().then(result => { 
-                    this.model = result 
-                })
-            
+                this.model = this.model.where(value, attributes[value])
             }
-            
-        }
 
+        }
     }
 
+    /**
+     * Retrieve first data from  or create it.
+     * 
+     * @param object atrributes 
+     * @return object
+     */
     firstOrCrete(attributes){
-        return this.applyConditions(attributes).then(result => {
-            let model = this.model
-            this.resetModel()
-            return model === undefined ? this.add(attributes) : model
+        this.applyConditions(attributes)
+        let model = this.model.first()
+        this.resetModel()
+
+        return model.then(result => {
+            if(result){
+                return result
+            }else{
+                return this.add(attributes).then(id => {
+                    return this.read(id)
+                })
+            }
+
         })
     }
 
+    /**
+     * set model value to tableName
+     * this method used by firstOrCreate method
+     */
     resetModel(){
         this.model = knex(this.tableName)
     }
 
+    /**
+     * Lists user's resource and default resources (without user_id)
+     * @param object user
+     * @return object
+     */
     listsDefaults(user){
         return knex(this.tableName)
                    .whereNull('user_id')
