@@ -18,7 +18,23 @@ class BaseService {
         this.tableName = null
         this.softDelete = true
 
-        this.resetWhere()
+        this.resetConditions()
+    }
+
+    where(field, operator, value) {
+        this.whereClauses.push({field, operator, value})
+
+        return this
+    }
+
+    getRelationLists() {
+        return []
+    }
+
+    join(tableName, relation) {
+        this.joinClauses.push({tableName, relation})
+
+        return this
     }
 
     whereNotIn(field, values) {
@@ -27,25 +43,45 @@ class BaseService {
             this.whereClauses.push({field, operator, value})
         })
 
-        return this        
+        return this
     }
 
     resetWhere() {
         this.whereClauses = []
     }
 
-    browse() {
-        //delete from current table where deleted at = null
-        const entity = knex(this.tableName)
-            .where('deleted_at', null)
+    resetJoin() {
+        this.joinClauses = []
+    }
 
+    applyConditions(entities) {
         _.map(this.whereClauses, (val) => {
-            entity.whereRaw(val.field + ' ' + val.operator + ' ?', [val.value])
+            entities.whereRaw(val.field + ' '  + val.operator + ' ?', [val.value])
         })
 
-        this.resetWhere()
+        _.map(this.joinClauses, (val) => {
+            entities.join(val.tableName, val.relation)
+        })
+    }
 
-        return entity
+    resetConditions() {
+        this.resetWhere()
+        this.resetJoin()
+    }
+
+    browse() {
+        const deletedColumn = 
+            this.joinClauses.length > 0 ? this.tableName + '.deleted_at' : 'deleted_at'
+
+        //delete from current table where deleted at = null
+        const entities = knex(this.tableName)
+            .where(deletedColumn, null)
+
+        this.applyConditions(entities)
+
+        this.resetConditions()
+
+        return entities
     }
 
     read(id) {
@@ -144,4 +180,3 @@ class BaseService {
 }
 
 module.exports = BaseService
-
