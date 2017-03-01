@@ -9,27 +9,52 @@ class TagService extends BaseService {
         this.tableName = 'tags'
     }
 
-    attach(object, user, tags) {
-        let ids = []
-        for (let tag of tags) {
-            ids[tag.id] = {'user_id': user.id}
-        }
-        object.tags().attach(ids)
+    /**
+     * attach method
+     * attach tags to entity with morphMany relation
+     * expect:
+     *  - entity => could be person, user, or task etc
+     *  - user 
+     *  - tags 
+     *  - type => entity type/name e.g 'person', 'user', 'task'
+     */
+    attach(entity, user, tags, type) {
 
-        this.triggerUpdatedEvent(object)
-        
-        for(let tag of tags) {
-            (new TagObserver).updated(tag)
-        }
-        return true
+        const payloads = []
+
+        _.map(tags, tag => {
+            payloads.push({
+                user_id: user.id,
+                tag_id: tag.id,
+                taggable_id: entity.id,
+                taggable_type: type
+            })
+        })
+
+        return knex('taggables').insert(payloads)
     }
 
-    detach(object, user, tags) {
-        return this.detach(object, user, tags)
-    }
+    /**
+     * detach method
+     * detach tags to entity with morphMany relation
+     * expect:
+     *  - entity => could be person, user, or task etc
+     *  - user 
+     *  - tags 
+     *  - type => entity type/name e.g 'person', 'user', 'task'
+     */
+    detach(entity, user, tags, type) {
+        const tag_ids = []
+        const payloads = {
+            user_id: user.id,
+            taggable_id: entity.id,
+            taggable_type: type
+        }
+        _.map(tags, tag => {
+            tag_ids.push(tag.id)
+        })
 
-    getTag(tag) {
-        return this.findWhere({'tag': tag})
+        return knex('taggables').whereIn('tag_id', tag_ids).where(payloads).del()
     }
 
     getInstances(tagsData) {
