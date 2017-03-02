@@ -114,4 +114,79 @@ describe('TagService', () => {
             }).catch(err => done(err))
         })
     })
+
+//attach test
+    describe('#attach()' , () => {
+        it('should return a valid query', (done) => {
+            const mockEntity = {id: 1}
+            const mockUser = {id: 9}
+            const mockTags = [{id: 1, tag: 'cool'}]
+            const mockType = 'person'
+
+            testObj.attach(mockEntity, mockUser, mockTags, mockType).then(result => {
+                result.sql.should.equals('insert into `taggables` (`tag_id`, `taggable_id`, `taggable_type`, `user_id`) values (?, ?, ?, ?)')
+                result.method.should.equals('insert')
+                result.bindings[0].should.equals(mockEntity.id)
+                result.bindings[1].should.equals(mockTags[0].id)
+                result.bindings[2].should.equals(mockType)
+                result.bindings[3].should.equals(mockUser.id)         
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
+    
+
+//detach test
+    describe('#detach()' , () => {
+        it('should return a valid query', (done) => {
+            const mockEntity = {id: 1}
+            const mockUser = {id: 9}
+            const mockTags = [{id: 1, tag: 'cool'}]
+            const mockType = 'person'
+
+            testObj.detach(mockEntity, mockUser, mockTags, mockType).then(result => {
+                result.sql.should.equals('delete from `taggables` where `tag_id` in (?) and `user_id` = ? and `taggable_id` = ? and `taggable_type` = ?')
+                result.method.should.equals('del')
+                result.bindings[0].should.equals(mockTags[0].id)
+                result.bindings[1].should.equals(mockUser.id)         
+                result.bindings[2].should.equals(mockEntity.id)
+                result.bindings[3].should.equals(mockType)
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
+})
+
+describe('TagService - getInstances()', () => {
+   
+    tracker.install()
+
+    tracker.on('query', function checkResult(query) {
+        query.response([ { id: 13,
+            tag: 'horror',
+            created_at: null,
+            updated_at: null,
+            deleted_at: null 
+        },
+        { 
+            id: 14,
+            tag: 'hansome',
+            created_at: null,
+            updated_at: null,
+            deleted_at: null 
+        } 
+        ])
+    })
+
+    testObj.getInstances({tag: 'horror'}, {tag: 'hansome'}).then(function (model) {
+            console.log('xxxx', model)
+            expect(model[0].id).to.equal(13)
+            expect(model[0].tag).to.equal('horror')
+            tracker.uninstall()
+            done()
+    })
+
+
 })
