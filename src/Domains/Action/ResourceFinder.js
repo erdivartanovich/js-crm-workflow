@@ -11,12 +11,11 @@ class ResourceFinder {
         this.workflow = workflow
         this.userId = workflow.user_id
         this.action = action
-        this.service = service
         this.rules = rules
         this.objects = objects
-        this.personService = di.container['PersonService']
+        this.personService = service
 
-        this.runnableOnce = false
+        this.runOnce = false
     }
 
     get() {
@@ -35,7 +34,7 @@ class ResourceFinder {
             runnableOnce = true
         }
 
-        this.runnableOnce = runnableOnce
+        this.runOnce = runnableOnce
 
         return this
     }
@@ -49,7 +48,7 @@ class ResourceFinder {
 
         /** @todo add filter for userContext Here */
 
-        let builder = this.personService
+        this.personService
             .resetConditions()
             .applyCriteria(ruleCriteria)
             .applyCriteria(objectCriteria)
@@ -72,7 +71,7 @@ class ResourceFinder {
 
             if (count > 0) {
                 do {
-                    batches.push(this.personService.paginate(this.limit, this.offset, table))
+                    batches.push(this.personService.paginate(this.limit, this.offset, table + '.*'))
                     this.offset += this.limit
                 } while (this.offset < count)
             }
