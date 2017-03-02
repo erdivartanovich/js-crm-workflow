@@ -130,6 +130,14 @@ class BaseService {
     }
 
     browse() {
+        const entities = this.get()
+
+        this.resetConditions()
+
+        return entities
+    }
+
+    get() {
         const deletedColumn = 
             this.joinClauses.length > 0 ? this.tableName + '.deleted_at' : 'deleted_at'
 
@@ -138,8 +146,6 @@ class BaseService {
             .where(deletedColumn, null)
 
         this.applyConditions(entities)
-
-        this.resetConditions()
 
         return entities
     }
