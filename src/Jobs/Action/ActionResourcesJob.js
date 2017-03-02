@@ -83,9 +83,7 @@ class ActionResourcesJob {
         // console.log('Update')
         return this.getActionResource(resource, resourceService)
         .then(target => {
-            return target.setAttribute(this.action.target_field, this.action.value)
-        })
-        .then(target => {
+            target[this.action.target_field] = this.action.value
             return this.service.edit(target)
         })
         .then(result => {
