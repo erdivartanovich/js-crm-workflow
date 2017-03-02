@@ -40,7 +40,7 @@ class TagService extends BaseService {
     detach(entity, user, tags, type) {
         const tag_ids = []
         const payloads = {
-            user_id: user.id,
+            user_id: user,
             taggable_id: entity.id,
             taggable_type: type
         }
