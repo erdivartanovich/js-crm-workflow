@@ -12,13 +12,15 @@ describe('RuleService', () => {
     before(() => {
         tracker.install()
         tracker.on('query', function checkResult(query, step) {
-            if(step == 9) {
+            switch(step) {
+            case 9:
                 query.response([{
                     rule_id: 10,
                 },{
                     rule_id: 11,
                 }])
-            } else {
+                break
+            default:
                 query.response(query)
             }
         })
@@ -167,11 +169,27 @@ describe('RuleService', () => {
                 workflow_id: 1
             }).then(result => {
                 if (result !== null) {
-                    done(new Error('It returns something else than null'))
+                    throw new Error('It returns something else than null')
                 } else {
                     done()
                 }
             }).catch(err => done(err))
+        })
+    })
+
+    describe('#getParentsFor()', () => {
+        it('Should return an empty array', (done) => {
+            let rule = {
+                id: 3,
+                parent_id: null
+            }
+
+            testObj.getParentsFor(rule).then(result => {
+                if (result.length !== 0) {
+                    throw Error('Return value is not an empty array')
+                }
+                done()
+            }).catch(err => done(err))        
         })
     })
 

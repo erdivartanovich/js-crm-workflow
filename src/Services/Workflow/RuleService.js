@@ -13,15 +13,6 @@ class RuleService extends BaseService {
 
     // TODO: implements syncActions, getParentsFor, getDependentRules, getRuleThatHasAction
 
-        // const data = []
-        
-        // actions.map(function (action) {
-        //     data.push({
-        //         rule_id: rule.id,
-        //         action_id: action.id,
-        //     })
-        // })
-
     syncActions(rule, actions) {
         return knex.transaction(trx => {
             return trx.from(this.ruleActionName).where('rule_id', rule.id).delete().then(() => {
@@ -34,31 +25,28 @@ class RuleService extends BaseService {
         
     }
 
-    // return knex(this.ruleActionName)
-    //         .where('rule_id', rule.id).del()
-    //         .then(() => {
-    //             return knex(this.ruleActionName)
-    //                 .insert(data)
-    //         })
-    // }
-
     getParent(rule) {
-        if(! rule.parent_id) {
+        if (rule.parent_id === null) {
             return Promise.resolve(null)
         }
-
+        
         return this.read(rule.parent_id)
     }
 
-    getParentsFor(rule) {
-        const data = []
-        data.push({
-           parent_id: rule.parent_id
-         })
+    getParentsFor(rule, carry) {
+        if (typeof carry == 'undefined') {
+            carry = []
+        }
 
-        return knex(this.ruleActionName)
-            .where('parent_id', rule.parent_id)
-            .insert(data)
+        return this.getParent(rule).then(result => {
+            if (result == null) {
+                return carry
+            }
+
+            carry.push(result)
+
+            return this.getParentsFor(result, carry)
+        })
     }
 
     // getDependentRules() method using elasticsearch
@@ -82,13 +70,8 @@ class RuleService extends BaseService {
 
 module.exports = RuleService
 
-// let test = new RuleService()
-
-// test.syncActions({
-//     id: 7,
-//     // 
-// }, [
-//     {id: 1},
-//     {id: 2},
-//     {id: 3}
-// ])
+let test = new RuleService()
+test.getParentsFor({
+    parent_id: 1,
+    // parent_id: 2
+})
