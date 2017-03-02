@@ -79,14 +79,14 @@ class ActionResourcesJob {
         return action
     }
 
-    actionUpdate(resource) {
+    actionUpdate(resource, resourceService) {
         // console.log('Update')
-        return this.getActionResource(resource)
+        return this.getActionResource(resource, resourceService)
         .then(target => {
             return target.setAttribute(this.action.target_field, this.action.value)
         })
         .then(target => {
-            return this.service.update(target)
+            return this.service.edit(target)
         })
         .then(result => {
             if(result) {
@@ -213,11 +213,11 @@ class ActionResourcesJob {
         return params
     }
 
-    getActionResource(resource) {
+    getActionResource(resource, resourceService) {
         const target = this.action.target_class
-        let model = resource
-        // const relationMaps = resource.getRelationLists()
-        const relationMaps = resource.getRelationLists //for testing only
+        const model = resourceService
+
+        const relationMaps = resourceService.getRelationLists()
 
         // TODO: implement isJoined method
         // return this.isJoined(model, target)
@@ -230,35 +230,36 @@ class ActionResourcesJob {
         //         resolve(model)
         //     })
         // })
-        const relation = relationMaps[target]
-        return this.setJoin(target, model, relation)
-        .then(model => {
-            return model
-                .where('persons.id', '=', resource.id)
-                .where('persons.user_id', '=', this.workflow.user_id)
-        })
-        .then(model =>{
-            return model.browse.select(target + '.*').first()
-        })
+
+        return this.setCriteria(target, model, resource, relationMaps)
         .then(result => {
-            return this.service.read(result.id)
+            return model.read(result.id)
         })
     }
 
     setJoin(target, model, relation) {
+
         let onKey
         let onValue
+        const relations = {}
+        // {key: val}
+        // {table: {key: val}}
 
-        _.forEach(relation, (key, value) =>{
+        _.map(relation, (value, key) => {
             if(typeof value === 'object') {
                 onKey = Object.keys(value)[0]
                 onValue = value[onKey]
-                return model.leftJoin(key, onKey, onValue)
+                relations[onKey] = onValue
+
+                model.join(key, relations, 'left')
             }
             else {
-                return model.leftJoin(target, key, value)
+                relations[key] = value
+                model.join(target, relations, 'left')
             }
         })
+
+        return model
     }
 
     // TODO:
@@ -272,6 +273,18 @@ class ActionResourcesJob {
         return knex('tasks')
         .where('id', action.task_id)
         .first()
+    }
+
+    setCriteria(target, model, resource, relationMaps) {
+        const relation = relationMaps[target]
+        this.setJoin(target, model, relation)
+
+        return model
+            .where('persons.id', '=', resource.id)
+            .where('persons.user_id', '=', this.workflow.user_id)
+            .browse()
+            .select(target + '.*')
+            .first()
     }
 
     log(resource, status, loginfo) {

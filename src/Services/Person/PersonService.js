@@ -25,7 +25,7 @@ class PersonService extends BaseService {
         this.lead_type_service = lead_type
         this.profession_service = profession
         this.company_service = company
-        
+
         this.tableName = 'persons'
 
         this.referralSourcesMap = {
@@ -79,7 +79,7 @@ class PersonService extends BaseService {
             }
         })
     }
-    
+
     findOrAddLeadType(lead_type) {
         return new Promise((resolve) => {
             if (typeof lead_type === 'undefined' || typeof lead_type.id === 'undefined') {
@@ -90,17 +90,17 @@ class PersonService extends BaseService {
                     if (typeof result != 'undefined') {
                         resolve({'lead_type_id': Number(result.id.join())})
                     } else {
-                        this.lead_type_service.add(lead_type).returning('id').then((lead_type_id) => resolve({'lead_type_id': Number(lead_type_id.join()) }))                        
+                        this.lead_type_service.add(lead_type).returning('id').then((lead_type_id) => resolve({'lead_type_id': Number(lead_type_id.join()) }))
                     }
                 })
             }
         })
     }
-    
+
     add(person) {
-       
+
         /**
-         * 
+         *
          * Inject User Service here
          *  -- Find or insert related user of person
          */
@@ -112,11 +112,11 @@ class PersonService extends BaseService {
 
         /**
          * Inject LeadType service
-         * -- Find or insert related LeadType of the person 
+         * -- Find or insert related LeadType of the person
          */
 
         //Set user_id, stage_id and lead_type_id
-        //add person 
+        //add person
         return new Promise ((resolve, reject) => {
             Promise.all (
                 [
@@ -129,7 +129,7 @@ class PersonService extends BaseService {
                 person['user_id'] = result[0].user_id
                 person['stage_id'] = result[1].user_id
                 person['lead_type_id'] = result[2].lead_type_id
-                
+
                 delete person.lead_type
                 delete person.stage
 
@@ -151,7 +151,7 @@ class PersonService extends BaseService {
 
     update(person) {
         /**
-         * 
+         *
          * Inject User Service here
          *  -- Find or insert related user of person
          */
@@ -163,7 +163,7 @@ class PersonService extends BaseService {
 
         /**
          * Inject LeadType service
-         * -- Find or insert related LeadType of the person 
+         * -- Find or insert related LeadType of the person
          */
 
         //Set user_id, stage_id and lead_type_id
@@ -180,7 +180,7 @@ class PersonService extends BaseService {
                 person['user_id'] = result[0].user_id
                 person['stage_id'] = result[1].user_id
                 person['lead_type_id'] = result[2].lead_type_id
-                
+
                 delete person.lead_type
                 delete person.stage
 
@@ -200,16 +200,16 @@ class PersonService extends BaseService {
         })
     }
 
-    
+
     syncReferrals(person, compositeSourcesIds) {
-        
+
         let promises = []
 
         _.map(compositeSourcesIds, (carry, compositeId) => {
             const comps = compositeId.split('-')
 
             if (typeof comps.id !== 'undefined') {
-                promises.push(this.referralSourcesMap[comps.table].read(comps.id))                
+                promises.push(this.referralSourcesMap[comps.table].read(comps.id))
             }
         })
 
@@ -250,7 +250,7 @@ class PersonService extends BaseService {
     setupCompanyAndProfession(person, person_result) {
         //person = old_value, person_result = new_value
         //for person.add method, those two values will be equals
-        
+
         if ((typeof person_result['profession'] != 'undefined')) {
             return knex('person_professions')
             .where('person_id', person_result.id)
@@ -258,7 +258,7 @@ class PersonService extends BaseService {
                 if (person_profession.length <= 0) {
                     return this.profession_service.add({
                         person_id: person_result.id,
-                        title: person_result.title 
+                        title: person_result.title
                     })
                     .then((person_profession) => Promise.resolve(person_profession))
                 } else {
@@ -295,7 +295,7 @@ class PersonService extends BaseService {
             })
         } else {
             //profession not defined
-            console.log(person_result, ' -> profession/company not defined')  
+            console.log(person_result, ' -> profession/company not defined')
         }
     }
 
@@ -305,9 +305,9 @@ class PersonService extends BaseService {
         /**
          * for each person.motivations
          * - search for default first
-         * - if motivation == null 
+         * - if motivation == null
          * - - create for current user
-         * 
+         *
          * @param person = {
          *      id: x,
          *      name: xxx,
@@ -317,7 +317,7 @@ class PersonService extends BaseService {
          *      ]
          *      user: {id: x}
          * }
-         * 
+         *
          */
 
         _.forEach(person.motivations, (item) => {
@@ -339,7 +339,7 @@ class PersonService extends BaseService {
             }
             let promises = motivations.map(fn)
             const replace = Promise.all(promises)
-            return replace    
+            return replace
         })
         //update relational person_motivations
         .then((motiv_ids) => {
@@ -373,9 +373,9 @@ class PersonService extends BaseService {
         /**
          * for each person.contact_types
          * - search for default first
-         * - if contact_types == null 
+         * - if contact_types == null
          * - - create for current user
-         * 
+         *
          * @param person = {
          *      id: x,
          *      name: xxx,
@@ -385,7 +385,7 @@ class PersonService extends BaseService {
          *      ]
          *      user: {id: x}
          * }
-         * 
+         *
          */
 
         _.forEach(person.contact_types, (item) => {
@@ -407,7 +407,7 @@ class PersonService extends BaseService {
             }
             let promises = contact_types.map(fn)
             const replace = Promise.all(promises)
-            return replace    
+            return replace
         })
         //update relational person_contact_types
         .then((motiv_ids) => {

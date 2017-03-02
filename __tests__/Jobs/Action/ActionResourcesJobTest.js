@@ -1,6 +1,7 @@
 'use strict'
 
 const basePath = '../../../src'
+const di = require(basePath + '/di')
 const ActionResourcesJob = require(basePath + '/Jobs/Action/ActionResourcesJob')
 const PersonService = require(basePath + '/Services/Person/PersonService')
 const LogService = require(basePath + '/Services/Workflow/LogService')
@@ -10,10 +11,11 @@ const TaskService = require(basePath + '/Services/Task/TaskService')
 var tracker = require('mock-knex').getTracker()
 var td = require('testdouble')
 
-const workflow = {id: 4}
-const action = {id: 7, task_id: 5, type: 5}
-const resources = [{}]
-const rules = [{}]
+const workflow = {id: 1, user_id: 6}
+const action = {id: 1, type: 4, task_id: 1, target_class: 'person_addresses'}
+const personService = di.container['PersonService']
+const resources = ({})
+const rules = [{id: 3}]
 
 const testObj = new ActionResourcesJob(workflow, action, resources, rules)
 const tableName = 'action_logs'
@@ -24,8 +26,16 @@ describe('ActionResourcesJob', () => {
 
     before(() => {
         tracker.install()
-        tracker.on('query', function checkResult(query) {
-            query.response(query)
+        tracker.on('query', function checkResult(query, step) {
+
+            console.log('Step '+step)
+            if (step == 8) {
+                query.response({
+                    id: 2
+                })
+            } else {
+                query.response(query)
+            }
         })
     })
 
@@ -62,19 +72,20 @@ describe('ActionResourcesJob', () => {
 
         it('should return a valid object', () => {
             testObj.logService = new LogService()
-            testObj.applyAction(resource).should.be.instanceOf(Object)
+            testObj.applyAction(resource).should.be.true
         })
     })
 
-    // TODO: need to implement model.leftJoin
-    // describe('#actionUpdate()', () => {
-    //     const resource = td.object(PersonService)
-    //
-    //     it('should return a valid object', () => {
-    //         testObj.logService = new LogService()
-    //         testObj.actionUpdate(resource).should.be.instanceOf(Object)
-    //     })
-    // })
+    describe('#actionUpdate()', () => {
+        const service = personService
+        const resource = {id: 7}
+
+        it('should return a valid object', () => {
+            testObj.logService = new LogService()
+            testObj.service = new WorkflowService()
+            testObj.actionUpdate(resource, service).should.be.instanceOf(Object)
+        })
+    })
 
     describe('#actionExecute()', () => {
         const resource = td.object(PersonService)
@@ -114,6 +125,53 @@ describe('ActionResourcesJob', () => {
         })
     })
 
+    describe('#getActionResource()' , () => {
+        it('should return a valid query', (done) => {
+            const browseQuery = 'select * from `persons` where `deleted_at` is null and `id` = ? limit ?'
+            const resources = {id: 7}
+
+            testObj.getActionResource(resources, personService).then(result => {
+                result.sql.should.equals(browseQuery)
+                result.method.should.equals('first')
+                result.bindings[0].should.equals(2)
+                result.bindings[1].should.equals(1)
+
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
+    describe('#setJoin()', (done) => {
+        const resource = td.object(PersonService)
+
+        it('should return a valid query', () => {
+            const target = 'persons'
+            const relation = {'person.id': 'workflow.id'}
+
+            testObj.setJoin(target, resource, relation).should.be.instanceOf(Object)
+        })
+    })
+
+    describe('#getCriteria()' , () => {
+        it('should return a valid query', (done) => {
+            const browseQuery = 'select persons.*, `person_addresses`.* from `persons` left join `person_addresses` on `persons`.`id` = `person_addresses`.`person_id` where `persons`.`deleted_at` is null and persons.id = ? and persons.user_id = ? limit ?'
+            const target = testObj.action.target_class
+            const model = personService
+            const resources = {id: 4}
+            const relationMaps = personService.getRelationLists()
+
+            testObj.setCriteria(target, model, resources, relationMaps).then(result => {
+                result.sql.should.equals(browseQuery)
+                result.method.should.equals('first')
+                result.bindings[0].should.equals(4)
+                result.bindings[1].should.equals(6)
+                result.bindings[2].should.equals(1)
+
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
     describe('#log()', () => {
         const resource = td.object(PersonService)
 
@@ -121,15 +179,4 @@ describe('ActionResourcesJob', () => {
             testObj.log(resource, 1, 'Log info').should.be.instanceOf(Object)
         })
     })
-
-
-
-
-
-    //  describe('#apply()', () => {
-    //     model = td.object(WorkflowService)
-    //     it('should return a valid object', () => {
-    //         testObj.apply(model).should.be.an.instanceOf(Object)
-    //     })
-    // })
 })
