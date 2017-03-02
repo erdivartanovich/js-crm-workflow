@@ -51,15 +51,33 @@ class ResourceFinder {
 
         let builder = this.personService
             .resetConditions()
-            .pushCriteria(ruleCriteria)
-            .pushCriteria(objectCriteria)
+            .applyCriteria(ruleCriteria)
+            .applyCriteria(objectCriteria)
 
         if (this.runnableOnce) {
             /** @todo Only query non exists on action_logs table resource if runnableOnce is true */
         }
-        
-        return builder
+
+        return this
+    }
+
+    getBatches() {
+        const table = this.personService.tableName
+        let count = 0
+
+        return this.personService.get().then(result => {
+            count = result.length
+
+            const batches = []
+
+            if (count > 0) {
+                do {
+                    batches.push(this.personService.paginate(this.limit, this.offset, table))
+                    this.offset += this.limit
+                } while (this.offset < count)
+            }
+
+            return batches
+        })
     }
 }
-
-module.exports = ResourceFinder
