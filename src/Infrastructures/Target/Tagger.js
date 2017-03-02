@@ -11,29 +11,39 @@ class Tagger {
     }
 
     attach(workflow, person, tag, tag_type) {
-        this.tagService
+        return Promise.resolve(
+           this.tagService
             .getInstances([
                 {
-                    'tag': tag
+                    id: tag.id,
+                    tag: tag.tag
                 }
-            ]).then(tagObjs => {
-                return this.tagService
-                    .attach(person, workflow.user_id, tagObjs, tag_type)
+            ]).then((tagObjs) => {
+                console.log('tagger send this to attach ===>', tagObjs)
+                return Promise.resolve(
+                    this.tagService
+                    .attach(person, workflow.user_id, tagObjs, tag_type)    
+                ) 
             })
+       )
     }
 
     detach(workflow, person, tag, tag_type) {
-        const tagObjs = this
-            .tagService
+        return Promise.resolve(
+            this.tagService
             .getInstances([
                 {
-                    'tag': tag
+                    id: tag.id,
+                    tag: tag.tag
                 }
             ]).then(tagObjs => {
-                return this
+                return Promise.resolve (
+                    this
                     .tagService
                     .detach(person, workflow.user_id, tagObjs, tag_type)
+                )
             })
+        )
     }
 }
 
