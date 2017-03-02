@@ -10,25 +10,6 @@ class SocialNetworkService extends BaseService{
         this.tableName = 'social_networks'
         this.model = knex(this.tableName)
     }
-    
-    /**
-     * Applies the given where conditions to the model
-     * this mehod used by firstOrCreate method 
-     * 
-     * @param object attributes
-     */
-    applyConditions(attributes){
-        for(var value in attributes){
-            if(Array.isArray(attributes[value])){
-                let field, condition, val
-                [field, condition, val] = attributes[value]
-                this.model =  this.model.where(field, condition, val)
-            }else{
-                this.model = this.model.where(value, attributes[value])
-            }
-
-        }
-    }
 
     /**
      * Retrieve first data from  or create it.
@@ -37,7 +18,10 @@ class SocialNetworkService extends BaseService{
      * @return object
      */
     firstOrCrete(attributes){
-        this.applyConditions(attributes)
+        for(var value in attributes){
+            this.model = this.model.where(value, attributes[value])
+        }
+        
         let model = this.model.first()
         this.resetModel()
 
