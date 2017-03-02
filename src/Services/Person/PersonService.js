@@ -326,7 +326,7 @@ class PersonService extends BaseService {
         //ensure motivations
         const fn = function promise(label) {
             let sql = 'delete from motivations where label = ? and user_id = ?'
-            return knex.raw(sql, [label, person.user.id]);
+            return knex.raw(sql, [label, person.user.id])
         }
         let promises = motivations.map(fn)
         const createOrReplace = Promise.all(promises)
@@ -373,7 +373,7 @@ class PersonService extends BaseService {
         /**
          * for each person.contact_types
          * - search for default first
-         * - if motivation == null 
+         * - if contact_types == null 
          * - - create for current user
          * 
          * @param person = {
@@ -394,7 +394,7 @@ class PersonService extends BaseService {
         //ensure contact_types
         const fn = function promise(label) {
             let sql = 'delete from contact_types where label = ? and user_id = ?'
-            return knex.raw(sql, [label, person.user.id]);
+            return knex.raw(sql, [label, person.user.id])
         }
         let promises = contact_types.map(fn)
         const createOrReplace = Promise.all(promises)
