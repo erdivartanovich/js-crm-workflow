@@ -1,7 +1,5 @@
 'use strict'
 
-const di = require('../../di')
-
 const RuleCriteriaFactory = require('../../Infrastructures/Rule/RuleCriteriaFactory')
 const ObjectCriteriaFactory = require('../../Infrastructures/Workflow/ObjectCriteriaFactory')
 
