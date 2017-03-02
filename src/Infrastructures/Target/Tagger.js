@@ -29,10 +29,11 @@ class Tagger {
                 {
                     'tag': tag
                 }
-            ])
-        return this
-            .tagService
-            .detach(person, workflow.user_id, tagObjs, tag_type)
+            ]).then(tagObjs => {
+                return this
+                    .tagService
+                    .detach(person, workflow.user_id, tagObjs, tag_type)
+            })
     }
 }
 

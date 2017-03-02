@@ -48,9 +48,6 @@ class TagService extends BaseService {
             tag_ids.push(tag.id)
         })
 
-        console.log('xxxx: ', payloads)
-        console.log('yyyy: ', tag_ids)
-
         return knex('taggables')
             .whereIn('tag_id', tag_ids)
             .where(payloads)
