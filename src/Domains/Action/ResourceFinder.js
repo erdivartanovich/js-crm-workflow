@@ -40,11 +40,11 @@ class ResourceFinder {
         return this
     }
 
-    prepareCriteria() {
+    prepareCriteria(limit) {
         const ruleCriteria = new RuleCriteriaFactory(this.rules)
         const objectCriteria = new ObjectCriteriaFactory(this.objects)
 
-        this.limit = 100
+        this.limit = typeof limit !== 'undefined' ? limit : 100
         this.offset = 0
 
         /** @todo add filter for userContext Here */
@@ -81,3 +81,5 @@ class ResourceFinder {
         })
     }
 }
+
+module.exports = ResourceFinder
