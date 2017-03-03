@@ -101,11 +101,8 @@ class BaseService {
         _.map(this.havingSegments, val => {
             entities.join(val.map[1], function () {
                 _.mapValues(val.have, id => {
-                    // Check id on morphable relationship
                     this.on(val.map[2] + '_id', tableName + '.id')
-                    // Check type on morphable relationship
                     this.on(val.map[2] + '_type', knex.raw(`'${tableName}'`))
-                    // Filter id
                     this.on(val.map[1] + '.' + val.map[0], id)
 
                 })

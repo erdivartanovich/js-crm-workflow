@@ -2,7 +2,7 @@
 
 const sourcePath = '../../../src'
 const PersonService = require(sourcePath + '/Services/Person/PersonService')
-const ResourceFinder = require(sourcePath + '/Domains/Action/ResourceFinder')
+const ResourceFinder = require(sourcePath + '/Services/Action/ResourceFinder')
 const RuleCriteriaFactory = require(sourcePath + '/Infrastructures/Rule/RuleCriteriaFactory')
 const ObjectCriteriaFactory = require(sourcePath + '/Infrastructures/Workflow/ObjectCriteriaFactory')
 var tracker = require('mock-knex').getTracker()
