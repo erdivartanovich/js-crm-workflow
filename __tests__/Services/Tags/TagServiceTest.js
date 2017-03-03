@@ -118,7 +118,7 @@ describe('TagService', () => {
 //attach test
     describe('#attach()' , () => {
         it('should return a valid query', (done) => {
-            const mockEntity = {id: 1}
+            const mockEntity = {id: 1, user_id: 9}
             const mockUser = {id: 9}
             const mockTags = [{id: 1, tag: 'cool'}]
             const mockType = 'person'
@@ -129,7 +129,7 @@ describe('TagService', () => {
                 result.bindings[0].should.equals(mockEntity.id)
                 result.bindings[1].should.equals(mockTags[0].id)
                 result.bindings[2].should.equals(mockType)
-                result.bindings[3].should.equals(mockUser.id)         
+                result.bindings[3].should.equals(mockUser)         
                 done()
             }).catch(err => done(err))
         })
@@ -149,7 +149,7 @@ describe('TagService', () => {
                 result.sql.should.equals('delete from `taggables` where `tag_id` in (?) and `user_id` = ? and `taggable_id` = ? and `taggable_type` = ?')
                 result.method.should.equals('del')
                 result.bindings[0].should.equals(mockTags[0].id)
-                result.bindings[1].should.equals(mockUser.id)         
+                result.bindings[1].should.equals(mockUser)         
                 result.bindings[2].should.equals(mockEntity.id)
                 result.bindings[3].should.equals(mockType)
                 done()
@@ -181,7 +181,6 @@ describe('TagService - getInstances()', () => {
     })
 
     testObj.getInstances({tag: 'horror'}, {tag: 'hansome'}).then(function (model) {
-            console.log('xxxx', model)
             expect(model[0].id).to.equal(13)
             expect(model[0].tag).to.equal('horror')
             tracker.uninstall()
@@ -190,3 +189,4 @@ describe('TagService - getInstances()', () => {
 
 
 })
+

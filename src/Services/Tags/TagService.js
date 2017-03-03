@@ -15,24 +15,19 @@ class TagService extends BaseService {
      * attach tags to entity with morphMany relation
      * expect:
      *  - entity => could be person, user, or task etc
-     *  - user 
-     *  - tags 
+     *  - user
+     *  - tags
      *  - type => entity type/name e.g 'person', 'user', 'task'
      */
     attach(entity, user, tags, type) {
-
-        const payloads = []
-
+        console.log('===>tags from tagger: ', tags, typeof tags)
+        let payloads = []
         _.map(tags, tag => {
-            payloads.push({
-                user_id: user.id,
-                tag_id: tag.id,
-                taggable_id: entity.id,
-                taggable_type: type
-            })
+            if (typeof tag.id == 'undefined') {tag['id'] = 0}
+            payloads.push({user_id: user, tag_id: tag.id, taggable_id: entity.id, taggable_type: type})
         })
-
-        return knex('taggables').insert(payloads)
+        console.log('payload to attach: ', payloads)
+        return Promise.resolve(knex('taggables').insert(payloads))
     }
 
     /**
@@ -40,14 +35,14 @@ class TagService extends BaseService {
      * detach tags to entity with morphMany relation
      * expect:
      *  - entity => could be person, user, or task etc
-     *  - user 
-     *  - tags 
+     *  - user
+     *  - tags
      *  - type => entity type/name e.g 'person', 'user', 'task'
      */
     detach(entity, user, tags, type) {
-        const tag_ids = []
+        let tag_ids = []
         const payloads = {
-            user_id: user.id,
+            user_id: user,
             taggable_id: entity.id,
             taggable_type: type
         }
@@ -55,59 +50,66 @@ class TagService extends BaseService {
             tag_ids.push(tag.id)
         })
 
-        return knex('taggables').whereIn('tag_id', tag_ids).where(payloads).del()
+        return knex('taggables')
+            .whereIn('tag_id', tag_ids)
+            .where(payloads)
+            .del()
     }
 
     /**
      * Function transform request to collection of tags. Creates tag on the fly if id is not provided
      */
     getInstances(tagsData) {
-        let tagIds = []   
-        let tags = []
+        var tagIds = []
+        var tags = []
         let promises1 = []
         let promises2 = []
 
         //Build the promise from iteration of tagsData
         _.map(tagsData, tag => {
             if (typeof tag['id'] != 'undefined') {
-                //select 
-                promises1.push(
-                  knex(this.tableName).where('id', tag['id'])
-                ) 
                 //store the tag_ids
                 tagIds.push(tag['id'])
+                //select
+                promises1.push(knex(this.tableName).where('id', tag['id']))
             } else if (typeof tag['tag'] != 'undefined') {
-                //firstOrCreate
-                const sql = 'INSERT INTO ' + this.tableName + ' (tag) ' +
-                            'SELECT * FROM (SELECT ?) AS tmp ' +
-                            ' WHERE NOT EXISTS ( ' +
-                            '   SELECT tag FROM '+ this.tableName +' WHERE tag = ? ' +
-                            ') LIMIT 1'
-                promises2.push(
-                    knex.raw(sql, [tag['tag'], tag['tag']])
-                )    
                 //store the tag for later select
-                tags.push(tag['tag'])            
+                tags.push(tag['tag'])
+                //firstOrCreate
+                const sql = 'INSERT INTO ' + this.tableName + ' (tag) SELECT * FROM (SELECT ?) AS tmp  WHERE NOT EXISTS (    SELECT tag FROM ' + this.tableName + ' WHERE tag = ? ) LIMIT 1'
+                promises2.push(knex.raw(sql, [tag['tag'], tag['tag']]))
             }
         })
 
         return Promise.all(promises1)
-          .then(() => {
-              return Promise.all(promises2)
-          })
-          .then(() => {
-              //select id from tags where tag in [tags] => array of stored tags
-              return knex(this.tableName).whereIn('tag', tags).select('id')
-          })
-          .then(objIds => {
-              _.map(objIds, id => {
-                  tagIds.push(id.id)
-              })
-              //select all based on tagIds
-              // return array of tags object              
-              return knex(this.tableName).whereIn('id', tagIds)              
-          })
-        
+            .then((result) => {
+                console.log('result of iteration if defined tag ID: ', result)
+                return Promise.all(promises2).then(result => {
+                     if (result == []) {
+                         return Promise.resolve(tagIds)
+                     } else {
+                         return Promise.resolve(tags)
+                     }
+                })
+            })
+            .then((result) => {
+                console.log('intermediete process checkpoint: ', result)
+                //select id from tags where tag in [tags] => array of stored tags
+                return Promise.resolve(knex(this.tableName)
+                    .whereIn('tag', tags)
+                    .select('id'))
+            })
+            .then(objIds => {
+                objIds = _.flatten(objIds)
+                console.log('result of tag Ids array: ', objIds)
+                _.map(objIds, id => {
+                    tagIds.push(id.id)
+                })
+                console.log('Ids to get their getInstances: ',tagIds)
+                //select all based on tagIds return array of tags object
+                return knex(this.tableName).whereIn('id', tagIds)
+            })
+
     }
 
 }
