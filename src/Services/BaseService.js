@@ -89,6 +89,8 @@ class BaseService {
             case 'left outer':
                 entities.leftOuterJoin(val.tableName, val.relation)
                 break
+            case 'left':
+                entities.leftJoin(val.tableName, val.relation)
             default:
                 jointing = false
             }
@@ -220,14 +222,14 @@ class BaseService {
             return Promise.resolve(related_service.read(entity.id))
             .then(function(obj){
                 //if get one then return the ID
-                if (typeof obj != 'undefined') {                    
+                if (typeof obj != 'undefined') {
                     return Promise.resolve(obj.id)
                 } else { //if none then add and return the ID
                     return Promise.resolve(related_service.add(entity).returning('id'))
                 }
             })
         //if passed entity not valid, it means it has to be added and return the ID
-        } else {                                                    
+        } else {
             return Promise.resolve(related_service.add(entity).returning('id'))
         }
     }
