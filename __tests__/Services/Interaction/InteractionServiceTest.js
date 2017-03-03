@@ -133,4 +133,61 @@ describe('InteractionService', () => {
             }).catch(err => done(err))
         })
     })
+
+    describe('===ooo000 Test getInitialInteractionFor 000ooo===' , () => {
+        it('should return a valid query to get initial interaction from table interactions', (done) => {
+            const query = 'select `interactions`.* from `interactions` where `interactions`.`user_id` = ? ' + 
+                                'and `interactions`.`person_id` = ? and `interactions`.`id` not in (?, ?, ?) order by `interaction_at` asc limit ?'
+            const user = {
+                id: 1,
+                firstName: 'john'
+            }
+            const person = {
+                id: 9,
+                firstName: 'marnie'
+            }
+            const excludeId = [2, 3, 4]
+            testObj.getInitialInteractionFor(user, person, excludeId).then(result => {
+                result.sql.should.equals(query)
+                result.method.should.equals('first')
+                result.bindings[0].should.equal(user.id)
+                result.bindings[1].should.equal(person.id)
+                result.bindings[2].should.equal(excludeId[0])
+                result.bindings[3].should.equal(excludeId[1])
+                result.bindings[4].should.equal(excludeId[2])
+                result.bindings[5].should.equal(user.id)
+                                                
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
+    describe('===ooo000 Test getLastInteractionFor 000ooo===' , () => {
+        it('should return a valid query to get initial interaction from table interactions', (done) => {
+            const query = 'select `interactions`.*, `interactions`.* from `interactions` where `interactions`.`user_id` = ? and ' +
+                            '`interactions`.`person_id` = ? and `interactions`.`id` not in (?, ?, ?) and `interactions`.`user_id` = ? ' +
+                            'and `interactions`.`person_id` = ? and `interactions`.`id` not in (?, ?, ?) order by `interaction_at` asc, `interaction_at` desc limit ?'
+            const user = {
+                id: 1,
+                firstName: 'john'
+            }
+            const person = {
+                id: 9,
+                firstName: 'marnie'
+            }
+            const excludeId = [2, 3, 4]
+            testObj.getLastInteractionFor(user, person, excludeId).then(result => {
+                result.sql.should.equals(query)
+                result.method.should.equals('first')
+                result.bindings[0].should.equal(user.id)
+                result.bindings[1].should.equal(person.id)
+                result.bindings[2].should.equal(excludeId[0])
+                result.bindings[3].should.equal(excludeId[1])
+                result.bindings[4].should.equal(excludeId[2])
+                result.bindings[5].should.equal(user.id)
+                                                
+                done()
+            }).catch(err => done(err))
+        })
+    })
 })
