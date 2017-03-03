@@ -24,6 +24,14 @@ class TargetServiceFactory {
         }
     }
 
+    make() {
+        if (!this.action.target_class) {
+            return null
+        }
+
+        return di.container[this.serviceMap()[this.action.target_class]]
+    }
+
 }
 
 module.exports = TargetServiceFactory
