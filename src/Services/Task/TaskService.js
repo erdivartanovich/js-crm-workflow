@@ -101,6 +101,7 @@ class TaskService extends BaseService {
   */
   clone() {
     // fix me
+    return Promise.resolve(true)
   }
 
   /**
