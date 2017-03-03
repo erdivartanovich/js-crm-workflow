@@ -21,4 +21,7 @@ bottle.service('PersonService', require('./Services/Person/PersonService'),
 
 bottle.service('TagService', require('./Services/Tags/TagService'))
 
+bottle.service('PersonMotivation', require('./Services/Person/PersonMotivationService'))
+bottle.service('PersonScore', require('./Services/Person/PersonScoreService'))
+
 module.exports = bottle
