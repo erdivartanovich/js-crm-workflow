@@ -9,6 +9,7 @@ const PersonService = require('./PersonService')
 const Moment = require('moment')
 const { parse, format, asYouType } = require('libphonenumber-js')
 const knex = require('../connection')
+const _ = require('lodash')
 /**
  * @todo Write KWAPI Wrapper to NodeJS
  */
@@ -236,7 +237,16 @@ class PersonCrawlService extends BaseService {
         if (person) {
 
             //FIXME find new Collection method of JS
-            const group = data['fullcontact']['photos'] ? :
+            const group = data['fullcontact']['photos'] ? _.groupBy(data['fullcontact']['photos'], 'typeId') : {}
+
+         data['fullcontact']['socialProfiles'].map(item => {
+             const social = item
+             typeId = item['typeId']
+
+             // check social network id
+             // FIXME getInstances()
+
+         })
 
 
         }
