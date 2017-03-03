@@ -4,16 +4,16 @@ const knex = require('../../connection')
 
 class ActionExecutor {
 
-	constructor(workflow, action, objects, rules) {
-		this.workflow = workflow
-		this.action = action
-		this.rules = rules
-		this.objects = objects
-		this.service = null
+    constructor(workflow, action, objects, rules) {
+        this.workflow = workflow
+        this.action = action
+        this.rules = rules
+        this.objects = objects
+        this.service = null
 		//add log service
-	}
+    }
 
-	execute() {
+    execute() {
 		// before prepareCriteria rules should filter with action rules only
         // get rules for action, if not exists, use workflow rules.
 
@@ -23,20 +23,20 @@ class ActionExecutor {
         // 	return filterRules()
         // })
         this.filterRules()
-    	.then(rules => {
-	    	return rules.length > 0 ? rules : this.rules
+        .then(rules => {
+            return rules.length > 0 ? rules : this.rules
         })
-    	.then(rules => {
-   //      	return new ResourceFinder(
-	  //           this.workflow,
-	  //           this.action,
-	  //           this.service,
-	  //           this.objects,
-	  //           ...$rules
-			// )
-			return rules
+        .then(rules => {
+            return new ResourceFinder(
+                this.workflow,
+                this.action,
+                this.service,
+                this.objects,
+                ...$rules
+			)
+            // return rules
 			// console.log(rules)
-		})
+        })
 		// .then(resourceFinder => {
 		// 	this.resourceFinder = resourceFinder
 		// 	return runnableOnce ? this.resourceFinder.runnableOnce() : this.resourceFinder
@@ -74,41 +74,41 @@ class ActionExecutor {
 		// 	}
 		// })
 
-	}
+    }
 
 	/**
 	  * @todo implements spawn service
 	  */
-	spawnService() {
-		
-	}
+    spawnService() {
 
-	runnableOnce() {
-		this.runnableOnce = true
-		return this
-	}
+    }
 
-	filterRules() {
-		const self = this
+    runnableOnce() {
+        this.runnableOnce = true
+        return this
+    }
 
-		return knex.select('*').from('rules').join('rule_action', (function() {
-		  this.on(function() {
-		    this.on('rule_action.rule_id', '=', 'rules.id')
-		    this.on('rule_action.rule_id', '=', self.action.id)
-		  })
-		})).where('rules.workflow_id', self.workflow.id).then(result => {
-			self.rules = result
-			return self.rules	
-		})
-	}
+    filterRules() {
+        const self = this
 
-	getRules() {
-		return this.rules
-	}
+        return knex.select('*').from('rules').join('rule_action', (function() {
+            this.on(function() {
+                this.on('rule_action.rule_id', '=', 'rules.id')
+                this.on('rule_action.rule_id', '=', self.action.id)
+            })
+        })).where('rules.workflow_id', self.workflow.id).then(result => {
+            self.rules = result
+            return self.rules
+        })
+    }
 
-	getAction() {
-		return this.action
-	}
+    getRules() {
+        return this.rules
+    }
+
+    getAction() {
+        return this.action
+    }
 
 }
 
