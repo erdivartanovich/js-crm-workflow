@@ -1,5 +1,5 @@
 'use strict'
-s
+
 const knex = require('../../connection')
 const BaseService = require('../BaseService')
 
@@ -13,26 +13,29 @@ class ObjectCustomFieldService extends BaseService{
         this.tableName = 'object_custom_fields'
     }
 
-    getFieldValue(user) {
+    getFieldValue(customField, object, user) {
 
-      return knex(this.tableName)
-      let attributes = {
-        user_id: user['user_id'],
-        custom_field_id: user['custom_field_id'],
-        object_id: user['object_id'],
-        object_type: user['object_type']
+      let attribute = {
+        user_id : user.id,
+        object_id : object.id,
+        custom_field_id : customField.id,
+        object_type : object.tableName,
       }
-
-      let objectField = knex(this.tableName).where(attributes).first()
-
-      if (objectField) {
-        return objectField
-      }
-
+      
       return knex(this.tableName)
-            .insert(attributes, user)
+            .where('user_id', attribute.user_id)
+            .andWhere('custom_field_id', attribute.custom_field_id)
+            .andWhere('object_id', attribute.object_id)
+            .andWhere('object_type', attribute.object_type).first()
+            .then(result => {
+                      
+              if (!result) {
+                attribute['custom_field_value'] = ''
+                return this.add(attribute)
+              }
 
-  }
+              return result
+            })
 
     }
 }
