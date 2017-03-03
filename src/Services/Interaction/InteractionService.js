@@ -11,7 +11,7 @@ class InteractionService extends BaseService{
         this.model = knex(this.tableName)
     }
 
-    getInitialInteractionFor(user, person, excludeId = []) {
+    getInitialInteractionFor(user, person, excludeId) {
         return this.model.where({
             'interactions.user_id': user.id,
             'interactions.person_id': person.id
@@ -24,7 +24,7 @@ class InteractionService extends BaseService{
     /**
      * {@inheritdoc}
      */
-    getLastInteractionFor(user, person, excludeId = []) {
+    getLastInteractionFor(user, person, excludeId) {
         return this.model.where({
             'interactions.user_id': user.id,
             'interactions.person_id': person.id
