@@ -10,7 +10,7 @@ class ActionExecutor {
         this.rules = rules
         this.objects = objects
         this.service = null
-		//add log service
+//add log service
     }
 
     execute() {
@@ -27,14 +27,14 @@ class ActionExecutor {
             return rules.length > 0 ? rules : this.rules
         })
         .then(rules => {
-            return new ResourceFinder(
-                this.workflow,
-                this.action,
-                this.service,
-                this.objects,
-                ...$rules
-			)
-            // return rules
+   //      	return new ResourceFinder(
+	  //           this.workflow,
+	  //           this.action,
+	  //           this.service,
+	  //           this.objects,
+	  //           ...$rules
+			// )
+            return rules
 			// console.log(rules)
         })
 		// .then(resourceFinder => {
@@ -74,7 +74,7 @@ class ActionExecutor {
 		// 	}
 		// })
 
-    }
+	}
 
 	/**
 	  * @todo implements spawn service
