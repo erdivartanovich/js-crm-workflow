@@ -8,14 +8,11 @@ class TargetServiceFactory {
         this.action = action
     }
     
-    serviceMap()
-    {
+    serviceMap() {
         return {
             'persons': 'PersonService',
-            'person_contexts': 'PersonContext',
             'motivations': 'PersonMotivation',
             'person_scores': 'PersonScore',
-            'person_types': 'PersonType',
             // execute
             'social_append': 'SocialAppend',
             'mailer': 'MailClient',
@@ -31,7 +28,6 @@ class TargetServiceFactory {
 
         return di.container[this.serviceMap()[this.action.target_class]]
     }
-
 }
 
 module.exports = TargetServiceFactory
