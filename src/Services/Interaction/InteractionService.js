@@ -14,7 +14,7 @@ class InteractionService extends BaseService{
     getInitialInteractionFor(user, person, excludeId = []) {
         return this.model.where({
             'interactions.user_id': user.id,
-            'interactions.person_id': person.getKey(),
+            'interactions.person_id': person.id
         }).whereNotIn('interactions.id', excludeId)
         .orderBy('interaction_at', 'asc')
         .select('interactions.*')
@@ -27,7 +27,7 @@ class InteractionService extends BaseService{
     getLastInteractionFor(user, person, excludeId = []) {
         return this.model.where({
             'interactions.user_id': user.id,
-            'interactions.person_id': person.getKey(),
+            'interactions.person_id': person.id
         }).whereNotIn('interactions.id', excludeId)
         .orderBy('interaction_at', 'desc')
         .select('interactions.*')
