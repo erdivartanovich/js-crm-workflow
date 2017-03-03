@@ -1,6 +1,8 @@
 'use strict'
 
 const knex = require('../../connection')
+const ResourceFinder = require('../../Domains/Action/ResourceFinder')
+const di = require('../../di')
 
 class ActionExecutor {
 
@@ -9,7 +11,7 @@ class ActionExecutor {
         this.action = action
         this.rules = rules
         this.objects = objects
-        this.service = null
+        this.service = di.container['PersonService']
 //add log service
     }
 
@@ -27,52 +29,42 @@ class ActionExecutor {
             return rules.length > 0 ? rules : this.rules
         })
         .then(rules => {
-   //      	return new ResourceFinder(
-	  //           this.workflow,
-	  //           this.action,
-	  //           this.service,
-	  //           this.objects,
-	  //           ...$rules
-			// )
-            return rules
-			// console.log(rules)
-        })
-		// .then(resourceFinder => {
-		// 	this.resourceFinder = resourceFinder
-		// 	return runnableOnce ? this.resourceFinder.runnableOnce() : this.resourceFinder
-		// })
-		// .then(resourceFinder => {
-		// 	return resourceFinder.prepareCriteria()
-		// })
-		// .then(resourceFinder => {
-		// 	return resourceFinder.getBatch()
-		// })
-		// .then(batch => {
-		// 	return new Promise((resolve, reject) => {
-  //               if (batch.count == 0) {
-  //               	this.logService.doLog(this.workflow, this.action, this.rules, LOG_STATUS_FAILED, 'Resource(s) not found!')
-  //                   reject(batch)
-  //               }
+            this.resourceFinder = new ResourceFinder(
+                this.workflow,
+                this.action,
+                this.service,
+                this.objects,
+                rules
+			)
 
-  //               resolve(batch)
-		// 	})
-		// })
-		// .then(batch => {
-		// 	while(batch.length) {
-		// 		return new ActionResourcesJob(this.workflow, this.action, batch, rules)
-		// 		.then(jobs => {
-		// 			return jobs.runnableOnce(runnableOnce)
-		// 		})
-		// 		.then(jobs => {
-		// 			//dispatch(jobs) ???
-		// 		})
-		// 		.then(() => {
-		// 			return resourceFinder.getBatch()
-		// 		}).then(new_batch => {
-		// 			batch = new_batch
-		// 		})
-		// 	}
-		// })
+            return this.runOnce ? this.resourceFinder.runnableOnce() : this.resourceFinder
+		})
+		.then(resourceFinder => resourceFinder
+                .prepareCriteria(12)
+                .getBatches())
+		.then(batches => {
+            console.log(batches.length)
+            batches.map(batch => {
+                batch.then(result => {
+                })
+            })
+		})
+		.then(batch => {
+			// while(batch.length) {
+			// 	return new ActionResourcesJob(this.workflow, this.action, batch, rules)
+			// 	.then(jobs => {
+			// 		return jobs.runnableOnce(runnableOnce)
+			// 	})
+			// 	.then(jobs => {
+			// 		//dispatch(jobs) ???
+			// 	})
+			// 	.then(() => {
+			// 		return resourceFinder.getBatch()
+			// 	}).then(new_batch => {
+			// 		batch = new_batch
+			// 	})
+			// }
+		})
 
 	}
 
@@ -84,7 +76,7 @@ class ActionExecutor {
     }
 
     runnableOnce() {
-        this.runnableOnce = true
+        this.runOnce = true
         return this
     }
 
