@@ -38,7 +38,7 @@ class BaseService {
     }
 
     join(tableName, relation, type) {
-        if (typeof type == 'undefined') {
+        if (typeof type === 'undefined') {
             type = ''
         }
 
@@ -58,14 +58,20 @@ class BaseService {
 
     resetWhere() {
         this.whereClauses = []
+
+        return this
     }
 
     resetHaving() {
         this.havingSegments = []
+
+        return this
     }
 
     resetJoin() {
         this.joinClauses = []
+
+        return this
     }
 
     applyConditions(entities) {
@@ -115,12 +121,26 @@ class BaseService {
 
     resetConditions() {
         this.resetWhere()
-        this.resetJoin()
-        this.resetHaving()
+            .resetJoin()
+            .resetHaving()
+
+        return this
+    }
+
+    applyCriteria(criteria) {
+        return criteria.apply(this)
     }
 
     browse() {
-        const deletedColumn =
+        const entities = this.get()
+
+        this.resetConditions()
+
+        return entities
+    }
+
+    get() {
+        const deletedColumn = 
             this.joinClauses.length > 0 ? this.tableName + '.deleted_at' : 'deleted_at'
 
         //delete from current table where deleted at = null
@@ -128,8 +148,6 @@ class BaseService {
             .where(deletedColumn, null)
 
         this.applyConditions(entities)
-
-        this.resetConditions()
 
         return entities
     }
@@ -227,6 +245,17 @@ class BaseService {
             .first()
     }
 
+    paginate(limit, offset, select) {
+        const deletedColumn = 
+            this.joinClauses.length > 0 ? this.tableName + '.deleted_at' : 'deleted_at'
+
+        const entities = knex(this.tableName)
+            .where(deletedColumn, null)
+
+        this.applyConditions(entities)
+
+        return entities.limit(limit).offset(offset).select(select)
+    }
 }
 
 module.exports = BaseService
