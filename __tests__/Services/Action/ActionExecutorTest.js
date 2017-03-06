@@ -5,11 +5,11 @@ const ActionExecutor = require(sourcePath + '/Services/Action/ActionExecutor')
 var tracker = require('mock-knex').getTracker()
 
 const workflow = {
-    id: 4
+    id: 1
 }
 
 const action = {
-    id: 3
+    id: 9
 }
 
 const objects = {
@@ -51,5 +51,5 @@ describe('ActionExecutor', () => {
         })
     })
 
-    
+
 })
