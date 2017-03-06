@@ -9,7 +9,7 @@ var webhook = new IncomingWebhook(url, {
 });
 
 webhook.send({
-    text: 'Code coverage result',
+    text: 'Code coverage result for `kw-crm-workflow`',
     "attachments": [
 		{
             "color": "#36a64f",
