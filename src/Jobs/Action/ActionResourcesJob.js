@@ -3,7 +3,7 @@
 const _ = require('lodash')
 const moment = require('moment')
 const DATEFORMAT = 'YYYY-MM-DD'
-const { container } = require('../../di')
+const container = require('../../di').container
 
 class ActionResourcesJob {
     constructor(workflow, action, resources, rules) {
