@@ -79,12 +79,14 @@ class ActionResourcesJob {
     }
 
     actionUpdate(resource, resourceService) {
+        // @todo: clean up the bugs
 
         return this.getActionResource(resource, resourceService)
         .then(target => {
             target[this.action.target_field] = this.action.value
  
-            return this.service.edit(target)
+            return this.service.edit(target).then((res) => {
+            })
         })
         .then(result => {
             if(result) {
