@@ -133,36 +133,36 @@ class ActionResourcesJob {
             })
         }
     }
-
+    
     actionClone(resource) {
-        // console.log('Clone')
+        // resource should be an object with person_id e.g {person_id: 1}
         const date = (new moment).add(5, 'days')
         return this.taskService.clone(this.getTask(this.action))
         .then(task => {
             task.user_id = this.workflow.user_id
-            task.person_id = resource
+            task.person_id = resource.person_id
             task.created_by = this.workflow.user_id
             task.updated_by = this.workflow.user_id
             task.due_date = date.format(DATEFORMAT)
             task.is_completed = 0
             task.status = 1
 
-            return task
+            return Promise.resolve(task)
         })
         .then(task => {
             return this.taskService.add(task)
         })
         .then(result => {
-            if(result) {
+            if(!!result) {
                 return this.log(resource, 1, 'Task cloned.')
                 .then(() => {
-                    return true
+                    return Promise.resolve(true)
                 })
             }
             else {
                 return this.log(resource, 0, 'Task clone failed!')
                 .then(() => {
-                    return false
+                    return Promise.resolve(false)
                 })
             }
         })
