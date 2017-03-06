@@ -102,6 +102,7 @@ class TaskService extends BaseService {
   */
   clone(task) {
       let data = {
+          //build payload object, with property value is null if not defined
           task_type: !!task.task_type ? task.task_type : null,
           task_action: !!task.task_action ? task.task_action : null,
           due_date: !!task.due_date ? task.due_date : null,
