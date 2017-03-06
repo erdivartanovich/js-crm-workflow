@@ -4,6 +4,7 @@ const _ = require('lodash')
 const knex = require('../../connection')
 const moment = require('moment')
 const DATEFORMAT = 'YYYY-MM-DD'
+const di = require('../../di')
 
 class ActionResourcesJob {
     constructor(workflow, action, resources, rules) {
@@ -17,12 +18,12 @@ class ActionResourcesJob {
         return this.runnableOnce = runnableOnce
     }
 
-    handle(taskService, logService, ruleService) {
-        this.taskService = taskService
-        this.logService = logService
-        this.ruleService = ruleService
-        // TODO:
-        // this.service = new TargetServiceFactory()
+    handle(service) {
+        this.taskService = di.container['TaskService']
+        this.logService = di.container['LogService']
+        this.ruleService = di.container['RuleService']
+
+        this.service = service
 
         _.map(this.resources, (resource) => {
             this.processResource(resource)
@@ -51,7 +52,7 @@ class ActionResourcesJob {
     applyAction(resource) {
         let action = false
         // const actionType = this.action.getActionType()
-        const actionType = this.action.type //for testing
+        const actionType = this.action.action_type
 
         switch(actionType) {
         case 1:
@@ -79,10 +80,12 @@ class ActionResourcesJob {
         return action
     }
 
-    actionUpdate(resource, resourceService) {
+    actionUpdate(resource) {
+        const resourceService = di.container['PersonService']
         // console.log('Update')
         return this.getActionResource(resource, resourceService)
         .then(target => {
+            console.log(target); process.exit()
             target[this.action.target_field] = this.action.value
             return this.service.edit(target)
         })
@@ -92,8 +95,7 @@ class ActionResourcesJob {
                 .then(() => {
                     return true
                 })
-            }
-            else {
+            } else {
                 return this.log(resource, 0, 'Target updated failed')
                 .then(() => {
                     return false
@@ -123,8 +125,7 @@ class ActionResourcesJob {
                 }
 
             })
-        }
-        else {
+        } else {
             return this.log(resource, 0, message)
             .then(() => {
                 return false
