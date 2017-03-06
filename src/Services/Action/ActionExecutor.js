@@ -8,12 +8,12 @@ const ActionResourcesJob = require('../../Jobs/Action/ActionResourcesJob')
 class ActionExecutor {
 
     constructor(workflow, action, objects, rules) {
+        this.service = (new TargetServiceFactory(action)).make()
         this.workflow = workflow
-        this.action = action
-        this.rules = rules
         this.filteredRules = []
         this.objects = objects
-        this.service = (new TargetServiceFactory(action)).make()
+        this.action = action
+        this.rules = rules
     }
 
     execute() {
@@ -23,19 +23,18 @@ class ActionExecutor {
         })
         .then(rules => {
             this.filteredRules = rules
+
             this.resourceFinder = new ResourceFinder(
                 this.workflow,
                 this.action,
                 this.service,
                 this.objects,
-                rules
+                this.filteredRules
 			)
 
             return this.runOnce ? this.resourceFinder.runnableOnce() : this.resourceFinder
         })
-		.then(resourceFinder => resourceFinder
-            .prepareCriteria()
-            .getBatches())
+		.then(resourceFinder => { resourceFinder.prepareCriteria(); return resourceFinder.getBatches() })
         .then(batches => {
             batches.map(batch => {
                 batch.then(resources => {
@@ -65,11 +64,10 @@ class ActionExecutor {
         return knex.select('*').from('rules').join('rule_action', (function() {
             this.on(function() {
                 this.on('rule_action.rule_id', '=', 'rules.id')
-                this.on('rule_action.rule_id', '=', self.action.id)
+                this.on('rule_action.action_id', '=', knex.raw(self.action.id))
             })
         })).where('rules.workflow_id', self.workflow.id).then(result => {
-            self.rules = result
-            return self.rules
+            return result
         })
     }
 

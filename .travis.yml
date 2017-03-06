@@ -50,7 +50,6 @@ branches:
 
 # Commands to be run before your environment runs.
 before_script:
-  - sleep 10
   - curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
   - sudo apt-get install -y nodejs
   # - git config --global url."https://$OAUTH_ACCESS_TOKEN:x-oauth-basic@github.com".insteadOf "https://github.com"
@@ -67,7 +66,8 @@ before_script:
 # Commands you want to run that will verify your build.
 # CANNOT DO ANY OF THESE YET
 script:
-  - DEBUG=knex:bindings npm run test
+  - npm run test
+  - node report.js
 #  - php artisan migrate:install --no-interaction -v
 #  - php artisan migrate:refresh --no-interaction -v
 #  - php artisan es:install --no-interaction -v

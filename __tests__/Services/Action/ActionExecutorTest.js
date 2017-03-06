@@ -39,7 +39,7 @@ describe('ActionExecutor', () => {
 
     describe('#filterRules()' , () => {
         it('should return a valid query', (done) => {
-            const browseQuery = 'select * from `rules` inner join `rule_action` on (`rule_action`.`rule_id` = `rules`.`id` and `rule_action`.`rule_id` = 3) where `rules`.`workflow_id` = ?'
+            const browseQuery = 'select * from `rules` inner join `rule_action` on (`rule_action`.`rule_id` = `rules`.`id` and `rule_action`.`action_id` = 3) where `rules`.`workflow_id` = ?'
 
             testObj.filterRules().then(result => {
                 result.sql.should.equals(browseQuery)
