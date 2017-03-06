@@ -23,12 +23,13 @@ class ActionExecutor {
         })
         .then(rules => {
             this.filteredRules = rules
+
             this.resourceFinder = new ResourceFinder(
                 this.workflow,
                 this.action,
                 this.service,
                 this.objects,
-                rules
+                this.filteredRules
 			)
 
             return this.runOnce ? this.resourceFinder.runnableOnce() : this.resourceFinder
@@ -68,8 +69,7 @@ class ActionExecutor {
                 this.on('rule_action.rule_id', '=', self.action.id)
             })
         })).where('rules.workflow_id', self.workflow.id).then(result => {
-            self.rules = result
-            return self.rules
+            return result
         })
     }
 
