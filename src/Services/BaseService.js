@@ -91,6 +91,7 @@ class BaseService {
                 break
             case 'left':
                 entities.leftJoin(val.tableName, val.relation)
+                break
             default:
                 jointing = false
             }
@@ -106,8 +107,7 @@ class BaseService {
                     _.mapValues(val.have, id => {
                         this.on(val.map[2] + '_id', tableName + '.id')
                         this.on(val.map[2] + '_type', knex.raw(`'${tableName}'`))
-                        this.on(val.map[1] + '.' + val.map[0], id)
-
+                        this.on(val.map[1] + '.' + val.map[0], knex.raw(id))
                     })
                 })
             } else {

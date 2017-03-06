@@ -85,6 +85,7 @@ describe('ResourceFinder' , () => {
             testObject.prepareCriteria().should.equals(testObject)
         })
     })
+})
 
     // describe('#getBatches()', () => {
     //     it('should have 1 batch', (done) => {
@@ -101,4 +102,3 @@ describe('ResourceFinder' , () => {
     //         }).catch(err => done(err))
     //     })
     // })
-})
