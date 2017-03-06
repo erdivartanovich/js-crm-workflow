@@ -187,13 +187,14 @@ class ActionResourcesJob {
             return this.taskService.edit(task)
         })
         .then(result => {
+            resource.tableName = this.taskService.tableName
+
             if(result) {
                 return this.log(resource, 1, 'Task '+task.task_action+' assigned')
                 .then(() => {
                     return true
                 })
-            }
-            else {
+            } else {
                 return this.log(resource, 0, 'Task assign failed!')
                 .then(() => {
                     return false
