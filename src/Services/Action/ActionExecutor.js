@@ -8,12 +8,12 @@ const ActionResourcesJob = require('../../Jobs/Action/ActionResourcesJob')
 class ActionExecutor {
 
     constructor(workflow, action, objects, rules) {
+        this.service = (new TargetServiceFactory(action)).make()
         this.workflow = workflow
-        this.action = action
-        this.rules = rules
         this.filteredRules = []
         this.objects = objects
-        this.service = (new TargetServiceFactory(action)).make()
+        this.action = action
+        this.rules = rules
     }
 
     execute() {
