@@ -103,7 +103,6 @@ class ActionResourcesJob {
     }
 
     actionExecute(resource) {
-        // console.log('Execute')
         let message = 'Action '+this.action.target_field+' on '+this.action.target_class+' not found !'
 
         if(typeof this.service[this.action.target_field] == 'function') {
@@ -115,7 +114,7 @@ class ActionResourcesJob {
                 if(result) {
                     return this.log(resource, 1, 'Action '+this.action.name+' executed')
                     .then(() => {
-                        return true
+                        return Promise.resolve(true)
                     })
                 }
                 else {
@@ -127,7 +126,7 @@ class ActionResourcesJob {
         else {
             return this.log(resource, 0, message)
             .then(() => {
-                return false
+                return Promise.resolve(false)
             })
         }
     }
