@@ -50,7 +50,6 @@ branches:
 
 # Commands to be run before your environment runs.
 before_script:
-  - sleep 10
   - curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
   - sudo apt-get install -y nodejs
   # - git config --global url."https://$OAUTH_ACCESS_TOKEN:x-oauth-basic@github.com".insteadOf "https://github.com"
