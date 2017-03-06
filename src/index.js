@@ -4,6 +4,7 @@ const program = require('commander')
 const di = require('./di')
 const workflowService = di.container['WorkflowService']
 const actionService = di.container['ActionService']
+const ActionExecutor = require('./Services/Action/ActionExecutor')
 
 class Factory {
     constructor() {
@@ -42,9 +43,10 @@ class Factory {
         this.attributes.action = action
     }
 }
+
 const factory = new Factory
 
-const run = (workflowId, actionId) => {
+const run = (workflowId, actionId, runnableOnce) => {
     // Get workflow from the inputted workflowId
     workflowService.read(workflowId)
     .then((workflow) => {
@@ -62,24 +64,47 @@ const run = (workflowId, actionId) => {
     }).then(action => {
         // set action from actionId
         factory.setAction(action)
-    })
+
+        const workflow = factory.getWorkflow()
+
+        // Return objects and rules from workflow
+        return Promise.all([
+            workflowService.listObjects(workflow),
+            workflowService.listRules(workflow)
+        ])
+    }).then(results => {
+        // insert objects and rules into factory object
+        factory.setObjects(results[0])
+        factory.setRules(results[1])
+
+        // Instantiate ActionExecutor and ...
+        const executor = new ActionExecutor(
+            factory.getWorkflow(),
+            factory.getAction(),
+            factory.getObjects(),
+            factory.getRules()
+        )
+
+        // ... execute!
+        executor.execute()
+    }).catch(err => console.error(err))
 }
 
 program
-.option('-w, --workflow =<n>', 'Workflow id')
-.option('-a, --action <n>', 'Action id')
-.option('-o, --once', 'Runnable once')
-.on('--help', () => {
-    console.log('  Examples:')
-    console.log()
-    console.log('    $ index -w workflow_id -a action_id')
-    console.log()
-})
-.parse(process.argv)
+    .option('-w, --workflow =<n>', 'Workflow id')
+    .option('-a, --action <n>', 'Action id')
+    .option('-o, --runnable-once', 'Runnable once')
+    .on('--help', () => {
+        console.log('  Examples:')
+        console.log()
+        console.log('    $ index -w workflow_id -a action_id')
+        console.log()
+    })
+    .parse(process.argv)
 
-console.log(program.once)
+console.log(program.runnableOnce)
 
-run(program.workflow, program.action)
+run(program.workflow, program.action, typeof program.runnableOnce == 'undefined' ? false : program.runnableOnce)
 
 if (!process.argv.slice(2).length) {
     program.help()
