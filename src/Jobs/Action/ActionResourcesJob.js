@@ -83,13 +83,15 @@ class ActionResourcesJob {
 
         return this.getActionResource(resource, resourceService)
         .then(target => {
-            target[this.action.target_field] = this.action.value
- 
-            return this.service.edit(target).then((res) => {
-            })
+            if(typeof result !== 'undefined') {
+                target[this.action.target_field] = this.action.value
+
+                return this.service.edit(target)
+            }
         })
         .then(result => {
             if(result) {
+                resource.tableName = this.service.tableName
                 return this.log(resource, 1, 'Target updated')
                 .then(() => {
                     return true
@@ -233,7 +235,11 @@ class ActionResourcesJob {
 
         return this.setCriteria(target, model, resource, relationMaps)
         .then(result => {
-            return model.read(result.id)
+            console.log('Getting resources ....', result.id)
+            if(typeof result !== 'undefined') {
+                return model.read(result.id)
+            }
+
         })
     }
 

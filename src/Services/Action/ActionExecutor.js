@@ -65,11 +65,10 @@ class ActionExecutor {
         return knex.select('*').from('rules').join('rule_action', (function() {
             this.on(function() {
                 this.on('rule_action.rule_id', '=', 'rules.id')
-                this.on('rule_action.rule_id', '=', self.action.id)
+                this.on('rule_action.action_id', '=', self.action.id)
             })
         })).where('rules.workflow_id', self.workflow.id).then(result => {
-            self.rules = result
-            return self.rules
+            return result
         })
     }
 
