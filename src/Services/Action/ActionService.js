@@ -1,6 +1,5 @@
 'use strict'
 
-const ActionExecutor = require('./ActionExecutor')
 const BaseService = require('../BaseService')
 const knex = require('../../connection')
 
@@ -29,12 +28,6 @@ class ActionService extends BaseService {
 
     syncRules(action, rules) {
 		//TODO
-    }
-
-    fireAction(isRunnableOnce, workflow, action, objects, rules) {
-        this.executor = new ActionExecutor(workflow, action, objects, rules)
-
-        return isRunnableOnce? this.executor.runnableOnce().execute() : this.executor.execute()
     }
 
     getExecutor() {
