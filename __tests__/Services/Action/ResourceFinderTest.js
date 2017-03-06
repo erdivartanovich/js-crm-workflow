@@ -39,8 +39,6 @@ describe('ResourceFinder' , () => {
         tracker.uninstall()        
     })
 
-<<<<<<< HEAD
-=======
     // describe('#get()', () => {
     //     it('should return a resultset containing entities', (done) => {
     //         testObject.get().then(results => {
@@ -50,7 +48,6 @@ describe('ResourceFinder' , () => {
     //     })
     // })
 
->>>>>>> develop
     describe('#setUserContext()', () => {
         it('should return itself', () => {
             testObject.setUserContext({}).should.equals(testObject)
