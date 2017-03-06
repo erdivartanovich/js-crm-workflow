@@ -4,7 +4,9 @@ const _ = require('lodash')
 const knex = require('../../connection')
 const moment = require('moment')
 const DATEFORMAT = 'YYYY-MM-DD'
+
 const di = require('../../di')
+const PersonService = require('../../Services/Person/PersonService')
 
 class ActionResourcesJob {
     constructor(workflow, action, resources, rules) {
@@ -81,8 +83,10 @@ class ActionResourcesJob {
     }
 
     actionUpdate(resource) {
-        const resourceService = di.container['PersonService']
-        // console.log('Update')
+        // const resourceService = di.container['PersonService']
+        // TODO: fix bug for using the dependency injection
+        const resourceService = new PersonService()
+
         return this.getActionResource(resource, resourceService)
         .then(target => {
             console.log(target); process.exit()

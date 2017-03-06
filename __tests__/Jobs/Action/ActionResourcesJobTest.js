@@ -29,10 +29,15 @@ describe('ActionResourcesJob', () => {
         tracker.on('query', function checkResult(query, step) {
 
             console.log('Step '+step)
-            if (step == 2 || step == 6 || step == 7 || step == 11 || step == 15 || step == 20) {
+            if (step == 2 || step == 12 || step == 17 || step == 20) {
                 query.response({
                     id: 2
                 })
+            }
+            else if (step == 8) {
+                // query.response({
+                //     id: 5
+                // })
             }
             else {
                 query.response(query)
@@ -74,7 +79,7 @@ describe('ActionResourcesJob', () => {
         it('should return a valid object', () => {
             testObj.logService = new LogService()
             testObj.taskService = td.object(TaskService)
-            testObj.applyAction(resource).should.be.true
+            testObj.applyAction(resource).should.be.instanceOf(Object)
         })
     })
     // TODO: setAttribute is not a function

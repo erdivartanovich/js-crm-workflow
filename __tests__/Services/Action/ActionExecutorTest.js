@@ -9,7 +9,7 @@ const workflow = {
 }
 
 const action = {
-    id: 9
+    id: 3
 }
 
 const objects = {
