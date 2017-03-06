@@ -36,8 +36,7 @@ class ActionResourcesJob {
             //1. check run once
             if(exist && this.runnableOnce) {
                 return false
-            }
-            else{
+            } else {
                 //process action
                 return this.applyAction(resource, service)
             }
@@ -105,7 +104,6 @@ class ActionResourcesJob {
     }
 
     actionExecute(resource) {
-        // console.log('Execute')
         let message = 'Action '+this.action.target_field+' on '+this.action.target_class+' not found !'
 
         if(typeof this.service[this.action.target_field] == 'function') {
