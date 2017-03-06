@@ -1,6 +1,6 @@
 'use strict'
 
-const { container } = require('../../di')
+const container = require('../../di').container
 
 class TargetServiceFactory {
 
