@@ -129,5 +129,23 @@ describe('CustomFieldAvailabilityService', () => {
         })
     })
 
+    describe('#sync()' , () => {
+        it('should return valid query for sync', (done) => {
+            const custom_fields = {
+                id: 1
+            }
+            const custom_fields_availability = [{object_type:'persons'}]
+
+            const query = 'insert into `custom_field_availability` (`field_id`, `object_type`) values (?, ?)'
+            testObj.sync(custom_fields, custom_fields_availability).then(result => {
+                result.sql.should.equals(query)
+                result.method.should.equals('insert')
+                result.bindings[0].should.equals(custom_fields.id)
+                result.bindings[1].should.equals(custom_fields_availability[0].object_type)
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
 
 })
