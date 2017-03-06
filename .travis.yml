@@ -68,6 +68,7 @@ before_script:
 # CANNOT DO ANY OF THESE YET
 script:
   - npm run test
+  - node report.js
 #  - php artisan migrate:install --no-interaction -v
 #  - php artisan migrate:refresh --no-interaction -v
 #  - php artisan es:install --no-interaction -v
