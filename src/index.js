@@ -46,7 +46,7 @@ class Factory {
 
 const factory = new Factory
 
-const run = (workflowId, actionId, runnableOnce) => {
+const run = (workflowId, actionId, isRunnableOnce) => {
     // Get workflow from the inputted workflowId
     workflowService.read(workflowId)
     .then((workflow) => {
@@ -86,7 +86,7 @@ const run = (workflowId, actionId, runnableOnce) => {
         )
 
         // ... execute!
-        executor.execute()
+        isRunnableOnce ? executor.runnableOnce().execute() : executor.execute()
     }).catch(err => console.error(err))
 }
 
