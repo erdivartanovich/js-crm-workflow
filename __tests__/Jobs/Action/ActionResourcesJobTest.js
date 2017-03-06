@@ -34,11 +34,6 @@ describe('ActionResourcesJob', () => {
                     id: 2
                 })
             }
-            else if (step == 8) {
-                // query.response({
-                //     id: 5
-                // })
-            }
             else {
                 query.response(query)
             }
