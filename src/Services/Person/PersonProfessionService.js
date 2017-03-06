@@ -10,5 +10,4 @@ class PersonProfessionService extends BaseService {
     }
 }
 
-
 module.exports = PersonProfessionService

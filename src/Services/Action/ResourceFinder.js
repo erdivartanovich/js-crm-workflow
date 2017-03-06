@@ -2,6 +2,7 @@
 
 const RuleCriteriaFactory = require('../../Infrastructures/Rule/RuleCriteriaFactory')
 const ObjectCriteriaFactory = require('../../Infrastructures/Workflow/ObjectCriteriaFactory')
+const di = require('../../di')
 
 class ResourceFinder {
 
@@ -11,7 +12,7 @@ class ResourceFinder {
         this.action = action
         this.rules = rules
         this.objects = objects
-        this.personService = service
+        this.personService = di.container['PersonService']
 
         this.runOnce = false
     }

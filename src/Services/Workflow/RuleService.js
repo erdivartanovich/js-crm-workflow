@@ -69,9 +69,3 @@ class RuleService extends BaseService {
 }
 
 module.exports = RuleService
-
-let test = new RuleService()
-test.getParentsFor({
-    parent_id: 1,
-    // parent_id: 2
-})

@@ -1,6 +1,6 @@
 'use strict'
 
-const di = require('../../di')
+const { container } = require('../../di')
 
 class TargetServiceFactory {
 
@@ -26,7 +26,7 @@ class TargetServiceFactory {
             return null
         }
 
-        return di.container[this.serviceMap()[this.action.target_class]]
+        return container[this.serviceMap()[this.action.target_class]]
     }
 }
 

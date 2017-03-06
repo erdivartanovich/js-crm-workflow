@@ -3,7 +3,7 @@
 * declare any require
 */
 const knex = require('../../connection')
-const BaseService = require('../BaseService');
+const BaseService = require('../BaseService')
 
 class TaskService extends BaseService {
   /**
@@ -128,4 +128,4 @@ class TaskService extends BaseService {
 /**
 * export module
 */
-module.exports = TaskService;
+module.exports = TaskService

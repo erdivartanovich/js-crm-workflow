@@ -1,9 +1,9 @@
 'use strict'
 
 const _ = require('lodash')
-const knex = require('../../connection')
 const moment = require('moment')
 const DATEFORMAT = 'YYYY-MM-DD'
+const { container } = require('../../di')
 
 class ActionResourcesJob {
     constructor(workflow, action, resources, rules) {
@@ -17,20 +17,20 @@ class ActionResourcesJob {
         return this.runnableOnce = runnableOnce
     }
 
-    handle(taskService, logService, ruleService) {
-        this.taskService = taskService
-        this.logService = logService
-        this.ruleService = ruleService
+    handle(service) {
+        this.taskService = container['TaskService']
+        this.logService = container['LogService']
+        this.ruleService = container['RuleService']
         // TODO:
-        // this.service = new TargetServiceFactory()
+        this.service = service
 
         _.map(this.resources, (resource) => {
-            this.processResource(resource)
+            this.processResource(resource, service)
         })
 
     }
 
-    processResource(resource) {
+    processResource(resource, service) {
         return this.logService.isRunned(this.workflow, this.action, resource)
         .then(exist => {
             //1. check run once
@@ -39,7 +39,7 @@ class ActionResourcesJob {
             }
             else{
                 //process action
-                return this.applyAction(resource)
+                return this.applyAction(resource, service)
             }
 
             // TODO:
@@ -48,14 +48,13 @@ class ActionResourcesJob {
         })
     }
 
-    applyAction(resource) {
+    applyAction(resource, service) {
         let action = false
-        // const actionType = this.action.getActionType()
-        const actionType = this.action.type //for testing
+        const actionType = this.action.action_type
 
         switch(actionType) {
         case 1:
-            this.actionUpdate(resource)
+            this.actionUpdate(resource, service)
             action = true
             break
         case 2:
@@ -80,11 +79,14 @@ class ActionResourcesJob {
     }
 
     actionUpdate(resource, resourceService) {
-        // console.log('Update')
+        // @todo: clean up the bugs
+
         return this.getActionResource(resource, resourceService)
         .then(target => {
             target[this.action.target_field] = this.action.value
-            return this.service.edit(target)
+ 
+            return this.service.edit(target).then((res) => {
+            })
         })
         .then(result => {
             if(result) {
@@ -268,9 +270,7 @@ class ActionResourcesJob {
     // }
 
     getTask(action) {
-        return knex('tasks')
-        .where('id', action.task_id)
-        .first()
+        return this.taskService.read(action.task_id)
     }
 
     setCriteria(target, model, resource, relationMaps) {

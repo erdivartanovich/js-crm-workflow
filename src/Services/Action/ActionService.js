@@ -5,45 +5,41 @@ const knex = require('../../connection')
 
 class ActionService extends BaseService {
 
-	constructor() {
-		super()
-		this.tableName = 'actions'
-	}
+    constructor() {
+        super()
+        this.tableName = 'actions'
+    }
 
-	syncWorkFlows(action, workflows) {
+    syncWorkFlows(action, workflows) {
 		//FIXME
-		const ids = workflows.map((workflow) => {
-			return workflow.workflow_id
-		})
+        const ids = workflows.map((workflow) => {
+            return workflow.workflow_id
+        })
 
-		return knex.transaction(trx => {
-			return trx.from('action_workflow').where('action_id', action.id).delete().then(() => {
-				return trx.insert(ids.map(item => {
-					item.action_id = action.id
-					return item
-				})).into(this.tableName)
-			})
-		})
-	}
+        return knex.transaction(trx => {
+            return trx.from('action_workflow').where('action_id', action.id).delete().then(() => {
+                return trx.insert(ids.map(item => {
+                    item.action_id = action.id
+                    return item
+                })).into(this.tableName)
+            })
+        })
+    }
 
-	syncRules(action, rules) {
+    syncRules(action, rules) {
 		//TODO
-	}
+    }
 
-	fireAction() {
-		//TODO
-	}
+    getExecutor() {
+        return this.executor
+    }
 
-	getExecutor() {
-		//TODO
-	}
-
-	getActionWorkflow(workflow, action) {
+    getActionWorkflow(workflow, action) {
 		//FIXME
-		return knex('actions')
+        return knex('actions')
 			.join('action_workflow', 'action.id', 'workflow_id')
 			.select('id')
-	}
+    }
 }
 
 module.exports = ActionService
