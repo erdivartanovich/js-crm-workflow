@@ -23,7 +23,7 @@ class ActionResourcesJob {
         this.ruleService = container['RuleService']
         // TODO:
         this.service = service
-
+        
         _.map(this.resources, (resource) => {
             this.processResource(resource, service)
         })
