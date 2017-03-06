@@ -153,7 +153,7 @@ class ActionResourcesJob {
             return this.taskService.add(task)
         })
         .then(result => {
-            if(!!result) {
+            if(typeof result != 'undefined' && result != null) {
                 return this.log(resource, 1, 'Task cloned.')
                 .then(() => {
                     return Promise.resolve(true)
