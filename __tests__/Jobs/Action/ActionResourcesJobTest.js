@@ -29,7 +29,7 @@ describe('ActionResourcesJob', () => {
         tracker.on('query', function checkResult(query, step) {
 
             console.log('Step '+step)
-            if (step == 2 || step == 12 || step == 17 || step == 20) {
+            if (step == 8 || step == 9 || step == 12 || step == 13 || step == 17 || step == 18 || step == 22) {
                 query.response({
                     id: 2
                 })
