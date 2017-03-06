@@ -1,8 +1,9 @@
 'use strict'
 
 const knex = require('../../connection')
-const ResourceFinder = require('../../Domains/Action/ResourceFinder')
-const di = require('../../di')
+const ResourceFinder = require('../../Services/Action/ResourceFinder')
+const TargetServiceFactory = require('./TargetServiceFactory')
+const ActionResourcesJob = require('../../Jobs/Action/ActionResourcesJob')
 
 class ActionExecutor {
 
@@ -10,25 +11,18 @@ class ActionExecutor {
         this.workflow = workflow
         this.action = action
         this.rules = rules
+        this.filteredRules = []
         this.objects = objects
-        this.service = di.container['PersonService']
-//add log service
+        this.service = (new TargetServiceFactory(action)).make()
     }
 
     execute() {
-		// before prepareCriteria rules should filter with action rules only
-        // get rules for action, if not exists, use workflow rules.
-
-
-        // this.spawnService().then(service => {
-        // 	this.service = service
-        // 	return filterRules()
-        // })
         this.filterRules()
         .then(rules => {
             return rules.length > 0 ? rules : this.rules
         })
         .then(rules => {
+            this.filteredRules = rules
             this.resourceFinder = new ResourceFinder(
                 this.workflow,
                 this.action,
@@ -38,35 +32,20 @@ class ActionExecutor {
 			)
 
             return this.runOnce ? this.resourceFinder.runnableOnce() : this.resourceFinder
-		})
+        })
 		.then(resourceFinder => resourceFinder
-                .prepareCriteria(12)
-                .getBatches())
-		.then(batches => {
-            console.log(batches.length)
+            .prepareCriteria()
+            .getBatches())
+        .then(batches => {
             batches.map(batch => {
-                batch.then(result => {
+                batch.then(resources => {
+                    const jobs = new ActionResourcesJob(this.workflow, this.action, resources, this.filteredRules)
+
+                    jobs.handle(this.service)
                 })
             })
-		})
-		.then(batch => {
-			// while(batch.length) {
-			// 	return new ActionResourcesJob(this.workflow, this.action, batch, rules)
-			// 	.then(jobs => {
-			// 		return jobs.runnableOnce(runnableOnce)
-			// 	})
-			// 	.then(jobs => {
-			// 		//dispatch(jobs) ???
-			// 	})
-			// 	.then(() => {
-			// 		return resourceFinder.getBatch()
-			// 	}).then(new_batch => {
-			// 		batch = new_batch
-			// 	})
-			// }
-		})
-
-	}
+        })
+    }
 
 	/**
 	  * @todo implements spawn service
