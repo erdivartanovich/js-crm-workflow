@@ -18,10 +18,10 @@ class PersonCrawlService extends BaseService {
     constructor(person) {
         super()
         this.personSocialAccounts = new PersonSocialAccounts()
-        this.PersonPhoneService = new PersonPhoneService()
+        this.personPhoneService = new PersonPhoneService()
         this.personEmail = new PersonEmailService()
         this.personService = new PersonService()
-        // FIXME KWAPI
+        this.api = Kwapi()
     }
 
     crawlEmail(email, person, user) {
