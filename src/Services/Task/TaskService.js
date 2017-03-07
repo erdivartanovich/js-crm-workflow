@@ -12,6 +12,7 @@ class TaskService extends BaseService {
   constructor() {
     super()
     this.tableName = 'tasks'
+    this.model = knex(this.tableName)
   }
 
   /**
@@ -99,10 +100,22 @@ class TaskService extends BaseService {
   /**
   * additional function: clone
   */
-  clone() {
-    // fix me
-    return Promise.resolve(true)
-  }
+  clone(task) {
+      let data = {
+          //build payload object, with property value is null if not defined
+          task_type: task.task_type ? task.task_type : null,
+          task_action: task.task_action ? task.task_action : null,
+          due_date: task.due_date ? task.due_date : null,
+          from_interaction: task.from_interaction ? task.from_interaction : null,
+          reason: task.reason ? task.reason : null,
+          description: task.description ? task.description : null,
+          is_completed: task.is_completed ? task.is_completed : null,
+          is_automated: task.is_automated ? task.is_automated : null,
+          status: task.status ? task.status : null,
+      }
+
+      return this.model.where(data);
+    }
 
   /**
   * additional function: isTaskStarredBy

@@ -29,7 +29,7 @@ describe('ActionResourcesJob', () => {
         tracker.on('query', function checkResult(query, step) {
 
             console.log('Step '+step)
-            if (step == 2 || step == 8 || step == 12 || step == 13 || step == 16 || step == 21) {
+            if (step == 5 || step == 6 || step == 14 || step == 19 || step == 24) {
                 query.response({
                     id: 2
                 })
@@ -69,15 +69,15 @@ describe('ActionResourcesJob', () => {
         })
     })
 
-    describe('#applyAction()', () => {
-        const resource = td.object(PersonService)
+    // describe('#applyAction()', () => {
+    //     const resource = td.object(PersonService)
 
-        it('should return a valid object', () => {
-            testObj.logService = new LogService()
-            testObj.taskService = td.object(TaskService)
-            testObj.applyAction(resource).should.be.instanceOf(Object)
-        })
-    })
+    //     it('should return a valid object', () => {
+    //         testObj.logService = new LogService()
+    //         testObj.taskService = td.object(TaskService)
+    //         testObj.applyAction(resource).should.be.true
+    //     })
+    // })
     // TODO: setAttribute is not a function
     describe('#actionUpdate()', () => {
         const service = personService
@@ -155,9 +155,9 @@ describe('ActionResourcesJob', () => {
         })
     })
 
-    describe('#getCriteria()' , () => {
+    describe('#setCriteria()' , () => {
         it('should return a valid query', (done) => {
-            const browseQuery = 'select persons.*, `person_addresses`.* from `persons` left join `person_addresses` on `persons`.`id` = `person_addresses`.`person_id` where `persons`.`deleted_at` is null and persons.id = ? and persons.user_id = ? limit ?'
+            const browseQuery = 'select person_addresses.*, persons.*, `person_addresses`.* from `persons` left join `person_addresses` on `persons`.`id` = `person_addresses`.`person_id` where `persons`.`deleted_at` is null and persons.id = ? and persons.user_id = ? limit ?'
             const target = testObj.action.target_class
             const model = personService
             const resources = {id: 4}

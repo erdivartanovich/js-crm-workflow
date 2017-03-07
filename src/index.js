@@ -102,8 +102,6 @@ program
     })
     .parse(process.argv)
 
-console.log(program.runnableOnce)
-
 run(program.workflow, program.action, typeof program.runnableOnce == 'undefined' ? false : program.runnableOnce)
 
 if (!process.argv.slice(2).length) {

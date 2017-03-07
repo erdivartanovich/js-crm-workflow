@@ -4,7 +4,6 @@ const _ = require('lodash')
 const moment = require('moment')
 const DATEFORMAT = 'YYYY-MM-DD'
 const container = require('../../di').container
-const TaskService = require('../../Services/Task/TaskService')
 
 class ActionResourcesJob {
     constructor(workflow, action, resources, rules) {
@@ -19,12 +18,10 @@ class ActionResourcesJob {
     }
 
     handle(service) {
-        // TODO: implement di for TaskService
         this.taskService = container['TaskService']
-        // this.taskService = new TaskService()
         this.logService = container['LogService']
         this.ruleService = container['RuleService']
-
+        // TODO:
         this.service = service
 
         _.map(this.resources, (resource) => {
@@ -86,15 +83,13 @@ class ActionResourcesJob {
 
         return this.getActionResource(resource, resourceService)
         .then(target => {
-            if(typeof result !== 'undefined') {
-                target[this.action.target_field] = this.action.value
-
-                return this.service.edit(target)
-            }
+            target[this.action.target_field] = this.action.value
+ 
+            return this.service.edit(target).then((res) => {
+            })
         })
         .then(result => {
             if(result) {
-                resource.tableName = this.service.tableName
                 return this.log(resource, 1, 'Target updated')
                 .then(() => {
                     return true
@@ -238,11 +233,7 @@ class ActionResourcesJob {
 
         return this.setCriteria(target, model, resource, relationMaps)
         .then(result => {
-            console.log('Getting resources ....', result.id)
-            if(typeof result !== 'undefined') {
-                return model.read(result.id)
-            }
-
+            return model.read(result.id)
         })
     }
 
@@ -279,7 +270,6 @@ class ActionResourcesJob {
     // }
 
     getTask(action) {
-        console.log(container['TaskService'])
         return this.taskService.read(action.task_id)
     }
 
