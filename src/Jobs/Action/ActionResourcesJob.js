@@ -178,7 +178,7 @@ class ActionResourcesJob {
             result.status = 1
 
             task = result
-            return return(Promise.resolve(result))
+            return(Promise.resolve(result))
         })
         .then(task => {
             return this.taskService.edit(task)
