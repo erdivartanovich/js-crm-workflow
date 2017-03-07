@@ -7,8 +7,7 @@ const obj = new LeadTypeService()
 const tracker = mockDB.getTracker()
 
 describe('LeadTypeService', () => {
-
-    before(() => {
+      before(() => {
         // mockDB.mock(db)
         tracker.install()
         tracker.on('query', function checkResult(query) {
@@ -21,7 +20,7 @@ describe('LeadTypeService', () => {
         // mockDB.unmock(db)
         tracker.uninstall()
     })
-
+  
     describe('#browse', () => {
         const query = 'select * from `lead_types` where `deleted_at` is null'
         it('Should return valid query results', () => {

@@ -1,3 +1,5 @@
+'use strict'
+
 const envloader = require('./Envloader')
 
 const config = {

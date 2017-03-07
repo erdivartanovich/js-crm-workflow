@@ -6,11 +6,18 @@ var tracker = require('mock-knex').getTracker()
 
 const testClass = new BaseService()
 /**
- * should test the base-service against specifif table name, 
+ * should test the base-service against specific table name, 
  * because base-service's table name is null by default
  */
 testClass.tableName = 'person_family'
 const tableName = testClass.tableName
+
+/**
+ * Need to include Related service to test findOrAddRelated method
+ * For Person, related service is StageService
+ */
+const RelatedService = require(basePath + '/Services/Stage/StageService')
+const related = new RelatedService
 
 describe('====== BaseServiceTest ========', () => {
 
@@ -130,5 +137,36 @@ describe('====== BaseServiceTest ========', () => {
         })
     })
 
+    describe('#findOrAddRelated()' , () => {
+        it('should return a valid query', (done) => {
+            const query =  'insert into `'+ related.tableName +'` (`created_at`, `label`, `updated_at`) values (?, ?, ?)'
+            const mockObject = {label: 'very important'}
+            
+            testClass.findOrAddRelated(related, mockObject).then(result => {
+                result.sql.should.equals(query)
+                result.method.should.equals('insert')
+                result.bindings[1].should.equals(mockObject.label)                
+                                                         
+                done()
+            }).catch(err => done(err))
+        })
+    })
+
+    describe('#readBy(field_name, value)' , () => {
+        it('should return a valid query', (done) => {
+            const field_name = 'stage_id'
+            const value = 2
+            const limit = 1
+            const query = 'select * from `' + tableName + '` where `deleted_at` is null and `'+ field_name +'` = ? limit ?'
+
+            testClass.readBy(field_name, value).then(result => {
+                result.sql.should.equals(query)
+                result.method.should.equals('first')
+                result.bindings[0].should.equals(value)
+                result.bindings[1].should.equals(limit)
+                done()
+            }).catch(err => done(err))
+        })
+    })
 
 })

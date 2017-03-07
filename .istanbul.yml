@@ -1,0 +1,22 @@
+verbose: true
+instrumentation:
+    root: src
+    extensions:
+        - .js
+    default-excludes: true
+    excludes: ['__tests__']
+    embed-source: false
+    variable: __coverage__
+    compact: true
+    preserve-comments: false
+    complete-copy: false
+    save-baseline: false
+    baseline-file: ./coverage/coverage-baseline.json
+    include-all-sources: false
+    include-pid: false
+    es-modules: false
+reporting:
+    print: summary
+    reports:
+        - json-summary
+        - lcov
