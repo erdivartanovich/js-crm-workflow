@@ -28,7 +28,7 @@ class PersonCrawlService extends BaseService {
 
         const dfind = {}
 
-        //resPerson = api.people().lookupEmail(email);
+        //resPerson = api.people().lookupEmail(email)
         const resPerson = ?
 
         if (person) {
@@ -37,14 +37,14 @@ class PersonCrawlService extends BaseService {
         }
 
         // FIXME create JS version
-        //resDemo = api.demographic().getDemographics(dfind);
+        //resDemo = api.demographic().getDemographics(dfind)
 
         const result = {
             fullcontact: {message: resPerson.? },
             datafinder: {message: resDemo.? }
         }
 
-        // resPersonData = resPerson.getBody();
+        // resPersonData = resPerson.getBody()
         const resPersonData = ?
 
         if(resPersonData.message) {
@@ -109,7 +109,7 @@ class PersonCrawlService extends BaseService {
 
     processBirthday(data, person) {
         try {
-            //dob = Carbon::createFromFormat('Ymd',data['datafinder']['results'][0]['DOB']).format('Y-m-d');
+            //dob = Carbon::createFromFormat('Ymd',data['datafinder']['results'][0]['DOB']).format('Y-m-d')
             const dob = Moment('Ymd', data['datafinder']['results'][0]['DOB']).format('YYYY-MM-DD')
         }
         catch (e) {
@@ -157,7 +157,7 @@ class PersonCrawlService extends BaseService {
 
             })
 
-        return data;
+        return data
     }
 
     processProfileImages(data, person) {
@@ -194,7 +194,7 @@ class PersonCrawlService extends BaseService {
 
         }
 
-        return data;
+        return data
     }
 
     /**
@@ -218,32 +218,41 @@ class PersonCrawlService extends BaseService {
         .first()
         .then(socialAccount => {
 
+            //if not found init new empty object
             if (typeof socialAccount == 'undefined') {
-                socialAccount = {};
+                socialAccount = {}
             }
 
+            //set identifier with value of url or username or id
             if (typeof social['url'] != 'undefined') {
-                socialAccount['identifier'] = social['url'];
+                socialAccount['identifier'] = social['url']
             }
 
             if (typeof social['username'] != 'undefined') {
-                socialAccount['identifier'] = social['username'];
+                socialAccount['identifier'] = social['username']
             }
 
             if (typeof social['id'] != 'undefined') {
-                socialAccount['identifier'] = social['id'];
+                socialAccount['identifier'] = social['id']
             }
 
-            socialAccount['social_network_id'] = socialNetworkId;
-            socialAccount['last_crawled_date'] = this.getNow();
-            socialAccount['data'] = JSON.stringify(social);
+            //set social network id
+            socialAccount['social_network_id'] = socialNetworkId
+
+            //set last_crawled_date
+            socialAccount['last_crawled_date'] = this.getNow()
+
+            //save social object into data in json string
+            socialAccount['data'] = JSON.stringify(social)
             
+            //if id not undefined update
             if (typeof socialAccount.id != 'undefined') {
-                return socialAccountModel.update(socialAccount);
+                return socialAccountModel.update(socialAccount)
             }
             
-            socialAccount['person_id'] = person.id;
-            return socialAccountModel.insert(socialAccount);
+            //if undefined insert new
+            socialAccount['person_id'] = person.id
+            return socialAccountModel.insert(socialAccount)
 
         })
 
