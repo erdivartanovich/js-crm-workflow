@@ -167,35 +167,50 @@ class ActionResourcesJob {
     }
 
     actionAssign(resource) {
-        // console.log('Resource')
+        
+        //init date with 5 days value in timestamp format, use momentjs
         const date = (new moment).add(5, 'days')
-        let task = ({})
+        
+        // init empty task object
+        let task = {}
+        
+        // perform getTask from action 
         return this.getTask(this.action)
         .then(result => {
+            //we got result of task
+            //reassign result object
             result.user_id = this.workflow.user_id
             result.updated_by = this.workflow.user_id
             result.due_date = date.format(DATEFORMAT)
             result.is_completed = 0
             result.status = 1
 
+            //pass result to task
             task = result
-            return result
+            return(Promise.resolve(task))
         })
         .then(task => {
+
+            //edit the relevant task record in database via task service
             return this.taskService.edit(task)
+            
         })
         .then(result => {
+
+            //we got the db record of task
             resource.tableName = this.taskService.tableName
 
-            if(result) {
+            if(typeof result != 'undefined' && result !== null) {
+                //if result has valid value
+                //log and return true
                 return this.log(resource, 1, 'Task '+task.task_action+' assigned')
                 .then(() => {
-                    return true
+                    return(Promise.resolve(true))
                 })
             } else {
                 return this.log(resource, 0, 'Task assign failed!')
                 .then(() => {
-                    return false
+                    return Promise.resolve(false)
                 })
             }
         })
