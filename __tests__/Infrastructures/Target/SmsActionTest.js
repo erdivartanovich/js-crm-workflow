@@ -1,7 +1,7 @@
 'use strict'
 
 const basePath = '../../../src'
-const Sms = require(basePath+'/Services/Action/Sms') 
+const Sms = require(basePath+'/Infrastructures/Target/Sms')
 var tracker = require('mock-knex').getTracker()
 var td = require('testdouble')
 
@@ -23,7 +23,7 @@ describe('--||=======SMSAction=======>', () => {
             target_field: 'sendPrimary',
             value: 'Hey, You are promoted to hot lead.',
             name: 'send-hot-lead-promotion-sms',
-            deleted_at: ''            
+            deleted_at: ''
         }
         person = {
             id: 2,
@@ -41,7 +41,7 @@ describe('--||=======SMSAction=======>', () => {
             user_id: 10,
             stage_id: 3,
             lead_type_id: 1
-        } 
+        }
     })
 
     describe('#send()', () => {
@@ -49,7 +49,10 @@ describe('--||=======SMSAction=======>', () => {
         beforeEach(() => {
             sendTheSms = td.function('sendTheSms')
             subject = new Sms(sendTheSms)
+            subject.phones = []
         })
+
+
         it('should send sms to person phone', () => {
             subject.send(workflow, action, person)
         })
