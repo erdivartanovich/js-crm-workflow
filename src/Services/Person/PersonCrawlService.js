@@ -7,7 +7,11 @@ const PersonEmailService = require('./PersonEmailService')
 const PersonService = require('./PersonService')
 
 const Moment = require('moment')
-const { parse, format, asYouType } = require('libphonenumber-js')
+// const { parse, format, asYouType } = require('libphonenumber-js')
+const parse = require('libphonenumber-js').parse
+const format = require('libphonenumber-js').format
+const asYouType = require('libphonenumber-js').asYouType
+
 const knex = require('../connection')
 const _ = require('lodash')
 /**
