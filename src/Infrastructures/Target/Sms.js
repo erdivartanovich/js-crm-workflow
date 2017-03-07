@@ -74,6 +74,7 @@ class Sms extends communicationTemplateService{
                 if (phone) {
                     return api.Communication().sendText(phone.number, message)
                     .then(res => {
+                        console.log(res)
                         if (!res.isError) {
 
                             const interaction = {
