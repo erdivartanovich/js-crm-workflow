@@ -35,7 +35,7 @@ env:
 notifications:
   slack:
     rooms:
-      - kwdev:dknCQKK3enfxFtNg9gGg2s6C
+      - refactory-id:T1r3gl1APBJzx88UA1cUJDFE#activities
     on_success: always
     on_failure: always
     on_start: always
