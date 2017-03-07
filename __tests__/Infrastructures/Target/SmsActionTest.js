@@ -42,6 +42,24 @@ describe('--||=======SMSAction=======>', () => {
             stage_id: 3,
             lead_type_id: 1
         }
+
+        tracker.install()
+        tracker.on('query', function checkResult(query, step) {
+
+            console.log('Step '+step)
+            // if (step == 4 || step == 5 || step == 13 || step == 18) {
+            //     query.response({
+            //         id: 2
+            //     })
+            // }
+            // else {
+            //     query.response(query)
+            // }
+        })
+    })
+
+    after(() => {
+        tracker.uninstall()
     })
 
     describe('#send()', () => {
@@ -49,7 +67,6 @@ describe('--||=======SMSAction=======>', () => {
         beforeEach(() => {
             sendTheSms = td.function('sendTheSms')
             subject = new Sms(sendTheSms)
-            subject.phones = []
         })
 
 
