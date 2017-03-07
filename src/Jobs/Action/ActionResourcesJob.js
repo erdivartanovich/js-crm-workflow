@@ -167,7 +167,6 @@ class ActionResourcesJob {
     }
 
     actionAssign(resource) {
-        // console.log('Resource')
         const date = (new moment).add(5, 'days')
         let task = ({})
         return this.getTask(this.action)
@@ -179,7 +178,7 @@ class ActionResourcesJob {
             result.status = 1
 
             task = result
-            return result
+            return return(Promise.resolve(result))
         })
         .then(task => {
             return this.taskService.edit(task)
@@ -190,12 +189,12 @@ class ActionResourcesJob {
             if(result) {
                 return this.log(resource, 1, 'Task '+task.task_action+' assigned')
                 .then(() => {
-                    return true
+                    return(Promise.resolve(true))
                 })
             } else {
                 return this.log(resource, 0, 'Task assign failed!')
                 .then(() => {
-                    return false
+                    return Promise.resolve(false)
                 })
             }
         })
