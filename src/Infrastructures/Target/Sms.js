@@ -4,7 +4,7 @@ const interactionService = require('../../Services/Interaction/InteractionServic
 const moment = require('moment')
 const phoneService = require('../../Services/Person/PersonPhoneService')
 const communicationTemplateService = require('../../Services/CommunicationTemplate/CommunicationTemplateService')
-const KWApi = require('../../../../kwapi-wrapper-js/lib/KWApi/index')
+// const KWApi = require('../../../../kwapi-wrapper-js/lib/KWApi/index')
 
 const INTERACTION_TYPE_TEXT = 4
 const INITIATED_BY_USER = 1
@@ -14,8 +14,8 @@ class Sms extends communicationTemplateService{
     constructor() {
         //FIXME with KWApi js
         super()
-        // this.api = 'KWApi'
-        this.api = KWApi
+        this.api = 'KWApi'
+        // this.api = KWApi
         this.interactionService = new interactionService()
         this.phoneService = new phoneService()
         this.communicationTemplateService = new communicationTemplateService()
