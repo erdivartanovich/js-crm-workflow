@@ -84,9 +84,8 @@ class ActionResourcesJob {
         return this.getActionResource(resource, resourceService)
         .then(target => {
             target[this.action.target_field] = this.action.value
- 
-            return this.service.edit(target).then((res) => {
-            })
+
+            return this.service.edit(target)
         })
         .then(result => {
             if(result) {
