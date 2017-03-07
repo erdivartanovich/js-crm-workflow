@@ -68,7 +68,7 @@ describe('ActionResourcesJob', () => {
         })
     })
 
-    // describe('#applyAction()', () => {
+    describe('#applyAction()', () => {
     //     const resource = td.object(PersonService)
 
         it('should return a valid object', () => {
