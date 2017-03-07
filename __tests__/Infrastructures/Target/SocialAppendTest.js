@@ -1,0 +1,49 @@
+
+const basePath = '../../../src'
+var tracker = require('mock-knex').getTracker()
+const di = require(basePath + '/di')
+
+const SocialAppend = di.container['SocialAppend']
+const testObj = SocialAppend
+
+describe('===== SocialAppend Action test =====', () => {
+
+    before(() => {
+        tracker.install()
+
+        tracker.on('query', function checkResult(query) {
+            query.response(query)
+        })
+        
+    })
+
+    after(() => {
+        tracker.uninstall()
+    })
+
+//crawlPerson Test
+    describe('=== crawlPerson ===', () => {
+        before(() => {
+            tracker.on('query', function sendResult(query, step) {
+                switch(step) {
+                case 3:
+                    query.response([{
+                        id: 1
+                    }])
+                    break
+                default:
+                    query.response(query)
+                }
+            })
+        })
+    
+        it('should return valid query', () => {
+            const person = {id: 1}
+            return testObj.crawlPerson(person)
+                .then((res) => {
+                    res.sql.should.equals('insert into `taggables` (`tag_id`, `taggable_id`, `taggable_type`, `user_id`) values (?, ?, ?, ?)')
+                    res.method.should.equals('insert')
+                })
+        })
+    })
+})
