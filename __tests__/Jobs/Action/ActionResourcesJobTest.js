@@ -29,7 +29,7 @@ describe('ActionResourcesJob', () => {
         tracker.on('query', function checkResult(query, step) {
 
             console.log('Step '+step)
-            if (step == 2 || step == 6 || step == 7 || step == 11 || step == 15 || step == 20) {
+            if (step == 2 || step == 8 || step == 12 || step == 13 || step == 16 || step == 21) {
                 query.response({
                     id: 2
                 })
@@ -46,7 +46,8 @@ describe('ActionResourcesJob', () => {
 
     describe('#getTask()' , () => {
         it('should return a valid query', (done) => {
-            const browseQuery = 'select * from `tasks` where `id` = ? limit ?'
+            const browseQuery = 'select * from `tasks` where `deleted_at` is null and `id` = ? limit ?'
+            testObj.taskService = new TaskService()
 
             testObj.getTask(testObj.action).then(result => {
                 result.sql.should.equals(browseQuery)
@@ -74,7 +75,7 @@ describe('ActionResourcesJob', () => {
         it('should return a valid object', () => {
             testObj.logService = new LogService()
             testObj.taskService = td.object(TaskService)
-            testObj.applyAction(resource).should.be.true
+            testObj.applyAction(resource).should.be.instanceOf(Object)
         })
     })
     // TODO: setAttribute is not a function

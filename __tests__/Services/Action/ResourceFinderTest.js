@@ -36,17 +36,17 @@ describe('ResourceFinder' , () => {
     })
 
     after(() => {
-        tracker.uninstall()        
+        tracker.uninstall()
     })
 
-    describe('#get()', () => {
-        it('should return a resultset containing entities', (done) => {
-            testObject.get().then(results => {
-                results.should.be.an('array')
-                done()
-            }).catch(err => done(err))
-        })
-    })
+    // describe('#get()', () => {
+    //     it('should return a resultset containing entities', (done) => {
+    //         testObject.get().then(results => {
+    //             results.should.be.an('array')
+    //             done()
+    //         }).catch(err => done(err))
+    //     })
+    // })
 
     describe('#setUserContext()', () => {
         it('should return itself', () => {
@@ -86,19 +86,19 @@ describe('ResourceFinder' , () => {
         })
     })
 
-    describe('#getBatches()', () => {
-        it('should have 1 batch', (done) => {
-            testObject.getBatches().then(results => {
-                results.length.should.equals(1)
-                done()
-            }).catch(err => done(err))
-        })
-
-        it('should have 2 batches', (done) => {
-            testObject.prepareCriteria(1).getBatches().then(results => {
-                results.length.should.equals(2)
-                done()
-            }).catch(err => done(err))
-        })
-    })
+    // describe('#getBatches()', () => {
+    //     it('should have 1 batch', (done) => {
+    //         testObject.getBatches().then(results => {
+    //             results.length.should.equals(1)
+    //             done()
+    //         }).catch(err => done(err))
+    //     })
+    //
+    //     it('should have 2 batches', (done) => {
+    //         testObject.prepareCriteria(1).getBatches().then(results => {
+    //             results.length.should.equals(2)
+    //             done()
+    //         }).catch(err => done(err))
+    //     })
+    // })
 })

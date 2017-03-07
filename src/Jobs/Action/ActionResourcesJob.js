@@ -3,7 +3,8 @@
 const _ = require('lodash')
 const moment = require('moment')
 const DATEFORMAT = 'YYYY-MM-DD'
-const { container } = require('../../di')
+const container = require('../../di').container
+const TaskService = require('../../Services/Task/TaskService')
 
 class ActionResourcesJob {
     constructor(workflow, action, resources, rules) {
@@ -18,12 +19,14 @@ class ActionResourcesJob {
     }
 
     handle(service) {
+        // TODO: implement di for TaskService
         this.taskService = container['TaskService']
+        // this.taskService = new TaskService()
         this.logService = container['LogService']
         this.ruleService = container['RuleService']
-        // TODO:
+
         this.service = service
-        
+
         _.map(this.resources, (resource) => {
             this.processResource(resource, service)
         })
@@ -276,6 +279,7 @@ class ActionResourcesJob {
     // }
 
     getTask(action) {
+        console.log(container['TaskService'])
         return this.taskService.read(action.task_id)
     }
 
