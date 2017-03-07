@@ -1,45 +1,3 @@
-<<<<<<< HEAD
-class PersonCrawlService extends BaseService {
-    
-/**
-     * Set social account object and save todatabase
-     * @param person
-     * @param array social
-     * @param socialNetworkId
-     * @return PersonSocialAccountInterface|mixed
-     */
-    setSocialAccount(person, social, socialNetworkId) {
-        // find current social network account on person
-        socialAccount = this.repository.findWhere([
-            'person_id': person.id,
-            'social_network_id': socialNetworkId]).first();
-
-        if (!socialAccount) {
-            socialAccount = this.repository.newInstance();
-        }
-
-        if (isset(social['url'])) {
-            socialAccount.setIdentifier(social['url']);
-        }
-        if (isset(social['username'])) {
-            socialAccount.setIdentifier(social['username']);
-        }
-        if (isset(social['id'])) {
-            socialAccount.setIdentifier(social['id']);
-        }
-
-        socialAccount.setSocialNetworkId(socialNetworkId);
-        socialAccount.setLastCrawledDate(this.getNow());
-        socialAccount.setData(json_encode(social));
-        if (socialAccount.id) {
-            return this.repository.update(socialAccount);
-        }
-        socialAccount.setPerson(person);
-        return this.repository.create(socialAccount);
-    }
-
-}
-=======
 'use strict'
 
 const BaseService = require('../BaseService')
@@ -70,7 +28,7 @@ class PersonCrawlService extends BaseService {
 
         const dfind = {}
 
-        //$resPerson = $api->people()->lookupEmail($email);
+        //resPerson = api.people().lookupEmail(email);
         const resPerson = ?
 
         if (person) {
@@ -79,14 +37,14 @@ class PersonCrawlService extends BaseService {
         }
 
         // FIXME create JS version
-        //$resDemo = $api->demographic()->getDemographics($dfind);
+        //resDemo = api.demographic().getDemographics(dfind);
 
         const result = {
             fullcontact: {message: resPerson.? },
             datafinder: {message: resDemo.? }
         }
 
-        // $resPersonData = $resPerson->getBody();
+        // resPersonData = resPerson.getBody();
         const resPersonData = ?
 
         if(resPersonData.message) {
@@ -151,7 +109,7 @@ class PersonCrawlService extends BaseService {
 
     processBirthday(data, person) {
         try {
-            //$dob = Carbon::createFromFormat('Ymd',$data['datafinder']['results'][0]['DOB'])->format('Y-m-d');
+            //dob = Carbon::createFromFormat('Ymd',data['datafinder']['results'][0]['DOB']).format('Y-m-d');
             const dob = Moment('Ymd', data['datafinder']['results'][0]['DOB']).format('YYYY-MM-DD')
         }
         catch (e) {
@@ -196,6 +154,7 @@ class PersonCrawlService extends BaseService {
                 if (typeof res == 'undefined') {
                     this.PersonPhoneService.create(phone)
                 }
+
             })
 
         return data;
@@ -238,38 +197,54 @@ class PersonCrawlService extends BaseService {
         return data;
     }
 
+    /**
+     * Set social account object and save todatabase
+     * @param person
+     * @param array social
+     * @param socialNetworkId
+     * @return PersonSocialAccountInterface|mixed
+     */
+
     setSocialAccount(person, social, socialNetworkId) {
+        
+        //set the db model
+        const socialAccountModel =  knex('person_social_accounts')
+
         //  find current social network account on person
-        knex(table).where({
+        return socialAccountModel.where({
             person_id: person.id,
-            social_netowk_id: socialNetworkId,
-        }).first().then(socialAccount => {
+            social_network_id: socialNetworkId,
+        })
+        .first()
+        .then(socialAccount => {
+
             if (typeof socialAccount == 'undefined') {
-                socialAccount = {}
+                socialAccount = {};
             }
 
             if (typeof social['url'] != 'undefined') {
-                socialAccount['identifier'] = social['url']
+                socialAccount['identifier'] = social['url'];
             }
 
-            if (social['username'] != 'undefined') {
-                socialAccount['username'] = social['username']
+            if (typeof social['username'] != 'undefined') {
+                socialAccount['identifier'] = social['username'];
             }
 
-            if (social['id'] != 'undefined') {
-                socialAccount['id'] = social['id']
+            if (typeof social['id'] != 'undefined') {
+                socialAccount['identifier'] = social['id'];
             }
 
-            // FIXME find this method
-            socialAccount.setSocialAccount(socialNetworkId)
-            socialAccount.setLastCrawledData(new DateTime())
-            socialAccount.setData(JSON.parse(social))
-
-            if (socialAccount.id) {
-                return this.personSocialAccounts.update(socialAccount)
+            socialAccount['social_network_id'] = socialNetworkId;
+            socialAccount['last_crawled_date'] = this.getNow();
+            socialAccount['data'] = JSON.stringify(social);
+            
+            if (typeof socialAccount.id != 'undefined') {
+                return socialAccountModel.update(socialAccount);
             }
-            socialAccount.setPerson(person)
-            return this.personSocialAccounts.create(socialAccount)
+            
+            socialAccount['person_id'] = person.id;
+            return socialAccountModel.insert(socialAccount);
+
         })
 
 
@@ -302,4 +277,3 @@ class PersonCrawlService extends BaseService {
 }
 
 module.exports = PersonCrawlService
->>>>>>> person-crawl
