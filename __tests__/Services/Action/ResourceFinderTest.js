@@ -14,7 +14,7 @@ const mocks = {}
 let testObject
 
 describe('ResourceFinder' , () => {
-
+    before(()=>{
         const rules = [], objects = []
         mocks.personService = td.object(PersonService)
         mocks.rule = new RuleCriteriaFactory(rules)
