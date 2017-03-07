@@ -5,10 +5,10 @@ const knex = require('../../connection')
 
 class PersonMotivationService extends BaseService{
 
-	constructor() {
-		super()
-		this.tableName = 'person_motivations'
-	}
+    constructor() {
+        super()
+        this.tableName = 'person_motivations'
+    }
 
 	// sync(person, motivations) {
 	// 	return knex(this.tablename)
@@ -23,16 +23,16 @@ class PersonMotivationService extends BaseService{
 	// 		})
 	// }
 
-	sync(person, motivations) {
-		return knex.transaction(trx => {
-			return trx.from(this.tableName).where('person_id', person.id).delete().then(() => {
-				return trx.insert(motivations.map(item => {
-					item.person_id = person.id
-					return item
-				})).into(this.tableName)
-			})
-		})
-	}
+    sync(person, motivations) {
+        return knex.transaction(trx => {
+            return trx.from(this.tableName).where('person_id', person.id).delete().then(() => {
+                return trx.insert(motivations.map(item => {
+                    item.person_id = person.id
+                    return item
+                })).into(this.tableName)
+            })
+        })
+    }
 
 }
 

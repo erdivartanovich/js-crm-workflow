@@ -4,6 +4,8 @@ const knex = require('../connection')
 const moment = require('moment')
 const DATEFORMAT = 'YYYY-MM-DD HH:mm:ss'
 
+const _ = require('lodash')
+
 class BaseService {
     /**
      * Constructor
@@ -15,12 +17,142 @@ class BaseService {
         //softDelete flag is set to default = true
         this.tableName = null
         this.softDelete = true
+        this.relationLists = []
+
+        this.resetConditions()
+    }
+
+    where(field, operator, value) {
+        this.whereClauses.push({field, operator, value})
+
+        return this
+    }
+
+    getRelationLists() {
+        return this.relationLists
+
+    }
+
+    having(table, have, map) {
+        this.havingSegments.push({table, have, map})
+    }
+
+    join(tableName, relation, type) {
+        if (typeof type === 'undefined') {
+            type = ''
+        }
+
+        this.joinClauses.push({tableName, relation, type})
+
+        return this
+    }
+
+    whereNotIn(field, values) {
+        const operator = '!='
+        _.map(values, (value) => {
+            this.whereClauses.push({field, operator, value})
+        })
+
+        return this
+    }
+
+    resetWhere() {
+        this.whereClauses = []
+
+        return this
+    }
+
+    resetHaving() {
+        this.havingSegments = []
+
+        return this
+    }
+
+    resetJoin() {
+        this.joinClauses = []
+
+        return this
+    }
+
+    applyConditions(entities) {
+        const tableName = this.tableName
+        _.map(this.whereClauses, val => {
+            entities.whereRaw(val.field + ' '  + val.operator + ' ?', [val.value])
+        })
+
+        _.map(this.joinClauses, val => {
+            let jointing = true
+            switch (val.type) {
+            case '':
+                entities.join(val.tableName, val.relation)
+                break
+            case 'left outer':
+                entities.leftOuterJoin(val.tableName, val.relation)
+                break
+            case 'left':
+                entities.leftJoin(val.tableName, val.relation)
+                break
+            default:
+                jointing = false
+            }
+
+            if (jointing) {
+                entities.select(knex.raw(val.tableName + '.*'))
+            }
+        })
+
+        _.map(this.havingSegments, val => {
+            if (val.map) {
+                entities.join(val.map[1], function () {
+                    _.mapValues(val.have, id => {
+                        this.on(val.map[2] + '_id', tableName + '.id')
+                        this.on(val.map[2] + '_type', knex.raw(`'${tableName}'`))
+                        this.on(val.map[1] + '.' + val.map[0], knex.raw(id))
+                    })
+                })
+            } else {
+                _.map(val.have, (value, key) => {
+                    entities.where(key, value)
+                })
+            }
+        })
+
+        if (this.joinClauses.length > 0) {
+            entities.select(knex.raw(this.tableName + '.*'))
+        }
+    }
+
+    resetConditions() {
+        this.resetWhere()
+            .resetJoin()
+            .resetHaving()
+
+        return this
+    }
+
+    applyCriteria(criteria) {
+        return criteria.apply(this)
     }
 
     browse() {
+        const entities = this.get()
+
+        this.resetConditions()
+
+        return entities
+    }
+
+    get() {
+        const deletedColumn = 
+            this.joinClauses.length > 0 ? this.tableName + '.deleted_at' : 'deleted_at'
+
         //delete from current table where deleted at = null
-        return knex(this.tableName)
-            .where('deleted_at', null)
+        const entities = knex(this.tableName)
+            .where(deletedColumn, null)
+
+        this.applyConditions(entities)
+
+        return entities
     }
 
     read(id) {
@@ -38,6 +170,10 @@ class BaseService {
         return knex(this.tableName)
             .where('id', payload['id'])
             .update(payload)
+        .then(result => {
+            // result.setTask(payload.getTask())
+            return result
+        })
     }
 
     add(payload) {
@@ -96,14 +232,14 @@ class BaseService {
             return Promise.resolve(related_service.read(entity.id))
             .then(function(obj){
                 //if get one then return the ID
-                if (typeof obj != 'undefined') {                    
+                if (typeof obj != 'undefined') {
                     return Promise.resolve(obj.id)
                 } else { //if none then add and return the ID
                     return Promise.resolve(related_service.add(entity).returning('id'))
                 }
             })
         //if passed entity not valid, it means it has to be added and return the ID
-        } else {                                                    
+        } else {
             return Promise.resolve(related_service.add(entity).returning('id'))
         }
     }
@@ -115,8 +251,18 @@ class BaseService {
             .where(field_name, value)
             .first()
     }
-    
+
+    paginate(limit, offset, select) {
+        const deletedColumn = 
+            this.joinClauses.length > 0 ? this.tableName + '.deleted_at' : 'deleted_at'
+
+        const entities = knex(this.tableName)
+            .where(deletedColumn, null)
+
+        this.applyConditions(entities)
+
+        return entities.limit(limit).offset(offset).select(select)
+    }
 }
 
 module.exports = BaseService
-
