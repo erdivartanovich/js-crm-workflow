@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "asyncawait": "^1.0.6",
+    "bluebird": "^3.5.0",
     "bottlejs": "^1.6.0",
     "commander": "^2.9.0",
     "dotenv": "^4.0.0",
@@ -23,7 +24,7 @@
     "@slack/client": "^3.8.1",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "istanbul":"^0.4.5",
+    "istanbul": "^0.4.5",
     "eslint": "^3.15.0",
     "mocha": "^3.2.0",
     "mock-knex": "^0.3.7",

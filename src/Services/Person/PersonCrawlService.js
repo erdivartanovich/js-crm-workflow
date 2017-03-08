@@ -11,9 +11,10 @@ const { parse, format, asYouType } = require('libphonenumber-js')
 const knex = require('../connection')
 const _ = require('lodash')
 
-const https = require('https');
-const http = require('http');
-const fileType = require('file-type');
+const https = require('https')
+const http = require('http')
+const fileType = require('file-type')
+const Promise = require('bluebird')
 
 /**
  * @todo Write KWAPI Wrapper to NodeJS
@@ -30,72 +31,58 @@ class PersonCrawlService extends BaseService {
     }
 
     processProfileImages(data, person) {
-        let asset = {}
+        
         const tableName = 'digital_assets'
         
-        //promise
-        return new Promise((resolve) => {
-
-            if(person && !person.getProfilePhoto() && data.fullcontact.photos === undefined){
-                let found = false
-                let i = 0
+        if(person && !person.getProfilePhoto() && data.fullcontact.photos === undefined){
+            let found = false
+            
+            //promise blubird
+            Promise.each(data.fullcontact.photos, function(photo) {
                 
-                    //promise
-                let promiseData = Promise.resolve(data.fullcontact.photos)
-                promiseData.then(photos => {
+                if(!found){
 
-                    if(!found && i < data.fullcontact.photos.length){
-                        
-                            //promise
-                            this.getUrlMimeType(photos[i].url)
-                            .then(result => {
-                                
-                                let payload = {
-                                    path: photos[i].url,
-                                    mime_type: result,
-                                    storage_type: 'url',
-                                    public_url: photos[i].url
+                    //promise mime
+                    this.getUrlMimeType(photo.url).then((mimeType) => {
+                        let payload = {
+                            path: photo.url,
+                            mime_type: mimeType,
+                            storage_type: 'url',
+                            public_url: photo.url
+                        }
+
+                        //promise knex insert
+                        this.beforeAdd()
+                        let add = knex(tableName).insert(payload)
+                        add.then(id => {
+                            let read = knex(this.tableName)
+                                        .where('deleted_at', null)
+                                        .where('id', id)
+                                        .first()
+                            
+                            //promise knex read
+                            read.then(data => {
+                                person = this.personService.attachProfilePhoto(person, data)
+                
+                                if(data && person){
+                                    photo.saved = true
+                                    found = true
                                 }
 
-                                //promise
-                                this.beforeAdd()
-                                let add = knex(tableName).insert(payload)
-                                add.then(id => {
-                                    let read = knex(this.tableName)
-                                                .where('deleted_at', null)
-                                                .where('id', id)
-                                                .first()
-                            
-                                    read.then(data => {
-                                        person = this.personService.attachProfilePhoto(person, asset)
-                    
-                                        if(asset && person){
-                                            data.fullcontact.photos[i].saved = true
-                                            found = true
-                                        }
-                                        
-                                        i++
-
-                                    })
-                                })
-                                //end of promise
                             })
-                            //end of promise
-                        
-                    }else{
-                        return
-                    }    
-                   
-                })
-                    //end of promise
-            }
+                            //end of promise knex read
+                        })
+                        //end of promise knex insert 
+                    })
+                    //end of promise 
+                }
+            })
+            //end of promise bluebird 
+        }
 
-            resolve(data)
-
-        })
-        //end of promise
+        return 
     }
-
+    
     getUrlMimeType(url){
         let protocol = url[4] === 's' ? https : http 
 
