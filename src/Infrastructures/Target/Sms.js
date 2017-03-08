@@ -4,8 +4,8 @@ const interactionService = require('../../Services/Interaction/InteractionServic
 const moment = require('moment')
 const phoneService = require('../../Services/Person/PersonPhoneService')
 const communicationTemplateService = require('../../Services/CommunicationTemplate/CommunicationTemplateService')
-const KWApi = require('../../../../kwapi-wrapper-js/src/KWApi/')
-const Credential = require('../../../../kwapi-wrapper-js/src/KWApi/Models/Credential')
+const KWApi = require('../../../../kwapi-wrapper-js/lib/KWApi/')
+const Credential = require('../../../../kwapi-wrapper-js/lib/KWApi/Models/Credential')
 
 const credential = new Credential('abc123')
 const INTERACTION_TYPE_TEXT = 4
@@ -70,7 +70,7 @@ class Sms extends communicationTemplateService{
             .then(data => {
                 const phone = data
                 const api = this.test
-
+                console.log(api)
                 if (phone) {
                     return api.Communication().sendText(phone.number, message)
                     .then(res => {
