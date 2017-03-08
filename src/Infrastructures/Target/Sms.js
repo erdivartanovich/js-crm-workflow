@@ -6,7 +6,7 @@ const phoneService = require('../../Services/Person/PersonPhoneService')
 const communicationTemplateService = require('../../Services/CommunicationTemplate/CommunicationTemplateService')
 
 // TODO: integrate wrapper into npm library
-const wrapper = require('kwapi-wrapper-js')
+const wrapper = require('@refactory-id/kwapi-wrapper-js')
 const KWApi = wrapper.KWApi
 const Credential = wrapper.Credential
 
