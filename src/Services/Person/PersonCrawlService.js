@@ -8,8 +8,8 @@ const PersonService = require('./PersonService')
 
 const Moment = require('moment')
 
-const parse = require('libphonenumber-js')
-const asYouType =require('libphonenumber-js')
+const parse = require('libphonenumber-js').parse
+const asYouType =require('libphonenumber-js').asYouType
 
 const knex = require('../connection')
 const _ = require('lodash')
