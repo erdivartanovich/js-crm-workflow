@@ -20,6 +20,39 @@ class PersonCrawlService extends BaseService {
         this.personService = new PersonService()
     }
 
+    crawlEmail(email, person, user) {
+        const api = this.wrapper
+        const dfind = {}
+        const result = {}
+        let resPersonData, resPerson, resDemo
+
+        if(person) {
+            dfind['d_first'] = person.first_name
+            dfind['d_last'] = person.last_name
+        }
+
+        return api.People().lookupEmail(email)
+        .then(response => {
+            resPerson = response.getCause()
+            result['fullcontact']['message'] = resPerson
+            resPersonData = response.getBody()
+            return api.Demographic().getDemographics(dfind)
+        })
+        .then(response => {
+            resDemo = response.getCause()
+            result['datafinder']['message'] = resDemo
+
+            if(resPersonData.message !== 'undefined') {
+                result.fullcontact.message += resPersonData.message
+            }
+            return this.processPersonData(resPerson, person, user, result)
+        })
+        .then(response => {
+            return this.processDemographicData(resDemo, person, response)
+        })
+
+    }
+
     processPhone(data, person) {
         const phone = {}
         return Promise.resolve(() => {
