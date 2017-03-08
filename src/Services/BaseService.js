@@ -91,6 +91,7 @@ class BaseService {
                 break
             case 'left':
                 entities.leftJoin(val.tableName, val.relation)
+                break
             default:
                 jointing = false
             }
@@ -101,14 +102,19 @@ class BaseService {
         })
 
         _.map(this.havingSegments, val => {
-            entities.join(val.map[1], function () {
-                _.mapValues(val.have, id => {
-                    this.on(val.map[2] + '_id', tableName + '.id')
-                    this.on(val.map[2] + '_type', knex.raw(`'${tableName}'`))
-                    this.on(val.map[1] + '.' + val.map[0], id)
-
+            if (val.map) {
+                entities.join(val.map[1], function () {
+                    _.mapValues(val.have, id => {
+                        this.on(val.map[2] + '_id', tableName + '.id')
+                        this.on(val.map[2] + '_type', knex.raw(`'${tableName}'`))
+                        this.on(val.map[1] + '.' + val.map[0], knex.raw(id))
+                    })
                 })
-            })
+            } else {
+                _.map(val.have, (value, key) => {
+                    entities.where(key, value)
+                })
+            }
         })
 
         if (this.joinClauses.length > 0) {
@@ -164,6 +170,10 @@ class BaseService {
         return knex(this.tableName)
             .where('id', payload['id'])
             .update(payload)
+        .then(result => {
+            // result.setTask(payload.getTask())
+            return result
+        })
     }
 
     add(payload) {

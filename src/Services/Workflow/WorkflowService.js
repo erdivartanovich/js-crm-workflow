@@ -120,6 +120,13 @@ class WorkflowService extends BaseService {
         })
     }
 
+    hasAction(workflow, actionId) {
+        return knex(this.pivots.action).where({
+            'workflow_id': workflow.id,
+            'action_id': actionId,
+        }).first().then(action => typeof action !== 'undefined')
+    }
+
     getByIds(ids) {
         return this.browse().whereIn('id', ids)
     }

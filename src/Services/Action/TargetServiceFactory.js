@@ -1,13 +1,13 @@
 'use strict'
 
-const di = require('../../di')
+const container = require('../../di').container
 
 class TargetServiceFactory {
 
     constructor(action) {
         this.action = action
     }
-    
+
     serviceMap() {
         return {
             'persons': 'PersonService',
@@ -26,7 +26,7 @@ class TargetServiceFactory {
             return null
         }
 
-        return di.container[this.serviceMap()[this.action.target_class]]
+        return container[this.serviceMap()[this.action.target_class]]
     }
 }
 
