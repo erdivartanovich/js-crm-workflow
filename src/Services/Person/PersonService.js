@@ -34,7 +34,7 @@ class PersonService extends BaseService {
             'sources': this.sourceService //TODO: user service not exist yet
         }
 
-        
+
         this.relationLists = {
             person_addresses: {'persons.id': 'person_addresses.person_id'},
             person_contact_types: {'persons.id': 'person_contact_types.person_id'},
@@ -432,7 +432,27 @@ class PersonService extends BaseService {
             const insertNew = Promise.all(promises)
             return insertNew
         })
-        .catch(console.log.bind(console))
+        .catch(err => err)
+    }
+
+    getProfilePhoto(person) {
+        if (person.profile_photo) {
+            return Promise.resolve(person.profile_photo)
+        }
+
+        return knex(this.pivots.assets)
+               .where('asset_type', 1)
+               .where('assetable_type', 'persons')
+               .where('assetable_id', person.id)
+               .first()
+               .then(assetable => knex('digital_assets').where('id', assetable.asset_id).first())
+               .then(asset => {
+                   if (asset) {
+                       return asset.public_url
+                   }
+
+                   return ''
+               }).catch(err => err)
     }
 
 }
