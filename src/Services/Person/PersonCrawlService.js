@@ -80,7 +80,7 @@ class PersonCrawlService extends BaseService {
             //end of promise bluebird 
         }
 
-        return 
+        return data
     }
     
     getUrlMimeType(url){
