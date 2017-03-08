@@ -4,6 +4,8 @@ const interactionService = require('../../Services/Interaction/InteractionServic
 const moment = require('moment')
 const phoneService = require('../../Services/Person/PersonPhoneService')
 const communicationTemplateService = require('../../Services/CommunicationTemplate/CommunicationTemplateService')
+
+// TODO: integrate wrapper into npm library
 const KWApi = require('../../../../kwapi-wrapper-js/lib/KWApi/')
 const Credential = require('../../../../kwapi-wrapper-js/lib/KWApi/Models/Credential')
 
@@ -14,11 +16,11 @@ const INITIATED_BY_USER = 1
 class Sms extends communicationTemplateService{
 
     constructor() {
-        //FIXME with KWApi js
         super()
-        // this.api = 'KWApi'
+        // this.wrapper = 'KWApi Wrapper' //for testing purpose only
+
         credential.setEndPoint('http://localhost:8000/v1')
-        this.test = new KWApi(credential)
+        this.wrapper = new KWApi(credential)
         this.interactionService = new interactionService()
         this.phoneService = new phoneService()
         this.communicationTemplateService = new communicationTemplateService()
@@ -34,32 +36,33 @@ class Sms extends communicationTemplateService{
             this.phoneService.getNumbers('person_id', person.id).then(data => {
 
                 const phones = data
-                const api = this.test
+                const api = this.wrapper
+                const interactionServ = this.interactionService
+
                 console.log(phones)
                 phones.forEach(function(phone) {
                     //FIXME with KWApi.
                     return api.Communication().sendText(phone.number, message)
                     .then(res => {
-                        console.log('+-+-=-=-=-=-=-',res)
-                        if (!res.isError) {
-                            const interaction = {
-                                person_id: person.id,
-                                user_id: workflow.user_id,
-                                interaction_type: INTERACTION_TYPE_TEXT,
-                                interaction_at: moment().format('Y-m-d H:i:s'),
-                                phone_number: phone.number,
-                                initiated_by: INITIATED_BY_USER,
-                            }
-                            this.interactionService.add(interaction)
+
+                        const interaction = {
+                            person_id: person.id,
+                            user_id: workflow.user_id,
+                            interaction_type: INTERACTION_TYPE_TEXT,
+                            interaction_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+                            phone_number: phone.number,
+                            initiated_by: INITIATED_BY_USER,
                         }
+
+                        interactionServ.add(interaction).then(() => {})
                     })
+                    .catch(err => console.log(err))
                 })
             })
         })
     }
 
     sendPrimary(workflow, action, person, message) {
-        // FIXME with add KWApi
 
         this.communicationTemplateService.read(action.template_id).then(response => {
             const communicationTemplate = response
@@ -69,25 +72,24 @@ class Sms extends communicationTemplateService{
             this.phoneService.getPrimary('person_id', person.id)
             .then(data => {
                 const phone = data
-                const api = this.test
-                console.log(api)
+                const api = this.wrapper
+
                 if (phone) {
                     return api.Communication().sendText(phone.number, message)
                     .then(res => {
-                        console.log(res)
-                        if (!res.isError) {
-
-                            const interaction = {
-                                person_id: person.id,
-                                user_id: workflow.user_id,
-                                interaction_type: INTERACTION_TYPE_TEXT,
-                                interaction_at: moment().format('Y-m-d H:i:s'),
-                                phone_number: phone.number,
-                                initiated_by: INITIATED_BY_USER,
-                            }
-                            this.interactionService.add(interaction)
+                        // console.log(res)
+                        const interaction = {
+                            person_id: person.id,
+                            user_id: workflow.user_id,
+                            interaction_type: INTERACTION_TYPE_TEXT,
+                            interaction_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+                            phone_number: phone.number,
+                            initiated_by: INITIATED_BY_USER,
                         }
+                        this.interactionService.add(interaction).then(() => {})
+
                     })
+                    .catch(err => console.log(err))
                 }
             })
         })
