@@ -6,22 +6,30 @@ const PersonPhoneService = require('./PersonPhoneService')
 const PersonEmailService = require('./PersonEmailService')
 const PersonService = require('./PersonService')
 
+const wrapper = require('@refactory-id/kwapi-wrapper-js')
+const KWApi = wrapper.KWApi
+const Credential = wrapper.Credential
+const credential = new Credential('abc123')
+
 const Moment = require('moment')
-const parse = require('libphonenumber-js')
-const asYouType =require('libphonenumber-js')
-const knex = require('../connection')
+// const parse = require('libphonenumber-js')
+// const asYouType =require('libphonenumber-js')
+const knex = require('../../connection')
 const _ = require('lodash')
 
 class PersonCrawlService extends BaseService {
     constructor() {
         super()
+        // console.log(Credential)
+        credential.setEndPoint('http://localhost:8000/v1')
+        this.kwapi = new KWApi(credential)
         this.personPhoneService = new PersonPhoneService()
         this.personEmail = new PersonEmailService()
         this.personService = new PersonService()
     }
 
     crawlEmail(email, person, user) {
-        const api = this.wrapper
+        const api = this.kwapi
         const dfind = {}
         const result = {}
         let resPersonData, resPerson, resDemo
@@ -33,9 +41,8 @@ class PersonCrawlService extends BaseService {
 
         return api.People().lookupEmail(email)
         .then(response => {
-            resPerson = response.getCause()
-            result['fullcontact']['message'] = resPerson
-            resPersonData = response.getBody()
+            console.log(response)
+            resPersonData = response
             return api.Demographic().getDemographics(dfind)
         })
         .then(response => {
@@ -50,6 +57,7 @@ class PersonCrawlService extends BaseService {
         .then(response => {
             return this.processDemographicData(resDemo, person, response)
         })
+        .catch(err => console.log(err))
 
     }
 
