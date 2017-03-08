@@ -36,7 +36,8 @@ class ActionResourcesJob {
             //1. check run once
             if(exist && this.runnableOnce) {
                 return false
-            } else {
+            }
+            else{
                 //process action
                 return this.applyAction(resource, service)
             }
@@ -83,9 +84,8 @@ class ActionResourcesJob {
         return this.getActionResource(resource, resourceService)
         .then(target => {
             target[this.action.target_field] = this.action.value
- 
-            return this.service.edit(target).then((res) => {
-            })
+
+            return this.service.edit(target)
         })
         .then(result => {
             if(result) {
@@ -115,7 +115,7 @@ class ActionResourcesJob {
                 if(result) {
                     return this.log(resource, 1, `Action ${this.action.name} executed`)
                     .then(() => {
-                        return Promise.resolve(true)
+                        return true
                     })
                 }
                 else {
@@ -127,40 +127,40 @@ class ActionResourcesJob {
         else {
             return this.log(resource, 0, message)
             .then(() => {
-                return Promise.resolve(false)
+                return false
             })
         }
     }
-    
+
     actionClone(resource) {
-        // resource should be an object with person_id e.g {person_id: 1}
+        // console.log('Clone')
         const date = (new moment).add(5, 'days')
         return this.taskService.clone(this.getTask(this.action))
         .then(task => {
             task.user_id = this.workflow.user_id
-            task.person_id = resource.person_id
+            task.person_id = resource
             task.created_by = this.workflow.user_id
             task.updated_by = this.workflow.user_id
             task.due_date = date.format(DATEFORMAT)
             task.is_completed = 0
             task.status = 1
 
-            return Promise.resolve(task)
+            return task
         })
         .then(task => {
             return this.taskService.add(task)
         })
         .then(result => {
-            if(typeof result != 'undefined' && result != null) {
+            if(result) {
                 return this.log(resource, 1, 'Task cloned.')
                 .then(() => {
-                    return Promise.resolve(true)
+                    return true
                 })
             }
             else {
                 return this.log(resource, 0, 'Task clone failed!')
                 .then(() => {
-                    return Promise.resolve(false)
+                    return false
                 })
             }
         })
@@ -196,7 +196,6 @@ class ActionResourcesJob {
             
         })
         .then(result => {
-
             //we got the db record of task
             resource.tableName = this.taskService.tableName
 
@@ -207,7 +206,8 @@ class ActionResourcesJob {
                 .then(() => {
                     return(Promise.resolve(true))
                 })
-            } else {
+            }
+            else {
                 return this.log(resource, 0, 'Task assign failed!')
                 .then(() => {
                     return Promise.resolve(false)
