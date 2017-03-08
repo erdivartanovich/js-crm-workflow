@@ -17,7 +17,8 @@
     "lodash": "^4.17.4",
     "moment": "^2.17.1",
     "mysql": "^2.13.0",
-    "promise": "^7.1.1"
+    "promise": "^7.1.1",
+    "kwapi-wrapper-js":"git+https://github.com/refactory-id/kwapi-wrapper-js"
   },
   "devDependencies": {
     "@slack/client": "^3.8.1",
