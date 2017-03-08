@@ -8,6 +8,11 @@ const PersonService = require('./PersonService')
 
 const Moment = require('moment')
 
+const https = require('https')
+const http = require('http')
+const fileType = require('file-type')
+const Promise = require('bluebird')
+
 const parse = require('libphonenumber-js').parse
 const asYouType = require('libphonenumber-js').asYouType
 
@@ -178,6 +183,72 @@ class PersonCrawlService extends BaseService {
             }
         }).then((data) => data)
     }
+  
+  processProfileImages(data, person) {
+        
+        const tableName = 'digital_assets'
+        
+        if(person && !person.getProfilePhoto() && data.fullcontact.photos === undefined){
+            let found = false
+            
+            Promise.resolve(   
+                //promise with blubird
+                Promise.each(data.fullcontact.photos, function(photo) {
+                
+                    if(!found){
+
+                        //promise for getting Mime Type
+                        this.getUrlMimeType(photo.url).then((mimeType) => {
+                            let payload = {
+                                path: photo.url,
+                                mime_type: mimeType,
+                                storage_type: 'url',
+                                public_url: photo.url
+                            }
+
+                            //promise knex insert
+                            this.beforeAdd()
+                            let add = knex(tableName).insert(payload)
+                            add.then(id => {
+                                let read = knex(this.tableName)
+                                            .where('deleted_at', null)
+                                            .where('id', id)
+                                            .first()
+                            
+                                //promise knex read
+                                read.then(data => {
+                                    person = this.personService.attachProfilePhoto(person, data)
+                
+                                    if(data && person){
+                                        photo.saved = true
+                                        found = true
+                                    }
+
+                                })
+                            })
+                        })
+                    }
+                })
+                
+                ).then(() => data)
+        }
+
+        return data
+    }
+    
+    getUrlMimeType(url){
+        let protocol = url[4] === 's' ? https : http 
+
+        return new Promise((resolve) => {
+            protocol.get(url, res => {
+                res.once('data', chunk => {
+                    res.destroy()
+                    resolve(fileType(chunk).mime)
+                })   
+            })
+        })
+    }
+  
 }
 
 module.exports = PersonCrawlService
