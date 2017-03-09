@@ -1,11 +1,11 @@
 'use strict'
 
-const interactionService = require('../../Services/Interaction/InteractionService')
 const moment = require('moment')
+
+const interactionService = require('../../Services/Interaction/InteractionService')
 const phoneService = require('../../Services/Person/PersonPhoneService')
 const communicationTemplateService = require('../../Services/CommunicationTemplate/CommunicationTemplateService')
 
-// TODO: integrate wrapper into npm library
 const wrapper = require('@refactory-id/kwapi-wrapper-js')
 const KWApi = wrapper.KWApi
 const Credential = wrapper.Credential
@@ -66,6 +66,7 @@ class Sms extends communicationTemplateService{
     sendPrimary(workflow, action, person, message) {
 
         this.communicationTemplateService.read(action.template_id).then(response => {
+            console.log('Im here guys ....', response)
             const communicationTemplate = response
             if (communicationTemplate) {
                 message = communicationTemplate.template
@@ -87,8 +88,10 @@ class Sms extends communicationTemplateService{
                             phone_number: phone.number,
                             initiated_by: INITIATED_BY_USER,
                         }
-                        this.interactionService.add(interaction).then(() => {})
-
+                        this.interactionService.add(interaction).then(() => {
+                            console.log('Final step......')
+                            return Promise.resolve(true)
+                        })
                     })
                     .catch(err => console.log(err))
                 }
