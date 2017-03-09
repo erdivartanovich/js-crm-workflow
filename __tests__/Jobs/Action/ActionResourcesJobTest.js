@@ -28,7 +28,6 @@ describe('ActionResourcesJob', () => {
         tracker.install()
         tracker.on('query', function checkResult(query, step) {
 
-            console.log('Step '+step)
             if (step == 5 || step == 6 || step == 14 || step == 19 || step == 24) {
                 query.response({
                     id: 2
@@ -90,16 +89,6 @@ describe('ActionResourcesJob', () => {
         })
     })
 
-    // describe('#actionExecute()', () => {
-    //     const resource = td.object(PersonService)
-    //
-    //     it('should return a valid object', () => {
-    //         testObj.logService = new LogService()
-    //         testObj.service = new WorkflowService()
-    //         testObj.actionExecute(resource).should.be.instanceOf(Object)
-    //     })
-    // })
-
     describe('#actionClone()', () => {
         const resource = td.object(PersonService)
 
@@ -109,40 +98,6 @@ describe('ActionResourcesJob', () => {
             testObj.actionClone(resource).should.be.instanceOf(Object)
         })
     })
-
-    // describe('#actionAssign()', () => {
-    //     const resource = td.object(PersonService)
-    //
-    //     it('should return a valid object', () => {
-    //         testObj.logService = new LogService()
-    //         testObj.actionAssign(resource).should.be.instanceOf(Object)
-    //     })
-    // })
-
-    // describe('#getExecuteParams()', () => {
-    //     const resource = td.object(PersonService)
-    //
-    //     it('should return a valid object', () => {
-    //         testObj.logService = new LogService()
-    //         testObj.getExecuteParams(resource).should.be.instanceOf(Object)
-    //     })
-    // })
-
-    // describe('#getActionResource()' , () => {
-    //     it('should return a valid query', (done) => {
-    //         const browseQuery = 'select * from `persons` where `deleted_at` is null and `id` = ? limit ?'
-    //         const resources = {id: 7}
-    //
-    //         testObj.getActionResource(resources, personService).then(result => {
-    //             result.sql.should.equals(browseQuery)
-    //             result.method.should.equals('first')
-    //             result.bindings[0].should.equals(2)
-    //             result.bindings[1].should.equals(1)
-    //
-    //             done()
-    //         }).catch(err => done(err))
-    //     })
-    // })
 
     describe('#setJoin()', (done) => {
         const resource = td.object(PersonService)

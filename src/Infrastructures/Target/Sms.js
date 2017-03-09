@@ -22,6 +22,7 @@ class Sms extends communicationTemplateService{
 
         credential.setEndPoint('http://localhost:8000/v1')
         this.wrapper = new KWApi(credential)
+
         this.interactionService = new interactionService()
         this.phoneService = new phoneService()
         this.communicationTemplateService = new communicationTemplateService()
@@ -74,16 +75,19 @@ class Sms extends communicationTemplateService{
             this.phoneService.getPrimary('person_id', person.id)
             .then(data => {
                 const phone = data
+
                 const api = this.wrapper
 
                 if (phone) {
                     return api.Communication().sendText(phone.number, message)
                     .then(res => {
                         // console.log(res)
+
                         const interaction = {
                             person_id: person.id,
                             user_id: workflow.user_id,
                             interaction_type: INTERACTION_TYPE_TEXT,
+
                             interaction_at: moment().format('YYYY-MM-DD HH:mm:ss'),
                             phone_number: phone.number,
                             initiated_by: INITIATED_BY_USER,
@@ -94,6 +98,7 @@ class Sms extends communicationTemplateService{
                         })
                     })
                     .catch(err => console.log(err))
+
                 }
             })
         })
