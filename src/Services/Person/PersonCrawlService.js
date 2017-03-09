@@ -297,9 +297,6 @@ class PersonCrawlService extends BaseService {
         })
     }
 
-    processPersonData(resp, person, user, result) {
-        return result
-    }
 }
 
 module.exports = PersonCrawlService
