@@ -195,10 +195,10 @@ class PersonCrawlService extends BaseService {
     }
 
     processDemographicData(resp, person, result){
-        //resp ia a Demographic.response body
-        result.datafinder = resp.datafinder
+        let data = resp.data
+        result.datafinder = data.datafinder
 
-        if(resp.datafinder['num-result'] > 0){
+        if(resp.status == 200 && data.datafinder['num-result'] > 0){
             result = this.processBirthday(result, person)
             result = this.processPhone(result, person)
         }
