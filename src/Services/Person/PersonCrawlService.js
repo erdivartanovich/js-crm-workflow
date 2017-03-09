@@ -6,6 +6,11 @@ const PersonPhoneService = require('./PersonPhoneService')
 const PersonEmailService = require('./PersonEmailService')
 const PersonService = require('./PersonService')
 
+const wrapper = require('@refactory-id/kwapi-wrapper-js')
+const KWApi = wrapper.KWApi
+const Credential = wrapper.Credential
+const credential = new Credential('abc123')
+
 const Moment = require('moment')
 
 const https = require('https')
@@ -22,10 +27,48 @@ const _ = require('lodash')
 class PersonCrawlService extends BaseService {
     constructor() {
         super()
+        // console.log(Credential)
+        credential.setEndPoint('http://localhost:8000/v1')
+        this.kwapi = new KWApi(credential)
         this.personPhoneService = new PersonPhoneService()
         this.personEmail = new PersonEmailService()
         this.personService = new PersonService()
     }
+
+    crawlEmail(email, person, user) {
+        const api = this.kwapi
+        const dfind = {}
+        const result = {}
+        let resPersonData, resDemo
+
+        if(person) {
+            dfind['d_first'] = person.first_name
+            dfind['d_last'] = person.last_name
+        }
+
+        result['fullcontact'] = {
+            message: ''
+        }
+        return api.People().lookupEmail(email)
+        .then(response => {
+            
+            resPersonData = response
+            return api.Demographic().getDemographics(dfind)
+        })
+        .then(response => {
+
+            resDemo = response
+
+            if(resPersonData.message !== 'undefined') {
+                result.fullcontact.message += resPersonData.message
+            }
+            return this.processPersonData(resPersonData, person, user, result)
+        })
+        .then(response => {
+
+            return this.processDemographicData(resDemo, person, response)
+        })
+        .catch(err => console.log(err))
 
     crawlPerson(person, user) {
         let tempEmails = []
@@ -62,14 +105,7 @@ class PersonCrawlService extends BaseService {
                 return retVal
             })
     }
-
-    /**
-     * @todo replace this method with proper one
-     */
-    crawlEmail(email, person, user) {
-        return Promise.resolve(true)
-    }
-
+    
     /**
      * Crawl social media data of a Person by personId.
      *
@@ -248,7 +284,10 @@ class PersonCrawlService extends BaseService {
             })
         })
     }
-  
+
+    processPersonData(resp, person, user, result) {
+        return result
+    }
 }
 
 module.exports = PersonCrawlService
