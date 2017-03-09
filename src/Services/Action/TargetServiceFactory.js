@@ -7,7 +7,7 @@ class TargetServiceFactory {
     constructor(action) {
         this.action = action
     }
-    
+
     serviceMap() {
         return {
             'persons': 'PersonService',
