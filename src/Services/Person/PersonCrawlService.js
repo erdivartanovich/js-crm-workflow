@@ -33,10 +33,11 @@ class PersonCrawlService extends BaseService {
         if (resp.status==200) {
             result['fullcontact'] = data
             // process profile image
-            result = this.processProfileImages(result, person)
-
-            // process social profiles
-            result = this.processProfileSocials(result, person, user)
+            return Promise.resolve(this.processProfileImages(result, person))
+                .then(() => {
+                    // process social profiles
+                    return Promise.resolve(this.processProfileSocials(result, person, user))
+                })
         }
         return result
     }
