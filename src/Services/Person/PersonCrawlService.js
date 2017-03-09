@@ -236,56 +236,60 @@ class PersonCrawlService extends BaseService {
         }).then((data) => data)
     }
   
+  /**
+   * @param data
+   * @param person
+   * @return data in promise format
+   */
   processProfileImages(data, person) {
         
         const tableName = 'digital_assets'
         
         if(person && !person.getProfilePhoto() && data.fullcontact.photos === undefined){
             let found = false
-            
-            Promise.resolve(   
-                //promise with blubird
-                Promise.each(data.fullcontact.photos, function(photo) {
+
+            //promise with blubird
+            return Promise.each(data.fullcontact.photos, function(photo) {
                 
-                    if(!found){
+                if(!found){
 
-                        //promise for getting Mime Type
-                        this.getUrlMimeType(photo.url).then((mimeType) => {
-                            let payload = {
-                                path: photo.url,
-                                mime_type: mimeType,
-                                storage_type: 'url',
-                                public_url: photo.url
-                            }
+                    //promise for getting Mime Type
+                    return this.getUrlMimeType(photo.url).then((mimeType) => {
+                        let payload = {
+                            path: photo.url,
+                            mime_type: mimeType,
+                            storage_type: 'url',
+                            public_url: photo.url
+                        }
 
-                            //promise knex insert
-                            this.beforeAdd()
-                            let add = knex(tableName).insert(payload)
-                            add.then(id => {
-                                let read = knex(this.tableName)
-                                            .where('deleted_at', null)
-                                            .where('id', id)
-                                            .first()
+                        //promise knex insert
+                        this.beforeAdd()
+                        let add = knex(tableName).insert(payload)
+                        add.then(id => {
+                            let read = knex(this.tableName)
+                                        .where('deleted_at', null)
+                                        .where('id', id)
+                                        .first()
                             
-                                //promise knex read
-                                read.then(data => {
-                                    person = this.personService.attachProfilePhoto(person, data)
+                            //promise knex read
+                            read.then(data => {
+                                person = this.personService.attachProfilePhoto(person, data)
                 
-                                    if(data && person){
-                                        photo.saved = true
-                                        found = true
-                                    }
+                                if(data && person){
+                                    photo.saved = true
+                                    found = true
+                                }
 
-                                })
                             })
                         })
-                    }
-                })
-                
-                ).then(() => data)
-        }
+                    })
+                }
+            })
 
-        return data
+        } else {
+            //return promise
+            return Promise.resolve(data)
+        }     
     }
     
     getUrlMimeType(url){
