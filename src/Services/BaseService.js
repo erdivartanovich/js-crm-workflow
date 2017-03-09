@@ -143,7 +143,7 @@ class BaseService {
     }
 
     get() {
-        const deletedColumn = 
+        const deletedColumn =
             this.joinClauses.length > 0 ? this.tableName + '.deleted_at' : 'deleted_at'
 
         //delete from current table where deleted at = null
@@ -253,7 +253,7 @@ class BaseService {
     }
 
     paginate(limit, offset, select) {
-        const deletedColumn = 
+        const deletedColumn =
             this.joinClauses.length > 0 ? this.tableName + '.deleted_at' : 'deleted_at'
 
         const entities = knex(this.tableName)
