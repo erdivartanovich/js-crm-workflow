@@ -29,12 +29,14 @@ class ActionExecutor {
                 this.action,
                 this.service,
                 this.objects,
-                this.filteredRules
+                rules
 			)
 
             return this.runOnce ? this.resourceFinder.runnableOnce() : this.resourceFinder
         })
-		.then(resourceFinder => { resourceFinder.prepareCriteria(); return resourceFinder.getBatches() })
+		.then(resourceFinder => resourceFinder
+            .prepareCriteria()
+            .getBatches())
         .then(batches => {
             batches.map(batch => {
                 batch.then(resources => {
@@ -67,7 +69,8 @@ class ActionExecutor {
                 this.on('rule_action.action_id', '=', knex.raw(self.action.id))
             })
         })).where('rules.workflow_id', self.workflow.id).then(result => {
-            return result
+            self.rules = result
+            return self.rules
         })
     }
 
