@@ -14,9 +14,7 @@ const mocks = {}
 let testObject
 
 describe('ResourceFinder' , () => {
-    before(() => {
-        tracker.install()
-
+    before(()=>{
         const rules = [], objects = []
         mocks.personService = td.object(PersonService)
         mocks.rule = new RuleCriteriaFactory(rules)
@@ -85,7 +83,6 @@ describe('ResourceFinder' , () => {
             testObject.prepareCriteria().should.equals(testObject)
         })
     })
-})
 
     // describe('#getBatches()', () => {
     //     it('should have 1 batch', (done) => {
@@ -94,7 +91,6 @@ describe('ResourceFinder' , () => {
     //             done()
     //         }).catch(err => done(err))
     //     })
-
     //     it('should have 2 batches', (done) => {
     //         testObject.prepareCriteria(1).getBatches().then(results => {
     //             results.length.should.equals(2)
@@ -102,3 +98,4 @@ describe('ResourceFinder' , () => {
     //         }).catch(err => done(err))
     //     })
     // })
+})

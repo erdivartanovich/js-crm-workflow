@@ -69,15 +69,15 @@ describe('ActionResourcesJob', () => {
         })
     })
 
-    // describe('#applyAction()', () => {
-    //     const resource = td.object(PersonService)
+    describe('#applyAction()', () => {
+        const resource = td.object(PersonService)
 
-    //     it('should return a valid object', () => {
-    //         testObj.logService = new LogService()
-    //         testObj.taskService = td.object(TaskService)
-    //         testObj.applyAction(resource).should.be.true
-    //     })
-    // })
+        it('should return a valid object', () => {
+            testObj.logService = new LogService()
+            testObj.taskService = td.object(TaskService)
+            testObj.applyAction(resource).should.be.instanceOf(Object)
+        })
+    })
     // TODO: setAttribute is not a function
     describe('#actionUpdate()', () => {
         const service = personService

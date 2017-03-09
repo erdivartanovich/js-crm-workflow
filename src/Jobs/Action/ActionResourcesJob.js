@@ -5,6 +5,9 @@ const moment = require('moment')
 const DATEFORMAT = 'YYYY-MM-DD'
 const container = require('../../di').container
 
+const di = require('../../di')
+const PersonService = require('../../Services/Person/PersonService')
+
 class ActionResourcesJob {
     constructor(workflow, action, resources, rules) {
         this.workflow = workflow
@@ -18,9 +21,10 @@ class ActionResourcesJob {
     }
 
     handle(service) {
-        this.taskService = container['TaskService']
-        this.logService = container['LogService']
-        this.ruleService = container['RuleService']
+        this.taskService = di.container['TaskService']
+        this.logService = di.container['LogService']
+        this.ruleService = di.container['RuleService']
+
         // TODO:
         this.service = service
 
@@ -78,8 +82,10 @@ class ActionResourcesJob {
         return action
     }
 
-    actionUpdate(resource, resourceService) {
-        // @todo: clean up the bugs
+    actionUpdate(resource) {
+        // const resourceService = di.container['PersonService']
+        // TODO: fix bug for using the dependency injection
+        const resourceService = new PersonService()
 
         return this.getActionResource(resource, resourceService)
         .then(target => {
@@ -93,8 +99,7 @@ class ActionResourcesJob {
                 .then(() => {
                     return true
                 })
-            }
-            else {
+            } else {
                 return this.log(resource, 0, 'Target updated failed')
                 .then(() => {
                     return false
@@ -123,8 +128,7 @@ class ActionResourcesJob {
                 }
 
             })
-        }
-        else {
+        } else {
             return this.log(resource, 0, message)
             .then(() => {
                 return false
