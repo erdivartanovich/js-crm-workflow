@@ -127,15 +127,20 @@ class PersonCrawlService extends BaseService {
      * @return Array
      */
     processPersonData(resp, person, user, result) {
+
         if (resp.status==200) {
+            
             result['fullcontact'] = data
+            
             // process profile image
-            result = this.processProfileImages(result, person)
+            this.processProfileImages(result, person)
 
             // process social profiles
-            result = this.processProfileSocials(result, person, user)
+            this.processProfileSocials(result, person, user)
         }
-        return result
+
+        return Promise.resolve(result)
+        
     }
 
     setSocialAccount(person, social, socialNetworkId) {
@@ -296,9 +301,6 @@ class PersonCrawlService extends BaseService {
         })
     }
 
-    processPersonData(resp, person, user, result) {
-        return result
-    }
 }
 
 module.exports = PersonCrawlService
