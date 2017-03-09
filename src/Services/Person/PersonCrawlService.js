@@ -32,29 +32,33 @@ class PersonCrawlService extends BaseService {
         const api = this.kwapi
         const dfind = {}
         const result = {}
-        let resPersonData, resPerson, resDemo
+        let resPersonData, resDemo
 
         if(person) {
             dfind['d_first'] = person.first_name
             dfind['d_last'] = person.last_name
         }
 
+        result['fullcontact'] = {
+            message: ''
+        }
         return api.People().lookupEmail(email)
         .then(response => {
-            console.log(response)
+            
             resPersonData = response
             return api.Demographic().getDemographics(dfind)
         })
         .then(response => {
-            resDemo = response.getCause()
-            result['datafinder']['message'] = resDemo
+
+            resDemo = response
 
             if(resPersonData.message !== 'undefined') {
                 result.fullcontact.message += resPersonData.message
             }
-            return this.processPersonData(resPerson, person, user, result)
+            return this.processPersonData(resPersonData, person, user, result)
         })
         .then(response => {
+
             return this.processDemographicData(resDemo, person, response)
         })
         .catch(err => console.log(err))
@@ -87,6 +91,14 @@ class PersonCrawlService extends BaseService {
             }
         })
         .then((data) => data)
+    }
+
+    processPersonData(resp, person, user, result) {
+        return result
+    }
+
+    processDemographicData(resp, person, result) {
+        return result
     }
 }
 
