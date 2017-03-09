@@ -120,12 +120,23 @@ class PersonCrawlService extends BaseService {
     }
 
     /**
-     * Set social account object and save todatabase
+     *  Process Person Data
+     * @param resp
      * @param person
-     * @param array social
-     * @param socialNetworkId
-     * @return PersonSocialAccountInterface|mixed
+     * @param result
+     * @return Array
      */
+    processPersonData(resp, person, user, result) {
+        if (resp.status==200) {
+            result['fullcontact'] = data
+            // process profile image
+            result = this.processProfileImages(result, person)
+
+            // process social profiles
+            result = this.processProfileSocials(result, person, user)
+        }
+        return result
+    }
 
     setSocialAccount(person, social, socialNetworkId) {
 
