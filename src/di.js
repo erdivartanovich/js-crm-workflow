@@ -23,6 +23,13 @@ if (typeof bottle == 'undefined') {
     bottle.service('PersonService', require('./Services/Person/PersonService'),
         'UserService', 'StageService', 'LeadTypeService', 'PersonProfessionService', 'CompanyService')
 
+    bottle.service('InteractionService', require('./Services/Interaction/InteractionService'))
+    bottle.service('PhoneService', require('./Services/Person/PersonPhoneService'))
+    bottle.service('TemplateService', require('./Services/CommunicationTemplate/CommunicationTemplateService'))
+
+    bottle.service('SMS', require('./Infrastructures/Target/Sms'),
+        'InteractionService', 'PhoneService', 'TemplateService')
+
     bottle.service('TagService', require('./Services/Tags/TagService'))
     bottle.service('Tagger', require('./Infrastructures/Target/Tagger'), 'TagService')
 
