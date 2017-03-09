@@ -8,6 +8,9 @@ const container = require('../../di').container
 const di = require('../../di')
 const PersonService = require('../../Services/Person/PersonService')
 
+const LOG_STATUS_SUCCESS = 1
+const LOG_STATUS_FAILED = 0
+
 class ActionResourcesJob {
     constructor(workflow, action, resources, rules) {
         this.workflow = workflow
@@ -95,12 +98,12 @@ class ActionResourcesJob {
         })
         .then(result => {
             if(result) {
-                return this.log(resource, 1, 'Target updated')
+                return this.log(resource, LOG_STATUS_SUCCESS, 'Target updated')
                 .then(() => {
                     return true
                 })
             } else {
-                return this.log(resource, 0, 'Target updated failed')
+                return this.log(resource, LOG_STATUS_FAILED, 'Target updated failed')
                 .then(() => {
                     return false
                 })
@@ -114,22 +117,24 @@ class ActionResourcesJob {
         if(typeof this.service[this.action.target_field] == 'function') {
             return this.getExecuteParams(resource)
             .then(params => {
-                return this.service[this.action.target_field].apply(undefined, params)
+                // console.log('Params:::', params)
+                return this.service[this.action.target_field].apply(this.service, params)
             })
             .then(result => {
+                console.log('Result::::', result)
                 if(result) {
-                    return this.log(resource, 1, `Action ${this.action.name} executed`)
+                    return this.log(resource, LOG_STATUS_SUCCESS, `Action ${this.action.name} executed`)
                     .then(() => {
                         return true
                     })
                 }
                 else {
-                    return this.log(resource, 0, `Action ${this.action.target_field} on $${this.action.target_class} failed!`)
+                    return this.log(resource, LOG_STATUS_FAILED, `Action ${this.action.target_field} on ${this.action.target_class} failed!`)
                 }
 
             })
         } else {
-            return this.log(resource, 0, message)
+            return this.log(resource, LOG_STATUS_FAILED, message)
             .then(() => {
                 return false
             })
@@ -156,13 +161,13 @@ class ActionResourcesJob {
         })
         .then(result => {
             if(result) {
-                return this.log(resource, 1, 'Task cloned.')
+                return this.log(resource, LOG_STATUS_SUCCESS, 'Task cloned.')
                 .then(() => {
                     return true
                 })
             }
             else {
-                return this.log(resource, 0, 'Task clone failed!')
+                return this.log(resource, LOG_STATUS_FAILED, 'Task clone failed!')
                 .then(() => {
                     return false
                 })
@@ -171,14 +176,14 @@ class ActionResourcesJob {
     }
 
     actionAssign(resource) {
-        
+
         //init date with 5 days value in timestamp format, use momentjs
         const date = (new moment).add(5, 'days')
-        
+
         // init empty task object
         let task = {}
-        
-        // perform getTask from action 
+
+        // perform getTask from action
         return this.getTask(this.action)
         .then(result => {
             //we got result of task
@@ -197,7 +202,7 @@ class ActionResourcesJob {
 
             //edit the relevant task record in database via task service
             return this.taskService.edit(task)
-            
+
         })
         .then(result => {
             //we got the db record of task
@@ -206,13 +211,13 @@ class ActionResourcesJob {
             if(typeof result != 'undefined' && result !== null) {
                 //if result has valid value
                 //log and return true
-                return this.log(resource, 1, 'Task '+task.task_action+' assigned')
+                return this.log(resource, LOG_STATUS_SUCCESS, 'Task '+task.task_action+' assigned')
                 .then(() => {
                     return(Promise.resolve(true))
                 })
             }
             else {
-                return this.log(resource, 0, 'Task assign failed!')
+                return this.log(resource, LOG_STATUS_FAILED, 'Task assign failed!')
                 .then(() => {
                     return Promise.resolve(false)
                 })
@@ -228,7 +233,7 @@ class ActionResourcesJob {
         params.push(resource)
         params.push(this.action.value)
 
-        return params
+        return Promise.resolve(params)
     }
 
     getActionResource(resource, resourceService) {
