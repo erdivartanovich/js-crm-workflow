@@ -17,7 +17,7 @@ class SocialNetworkService extends BaseService{
      * @param object atrributes 
      * @return object
      */
-    firstOrCrete(attributes){
+    firstOrCreate(attributes){
         for(var value in attributes){
             this.model = this.model.where(value, attributes[value])
         }
@@ -56,6 +56,31 @@ class SocialNetworkService extends BaseService{
                    .orWhere('user_id', user['user_id'])
     }
 
+    getInstances(labels, user) {
+
+        const promises = labels.map(label => this.getByLabel(label.trim(), user))
+
+        return Promise.all(promises)
+        .then(results => {
+            return results
+        })
+    }
+
+    getByLabel(label, user) {
+        return this.readBy('label', label).where('user_id', 'is', null).then(result => {
+            if (typeof result != 'undefined') {
+                return Promise.resolve(result)
+            }
+
+            if (typeof user != 'undefined') {
+                return this.firstOrCreate({ 'label': label, 'user_id': user.id })
+            }
+
+            return Promise.resolve(null)
+        }).then(result => {
+            return result
+        })
+    }
 }
 
 module.exports = SocialNetworkService
