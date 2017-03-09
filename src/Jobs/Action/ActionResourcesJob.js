@@ -8,6 +8,9 @@ const container = require('../../di').container
 const di = require('../../di')
 const PersonService = require('../../Services/Person/PersonService')
 
+const LOG_STATUS_SUCCESS = 1
+const LOG_STATUS_FAILED = 0
+
 class ActionResourcesJob {
     constructor(workflow, action, resources, rules) {
         this.workflow = workflow
@@ -21,10 +24,9 @@ class ActionResourcesJob {
     }
 
     handle(service) {
-        this.taskService = di.container['TaskService']
-        this.logService = di.container['LogService']
-        this.ruleService = di.container['RuleService']
-
+        this.taskService = container['TaskService']
+        this.logService = container['LogService']
+        this.ruleService = container['RuleService']
         // TODO:
         this.service = service
 
@@ -40,8 +42,7 @@ class ActionResourcesJob {
             //1. check run once
             if(exist && this.runnableOnce) {
                 return false
-            }
-            else{
+            } else {
                 //process action
                 return this.applyAction(resource, service)
             }
@@ -82,16 +83,15 @@ class ActionResourcesJob {
         return action
     }
 
-    actionUpdate(resource) {
-        // const resourceService = di.container['PersonService']
-        // TODO: fix bug for using the dependency injection
-        const resourceService = new PersonService()
+    actionUpdate(resource, resourceService) {
+        // @todo: clean up the bugs
 
         return this.getActionResource(resource, resourceService)
         .then(target => {
             target[this.action.target_field] = this.action.value
-
-            return this.service.edit(target)
+ 
+            return this.service.edit(target).then((res) => {
+            })
         })
         .then(result => {
             if(result) {
@@ -100,7 +100,7 @@ class ActionResourcesJob {
                     return true
                 })
             } else {
-                return this.log(resource, 0, 'Target updated failed')
+                return this.log(resource, LOG_STATUS_FAILED, 'Target updated failed')
                 .then(() => {
                     return false
                 })
@@ -109,7 +109,7 @@ class ActionResourcesJob {
     }
 
     actionExecute(resource) {
-        let message = `Action ${this.action.target_field} on ${this.action.target_class} not found !`
+        let message = 'Action '+this.action.target_field+' on '+this.action.target_class+' not found !'
 
         if(typeof this.service[this.action.target_field] == 'function') {
             return this.getExecuteParams(resource)
@@ -118,38 +118,38 @@ class ActionResourcesJob {
             })
             .then(result => {
                 if(result) {
-                    return this.log(resource, 1, `Action ${this.action.name} executed`)
+                    return this.log(resource, LOG_STATUS_SUCCESS, `Action ${this.action.name} executed`)
                     .then(() => {
-                        return true
+                        return Promise.resolve(true)
                     })
                 }
                 else {
-                    return this.log(resource, 0, `Action ${this.action.target_field} on $${this.action.target_class} failed!`)
+                    return this.log(resource, LOG_STATUS_FAILED, `Action ${this.action.target_field} on ${this.action.target_class} failed!`)
                 }
 
             })
         } else {
-            return this.log(resource, 0, message)
+            return this.log(resource, LOG_STATUS_FAILED, message)
             .then(() => {
-                return false
+                return Promise.resolve(false)
             })
         }
     }
-
+    
     actionClone(resource) {
-        // console.log('Clone')
+        // resource should be an object with person_id e.g {person_id: 1}
         const date = (new moment).add(5, 'days')
         return this.taskService.clone(this.getTask(this.action))
         .then(task => {
             task.user_id = this.workflow.user_id
-            task.person_id = resource
+            task.person_id = resource.person_id
             task.created_by = this.workflow.user_id
             task.updated_by = this.workflow.user_id
             task.due_date = date.format(DATEFORMAT)
             task.is_completed = 0
             task.status = 1
 
-            return task
+            return Promise.resolve(task)
         })
         .then(task => {
             return this.taskService.add(task)
@@ -158,13 +158,13 @@ class ActionResourcesJob {
             if(result) {
                 return this.log(resource, 1, 'Task cloned.')
                 .then(() => {
-                    return true
+                    return Promise.resolve(true)
                 })
             }
             else {
                 return this.log(resource, 0, 'Task clone failed!')
                 .then(() => {
-                    return false
+                    return Promise.resolve(false)
                 })
             }
         })
@@ -181,26 +181,20 @@ class ActionResourcesJob {
         // perform getTask from action 
         return this.getTask(this.action)
         .then(result => {
-            //we got result of task
-            //reassign result object
             result.user_id = this.workflow.user_id
             result.updated_by = this.workflow.user_id
             result.due_date = date.format(DATEFORMAT)
             result.is_completed = 0
             result.status = 1
 
-            //pass result to task
             task = result
-            return(Promise.resolve(task))
+            return result
         })
         .then(task => {
-
-            //edit the relevant task record in database via task service
             return this.taskService.edit(task)
             
         })
         .then(result => {
-            //we got the db record of task
             resource.tableName = this.taskService.tableName
 
             if(typeof result != 'undefined' && result !== null) {
@@ -208,13 +202,13 @@ class ActionResourcesJob {
                 //log and return true
                 return this.log(resource, 1, 'Task '+task.task_action+' assigned')
                 .then(() => {
-                    return(Promise.resolve(true))
+                    return true
                 })
             }
             else {
                 return this.log(resource, 0, 'Task assign failed!')
                 .then(() => {
-                    return Promise.resolve(false)
+                    return false
                 })
             }
         })
