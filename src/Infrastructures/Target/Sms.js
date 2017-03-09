@@ -5,7 +5,7 @@ const moment = require('moment')
 const phoneService = require('../../Services/Person/PersonPhoneService')
 const communicationTemplateService = require('../../Services/CommunicationTemplate/CommunicationTemplateService')
 
-// TODO: integrate wrapper into npm library
+// Instantiated kwapi-wrapper-js
 const wrapper = require('@refactory-id/kwapi-wrapper-js')
 const KWApi = wrapper.KWApi
 const Credential = wrapper.Credential
@@ -18,8 +18,7 @@ class Sms extends communicationTemplateService{
 
     constructor() {
         super()
-        // this.wrapper = 'KWApi Wrapper' //for testing purpose only
-
+        // Set endPoint of kwapi-wrapper-js 
         credential.setEndPoint('http://localhost:8000/v1')
         this.wrapper = new KWApi(credential)
         this.interactionService = new interactionService()
@@ -45,6 +44,7 @@ class Sms extends communicationTemplateService{
                     //FIXME with KWApi.
                     return api.Communication().sendText(phone.number, message)
                     .then(res => {
+
 
                         const interaction = {
                             person_id: person.id,
@@ -73,12 +73,13 @@ class Sms extends communicationTemplateService{
             this.phoneService.getPrimary('person_id', person.id)
             .then(data => {
                 const phone = data
+
                 const api = this.wrapper
 
                 if (phone) {
                     return api.Communication().sendText(phone.number, message)
                     .then(res => {
-                        // console.log(res)
+   
                         const interaction = {
                             person_id: person.id,
                             user_id: workflow.user_id,
