@@ -262,17 +262,18 @@ class PersonCrawlService extends BaseService {
                             public_url: photo.url
                         }
 
-                        //promise knex insert
                         this.beforeAdd()
                         let add = knex(tableName).insert(payload)
-                        add.then(id => {
+                        
+                        //promise knex insert
+                        return add.then(id => {
                             let read = knex(this.tableName)
                                         .where('deleted_at', null)
                                         .where('id', id)
                                         .first()
                             
                             //promise knex read
-                            read.then(data => {
+                            return read.then(data => {
                                 person = this.personService.attachProfilePhoto(person, data)
                 
                                 if(data && person){
@@ -284,7 +285,7 @@ class PersonCrawlService extends BaseService {
                         })
                     })
                 }
-            })
+            }).then(() => data)
 
         } else {
             //return promise
