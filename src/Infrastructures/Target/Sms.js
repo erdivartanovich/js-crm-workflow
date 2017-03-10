@@ -29,12 +29,14 @@ class Sms extends communicationTemplateService{
 
     send(workflow, action, person, message) {
         const phones = []
-        this.communicationTemplateService.read(action.template_id).then(response => {
+        return this.communicationTemplateService.read(action.template_id)
+        .then(response => {
             const communicationTemplate = response
             if (communicationTemplate) {
                 message = communicationTemplate.template
             }
-            this.phoneService.getNumbers('person_id', person.id).then(data => {
+            return this.phoneService.getNumbers('person_id', person.id)
+            .then(data => {
 
                 const phones = data
                 const api = this.wrapper
@@ -53,9 +55,7 @@ class Sms extends communicationTemplateService{
                             initiated_by: INITIATED_BY_USER,
                         }
 
-                        return interactionServ.add(interaction).then(() => {
-                            // return Promise.resolve(true)
-                        })
+                        return interactionServ.add(interaction)
                     })
                     .then(() => {
                         return Promise.resolve(true)
