@@ -49,7 +49,8 @@ class ActionResourcesJob {
     }
 
     finished() {
-        this.event.emit('finished')
+        // TODO: fix the implementation of Observer
+        // this.event.emit('finished')
     }
 
     processResource(resource, service) {
@@ -75,22 +76,22 @@ class ActionResourcesJob {
         const actionType = this.action.action_type
 
         switch (actionType) {
-            case 1:
-                this.actionUpdate(resource, service)
-                action = true
-                break
-            case 2:
-                this.actionExecute(resource)
-                action = true
-                break
-            case 3:
-                this.actionClone(resource)
-                action = true
-                break
-            case 4:
-                this.actionAssign(resource)
-                action = true
-                break
+        case 1:
+            this.actionUpdate(resource, service)
+            action = true
+            break
+        case 2:
+            this.actionExecute(resource)
+            action = true
+            break
+        case 3:
+            this.actionClone(resource)
+            action = true
+            break
+        case 4:
+            this.actionAssign(resource)
+            action = true
+            break
         }
 
         if (!action) {
@@ -107,7 +108,7 @@ class ActionResourcesJob {
             .then(target => {
                 target[this.action.target_field] = this.action.value
 
-                return this.service.edit(target).then((res) => {})
+                return this.service.edit(target).then(() => {})
             })
             .then(result => {
                 if (result) {
@@ -133,7 +134,7 @@ class ActionResourcesJob {
         if (typeof this.service[this.action.target_field] == 'function') {
             return this.getExecuteParams(resource)
                 .then(params => {
-                    return this.service[this.action.target_field].apply(undefined, params)
+                    return this.service[this.action.target_field].apply(this.service, params)
                 })
                 .then(result => {
                     if (result) {
@@ -200,7 +201,7 @@ class ActionResourcesJob {
         // init empty task object
         let task = {}
 
-        // perform getTask from action 
+        // perform getTask from action
         return this.getTask(this.action)
             .then(result => {
                 result.user_id = this.workflow.user_id
