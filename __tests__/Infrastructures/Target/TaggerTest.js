@@ -39,9 +39,9 @@ describe('===== Tagger Action test =====', () => {
         it('should return valid query', () => {
             const workflow = {id: 1, user_id: 9}
             const person = {id: 1}
-            const tag = {tag: 'hazardous'}
-            const type = 'person'
-            return testObj.attach(workflow, person, tag, type)
+            const tag = 'hazardous'
+            const action = ''
+            return testObj.attach(workflow, action, person, tag)
                 .then((res) => {
                     res.sql.should.equals('insert into `taggables` (`tag_id`, `taggable_id`, `taggable_type`, `user_id`) values (?, ?, ?, ?)')
                     res.bindings[2].should.equals[type]
@@ -70,9 +70,9 @@ describe('===== Tagger Action test =====', () => {
         it('should return valid query', () => {
             const workflow = {id: 1, user_id: 9}
             const person = {id: 1}
-            const tag = {tag: 'hazardous'}
-            const type = 'person'
-            return testObj.attach(workflow, person, tag, type)
+            const tag = 'hazardous'
+            const action = ''
+            return testObj.attach(workflow, action, person, tag)
                 .then((res) => {
                     res.sql.should.equals('insert into `taggables` (`tag_id`, `taggable_id`, `taggable_type`, `user_id`) values (?, ?, ?, ?)')
                     res.bindings[2].should.equals[type]
