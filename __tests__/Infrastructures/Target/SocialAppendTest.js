@@ -38,11 +38,10 @@ describe('===== SocialAppend Action test =====', () => {
         })
     
         it('should return valid query', () => {
-            const person = {id: 1}
-            return testObj.crawlPerson(person)
-                .then((res) => {
-                    res.sql.should.equals('insert into `taggables` (`tag_id`, `taggable_id`, `taggable_type`, `user_id`) values (?, ?, ?, ?)')
-                    res.method.should.equals('insert')
+            const person = {id: 1, user_id: 9, stage_id: 5, lead_type_id: 4}
+            return Promise.resolve(testObj.crawlPerson(person))
+                .then((res) => { 
+                    res.should.be.equals(true)  
                 })
         })
     })

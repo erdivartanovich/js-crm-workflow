@@ -37,8 +37,9 @@ if (typeof bottle == 'undefined') {
     bottle.service('PersonMotivation', require('./Services/Person/PersonMotivationService'))
     bottle.service('PersonScore', require('./Services/Person/PersonScoreService'))
 
+    bottle.service('PersonCrawlService', require('./Services/Person/PersonCrawlService'))
+    bottle.service('SocialAppend', require('./Infrastructures/Target/SocialAppend'),'PersonCrawlService' )
 }
 
-bottle.service('SocialAppend', require('./Infrastructures/Target/SocialAppend'))
 
 module.exports = bottle
