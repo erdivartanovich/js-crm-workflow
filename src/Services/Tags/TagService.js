@@ -21,7 +21,7 @@ class TagService extends BaseService {
      */
     attach(entity, user, tags, type) {
         console.log('===>tags from tagger: ', tags, typeof tags)
-        let payloads = []
+        const payloads = []
         _.map(tags, tag => {
             if (typeof tag.id == 'undefined') {tag['id'] = 0}
             payloads.push({user_id: user, tag_id: tag.id, taggable_id: entity.id, taggable_type: type})
