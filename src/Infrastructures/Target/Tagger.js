@@ -21,7 +21,6 @@ class Tagger {
                     tag: tag
                 }
             ]).then((tagObjs) => {
-                console.log('tagger send this to attach ===>', tagObjs)
                 return Promise.resolve(
                     this.tagService
                     .attach(person, workflow.user_id, tagObjs, tag_type)    
