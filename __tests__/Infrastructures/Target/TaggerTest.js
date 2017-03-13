@@ -44,7 +44,7 @@ describe('===== Tagger Action test =====', () => {
             return testObj.attach(workflow, action, person, tag)
                 .then((res) => {
                     res.sql.should.equals('insert into `taggables` (`tag_id`, `taggable_id`, `taggable_type`, `user_id`) values (?, ?, ?, ?)')
-                    res.bindings[2].should.equals[type]
+                    res.bindings[2].should.equals['person']
                     res.bindings[3].should.equals[workflow.user_id]
                     res.method.should.equals('insert')
                 })
@@ -75,7 +75,7 @@ describe('===== Tagger Action test =====', () => {
             return testObj.attach(workflow, action, person, tag)
                 .then((res) => {
                     res.sql.should.equals('insert into `taggables` (`tag_id`, `taggable_id`, `taggable_type`, `user_id`) values (?, ?, ?, ?)')
-                    res.bindings[2].should.equals[type]
+                    res.bindings[2].should.equals['person']
                     res.bindings[3].should.equals[workflow.user_id]
                     res.method.should.equals('insert')
                 })
