@@ -31,13 +31,15 @@ class Tagger {
        )
     }
 
-    detach(workflow, person, tag, tag_type) {
+    detach(workflow, action, person, tag) {
+
+        const tag_type = 'person'
+        
         return Promise.resolve(
             this.tagService
             .getInstances([
                 {
-                    id: tag.id,
-                    tag: tag.tag
+                    tag: tag
                 }
             ]).then(tagObjs => {
                 return Promise.resolve (
