@@ -76,22 +76,22 @@ class ActionResourcesJob {
         const actionType = this.action.action_type
 
         switch (actionType) {
-        case 1:
-            this.actionUpdate(resource, service)
-            action = true
-            break
-        case 2:
-            this.actionExecute(resource)
-            action = true
-            break
-        case 3:
-            this.actionClone(resource)
-            action = true
-            break
-        case 4:
-            this.actionAssign(resource)
-            action = true
-            break
+            case 1:
+                this.actionUpdate(resource, service)
+                action = true
+                break
+            case 2:
+                this.actionExecute(resource)
+                action = true
+                break
+            case 3:
+                this.actionClone(resource)
+                action = true
+                break
+            case 4:
+                this.actionAssign(resource)
+                action = true
+                break
         }
 
         if (!action) {
@@ -108,7 +108,9 @@ class ActionResourcesJob {
             .then(target => {
                 target[this.action.target_field] = this.action.value
 
-                return this.service.edit(target).then(() => {})
+                return this.service.edit(target).then(() => {
+                    return true
+                })
             })
             .then(result => {
                 if (result) {
