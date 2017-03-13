@@ -10,13 +10,15 @@ class Tagger {
         this.tagService = tagService
     }
 
-    attach(workflow, person, tag, tag_type) {
+    attach(workflow, action, person, tag) {
+
+        const tag_type = 'person'
+        
         return Promise.resolve(
            this.tagService
             .getInstances([
                 {
-                    id: tag.id,
-                    tag: tag.tag
+                    tag: tag
                 }
             ]).then((tagObjs) => {
                 console.log('tagger send this to attach ===>', tagObjs)
@@ -25,6 +27,7 @@ class Tagger {
                     .attach(person, workflow.user_id, tagObjs, tag_type)    
                 ) 
             })
+
        )
     }
 
