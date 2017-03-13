@@ -21,7 +21,7 @@ const Promise = require('bluebird')
 const parse = require('libphonenumber-js').parse
 const asYouType = require('libphonenumber-js').asYouType
 
-const knex = require('../connection')
+const knex = require('../../connection')
 const _ = require('lodash')
 
 class PersonCrawlService extends BaseService {
@@ -69,6 +69,7 @@ class PersonCrawlService extends BaseService {
             return this.processDemographicData(resDemo, person, response)
         })
         .catch(err => console.log(err))
+    }
 
     crawlPerson(person, user) {
         let tempEmails = []
