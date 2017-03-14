@@ -20,13 +20,13 @@ class TagService extends BaseService {
      *  - type => entity type/name e.g 'person', 'user', 'task'
      */
     attach(entity, user, tags, type) {
-        console.log('===>tags from tagger: ', tags, typeof tags)
-        let payloads = []
+
+        const payloads = []
         _.map(tags, tag => {
             if (typeof tag.id == 'undefined') {tag['id'] = 0}
             payloads.push({user_id: user, tag_id: tag.id, taggable_id: entity.id, taggable_type: type})
         })
-        console.log('payload to attach: ', payloads)
+
         return Promise.resolve(knex('taggables').insert(payloads))
     }
 
@@ -83,7 +83,7 @@ class TagService extends BaseService {
 
         return Promise.all(promises1)
             .then((result) => {
-                console.log('result of iteration if defined tag ID: ', result)
+
                 return Promise.all(promises2).then(result => {
                      if (result == []) {
                          return Promise.resolve(tagIds)
@@ -93,7 +93,7 @@ class TagService extends BaseService {
                 })
             })
             .then((result) => {
-                console.log('intermediete process checkpoint: ', result)
+
                 //select id from tags where tag in [tags] => array of stored tags
                 return Promise.resolve(knex(this.tableName)
                     .whereIn('tag', tags)
@@ -101,11 +101,11 @@ class TagService extends BaseService {
             })
             .then(objIds => {
                 objIds = _.flatten(objIds)
-                console.log('result of tag Ids array: ', objIds)
+
                 _.map(objIds, id => {
                     tagIds.push(id.id)
                 })
-                console.log('Ids to get their getInstances: ',tagIds)
+                
                 //select all based on tagIds return array of tags object
                 return knex(this.tableName).whereIn('id', tagIds)
             })
