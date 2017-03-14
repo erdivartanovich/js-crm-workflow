@@ -65,7 +65,10 @@ class ActionExecutor {
                 .getBatches())
             .then(batches => {
                 if (batches.length <= 0) {
-                    this.event.emit('exit')
+                    return this.log.doLog(this.workflow, this.action, this.rules, 0, 'Resource(s) not found!')
+                        .then(() => {
+                            this.event.emit('exit')
+                        })
                 }
                 batches.map(batch => {
                     batch.then(resources => {
