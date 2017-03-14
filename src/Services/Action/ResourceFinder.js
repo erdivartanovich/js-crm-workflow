@@ -80,10 +80,11 @@ class ResourceFinder {
         })
     }
 
+
     /**
      * getPauseWorkflowByPerson
-     * will return array of object, with preferenceable_id
-     * example:  [{preferenceable_id: 9}]
+     * will return array of object, with value of preferenceable_id
+     * example:  [9, 15]
      */
 
     getPauseWorkflowByPerson() {
@@ -100,6 +101,13 @@ class ResourceFinder {
             preferenceable_type: 'persons'
         })
         .select('preferenceable_id')
+        .then((result) => {
+            let preferences = []
+            result.map((item) => {
+                preferences.push(item.preferenceable_id)
+            })
+            return Promise.resolve(preferences)
+        })
         
     }
 }
