@@ -8,14 +8,14 @@ const knex = require('../../connection')
 class ResourceFinder {
 
     constructor(workflow, action, service, objects, rules) {
-        // this.workflow = workflow
-        // this.userId = workflow.user_id
-        // this.action = action
-        // this.rules = rules
-        // this.objects = objects
-        // this.personService = di.container['PersonService']
+        this.workflow = workflow
+        this.userId = workflow.user_id
+        this.action = action
+        this.rules = rules
+        this.objects = objects
+        this.personService = di.container['PersonService']
 
-        // this.runOnce = false
+        this.runOnce = false
     }
 
     get() {
