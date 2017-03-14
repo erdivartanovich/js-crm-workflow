@@ -57,7 +57,14 @@ class ResourceFinder {
             /** @todo Only query non exists on action_logs table resource if runnableOnce is true */
         }
 
-        return this
+        //apply getPauseWorkflowByPerson filter
+        this.getPauseWorkflowByPerson().then((results) => {
+            results.map((result) => {
+                this.personService.where('id', result)
+            })
+            
+            return this
+        })
     }
 
     getBatches() {
