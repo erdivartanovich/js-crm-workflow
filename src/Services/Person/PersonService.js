@@ -49,6 +49,8 @@ class PersonService extends BaseService {
             person_social_accounts: {'persons.id': 'person_social_accounts.person_id'},
         }
 
+        this.modelAssets = knex('assetables')
+
     }
 
     ensureUser(user_id) {
@@ -436,23 +438,21 @@ class PersonService extends BaseService {
     }
 
     getProfilePhoto(person) {
-        if (person.profile_photo) {
-            return Promise.resolve(person.profile_photo)
-        }
 
-        return knex(this.pivots.assets)
-               .where('asset_type', 1)
-               .where('assetable_type', 'persons')
-               .where('assetable_id', person.id)
-               .first()
-               .then(assetable => knex('digital_assets').where('id', assetable.asset_id).first())
-               .then(asset => {
-                   if (asset) {
-                       return asset.public_url
-                   }
-
-                   return ''
-               }).catch(err => err)
+        return this.modelAssets
+                .where({
+                    assetable_id: person.id, 
+                    assetable_type: 'persons',
+                    asset_type: 1
+                })
+                .first()
+                .then((asset) => {
+                    if (asset == 'undefined') {
+                        return ''
+                    }
+                    return asset.public_url
+                })
+                .catch(err => err)
     }
 
 }
