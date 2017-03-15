@@ -194,23 +194,54 @@ describe('RuleService', () => {
     })
 
 
-    describe('#getDependentRule()', () => {
-        it('Should return an empty array', (done) => {
-            const workflow = {
-                id: 3,
-            }
+    describe('#getRuleWithParent()', () => {
+        it('Should return valid query', (done) => {
+            const query = 'select * from `rules` where `workflow_id` = ? and `parent_id` is not null'
+            const workflow = { id: 2 }
 
-            const action = {
-                id: 5
-            }
+            testObj.getRuleWithParent(workflow)
+                .then(result => {
+                    result.sql.should.equals(query)
+                    result.bindings[0].should.equals(workflow.id)
 
-            testObj.getDependentRules(workflow, action).then(result => {
-                // if (result.length !== 0) {
-                //     throw Error('Return value is not an empty array')
-                // }
-                console.log('=-=-=-=-=-=-==-', result)
-                done()
-            }).catch(err => done(err))
+                    done()
+                }).catch(err => done(err))
+        })
+    })
+
+    describe('#getAssociatedRule()', () => {
+        it('Should return valid query', (done) => {
+            const query = 'select * from `rule_action` where `rule_id` in (?, ?, ?) and `action_id` = ?'
+            const action = { id: 2 }
+            const ids = [1, 2, 3]
+
+            testObj.getAssociatedRule(action, ids)
+                .then(result => {
+                    result.sql.should.equals(query)
+                    result.bindings[0].should.equals(ids[0])
+                    result.bindings[1].should.equals(ids[1])
+                    result.bindings[2].should.equals(ids[2])
+                    result.bindings[3].should.equals(action.id)
+
+                    done()
+                }).catch(err => done(err))
+        })
+    })
+
+    describe('#getRuleObjects()', () => {
+        it('Should return valid query', (done) => {
+            const query = 'select * from `rules` where `id` in (?, ?, ?)'
+            const rules = [1, 3, 5]
+
+            testObj.getRuleObjects(rules)
+                .then(result => {
+                    result.sql.should.equals(query)
+                    result.bindings[0].should.equals(rules[0])
+                    result.bindings[1].should.equals(rules[1])
+                    result.bindings[2].should.equals(rules[2])
+
+                    done()
+                }).catch(err => done(err))
         })
     })
 })

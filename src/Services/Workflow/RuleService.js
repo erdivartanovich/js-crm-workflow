@@ -71,7 +71,7 @@ class RuleService extends BaseService {
                 result.map(item => {
                     parentIds.push(item.parent_id)
                 })
-                return this.getParentRule(parentIds)
+                return this.getRuleObjects(parentIds)
             })
             .catch(err => console.log(err))
     }
