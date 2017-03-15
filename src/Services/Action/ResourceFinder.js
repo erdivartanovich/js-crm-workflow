@@ -64,7 +64,7 @@ class ResourceFinder {
             results = (!!results) ? results: [] 
             
             results.map((result) => {
-                this.personService.where(result)
+                this.personService.where('id', '=', result)
             })
             
             //return this class as thenable value
