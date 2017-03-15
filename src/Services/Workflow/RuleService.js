@@ -79,6 +79,7 @@ class RuleService extends BaseService {
                 return knex(this.tableName)
                     .whereIn('id', parentIds)
             })
+            .catch(err => console.log(err))
     }
 
     // getDependentRules() method using elasticsearch
