@@ -70,17 +70,21 @@ describe('ResourceFinder' , () => {
 
     describe('#prepareCriteria()', () => {
         it('should set limit into 10', () => {
-            testObject.prepareCriteria(10)
-            testObject.limit.should.equals(10)
+            testObject.prepareCriteria(10).then((obj) => {
+                obj.limit.should.equals(10)
+            })
         })
 
         it('should set limit into 100', () => {
-            testObject.prepareCriteria()
-            testObject.limit.should.equals(100)
+            testObject.prepareCriteria(100).then((obj) => {
+                obj.limit.should.equals(100)
+            })
         })
 
         it('should return itself', () => {
-            testObject.prepareCriteria().should.equals(testObject)
+            testObject.prepareCriteria().then((obj) => {
+                obj.should.equals(testObject)
+            })
         })
     })
 
