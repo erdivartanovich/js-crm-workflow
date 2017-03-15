@@ -76,11 +76,6 @@ class LogService extends BaseService {
         return Promise.resolve(result > 0)
     }
 
-    isParentRunned(workflow, action, resource, rules) {
-
-
-    }
-
 
 
 }

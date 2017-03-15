@@ -12,16 +12,16 @@ describe('RuleService', () => {
     before(() => {
         tracker.install()
         tracker.on('query', function checkResult(query, step) {
-            switch(step) {
-            case 9:
-                query.response([{
-                    rule_id: 10,
-                },{
-                    rule_id: 11,
-                }])
-                break
-            default:
-                query.response(query)
+            switch (step) {
+                case 9:
+                    query.response([{
+                        rule_id: 10,
+                    }, {
+                        rule_id: 11,
+                    }])
+                    break
+                default:
+                    query.response(query)
             }
         })
 
@@ -31,7 +31,7 @@ describe('RuleService', () => {
         tracker.uninstall()
     })
 
-    describe('#browse()' , () => {
+    describe('#browse()', () => {
         it('should return a valid query', (done) => {
             const browseQuery = 'select * from `rules` where `deleted_at` is null'
 
@@ -44,10 +44,10 @@ describe('RuleService', () => {
         })
     })
 
-    describe('#read()' , () => {
+    describe('#read()', () => {
         it('should return a valid query', (done) => {
             const readQuery = 'select * from `rules` where `deleted_at` is null and `id` = ? limit ?'
-            const readId = {id: 7}
+            const readId = { id: 7 }
             const limit = 1
 
             testObj.read(readId).then(result => {
@@ -61,39 +61,40 @@ describe('RuleService', () => {
         })
     })
 
-    describe('#edit()' , () => {
+    describe('#edit()', () => {
         it('should return a valid query', (done) => {
             const editQuery = 'update `rules` set `action_id` = ?, `id` = ?, `updated_at` = ? where `id` = ?'
             const editObject = {
-                id: 1, 'action_id': 77,
+                id: 1,
+                'action_id': 77,
             }
 
             testObj.edit(editObject).then(result => {
-              result.sql.should.equals(editQuery)
-              result.method.should.equals('update')
-              result.bindings[0].should.equals(editObject.action_id)
-              result.bindings[1].should.equals(editObject.id)
-              result.bindings[2].should.not.empty
-              result.bindings[3].should.equals(editObject.id)
+                result.sql.should.equals(editQuery)
+                result.method.should.equals('update')
+                result.bindings[0].should.equals(editObject.action_id)
+                result.bindings[1].should.equals(editObject.id)
+                result.bindings[2].should.not.empty
+                result.bindings[3].should.equals(editObject.id)
 
                 done()
             }).catch(err => done(err))
         })
     })
 
-    describe('#delete()' , () => {
-      it('should return a valid query for forced delete', (done) => {
-          const deleteQuery = 'delete from `rules` where `id` = ?'
-          const deleteId = 12
+    describe('#delete()', () => {
+        it('should return a valid query for forced delete', (done) => {
+            const deleteQuery = 'delete from `rules` where `id` = ?'
+            const deleteId = 12
 
-          testObj.delete({'id': deleteId}, true).then(result => {
-              result.sql.should.equals(deleteQuery)
-              result.method.should.equals('del')
-              result.bindings[0].should.equals(deleteId)
+            testObj.delete({ 'id': deleteId }, true).then(result => {
+                result.sql.should.equals(deleteQuery)
+                result.method.should.equals('del')
+                result.bindings[0].should.equals(deleteId)
 
-              done()
-          }).catch(err => done(err))
-      })
+                done()
+            }).catch(err => done(err))
+        })
     })
 
     describe('#syncActions()', () => {
@@ -101,15 +102,14 @@ describe('RuleService', () => {
             const rule = {
                 id: 1
             }
-            const action = [
-            {
+            const action = [{
                     id: 3
                 },
                 {
                     id: 4
                 },
                 {
-                    id: 5    
+                    id: 5
                 }
             ]
 
@@ -137,7 +137,7 @@ describe('RuleService', () => {
             const action = {
                 id: 2
             }
-            
+
             const addQuery = 'select * from `rules` where `workflow_id` = ? and `id` in (?, ?)'
             testObj.getRuleThatHasAction(workflow, action).then(result => {
                 result.sql.should.equals(addQuery)
@@ -152,7 +152,7 @@ describe('RuleService', () => {
             const query = 'select * from `rules` where `deleted_at` is null and `id` = ? limit ?'
             testObj.getParent({
                 id: 1,
-                parent_id: 1, 
+                parent_id: 1,
                 workflow_id: 1
             }).then(result => {
                 result.sql.should.equals(query)
@@ -165,7 +165,7 @@ describe('RuleService', () => {
 
             testObj.getParent({
                 id: 1,
-                parent_id: null, 
+                parent_id: null,
                 workflow_id: 1
             }).then(result => {
                 if (result !== null) {
@@ -189,8 +189,28 @@ describe('RuleService', () => {
                     throw Error('Return value is not an empty array')
                 }
                 done()
-            }).catch(err => done(err))        
+            }).catch(err => done(err))
         })
     })
 
+
+    describe('#getDependentRule()', () => {
+        it('Should return an empty array', (done) => {
+            const workflow = {
+                id: 3,
+            }
+
+            const action = {
+                id: 5
+            }
+
+            testObj.getDependentRules(workflow, action).then(result => {
+                // if (result.length !== 0) {
+                //     throw Error('Return value is not an empty array')
+                // }
+                console.log('=-=-=-=-=-=-==-', result)
+                done()
+            }).catch(err => done(err))
+        })
+    })
 })

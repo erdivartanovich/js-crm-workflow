@@ -50,36 +50,52 @@ class RuleService extends BaseService {
     }
 
     getDependentRules(workflow, action) {
-        return knex(this.tableName)
-            .where('workflow_id', workflow.id)
-            .whereNotNull('parent_id')
+        return this.getRuleWithParent(workflow)
             .then(result => {
-                console.log('Hello', result)
+                console.log('first....', result)
                 const ids = []
                 result.map(item => {
                     ids.push(item.id)
                 })
-                return knex(this.ruleActionName)
-                    .whereIn('rule_id', ids)
-                    .where('action_id', action.id)
+                return this.getAssociatedRule(action, ids)
             })
             .then(result => {
                 const rules = []
                 result.map(item => {
                     rules.push(item.rule_id)
                 })
-                return knex(this.tableName)
-                    .whereIn('id', rules)
+                return this.getRuleObjects(rules)
             })
             .then(result => {
                 const parentIds = []
                 result.map(item => {
                     parentIds.push(item.parent_id)
                 })
-                return knex(this.tableName)
-                    .whereIn('id', parentIds)
+                return this.getParentRule(parentIds)
             })
             .catch(err => console.log(err))
+    }
+
+    getRuleWithParent(workflow) {
+        return knex(this.tableName)
+            .where('workflow_id', workflow.id)
+            .whereNotNull('parent_id')
+    }
+
+    getAssociatedRule(action, ids) {
+        return knex(this.ruleActionName)
+            .whereIn('rule_id', ids)
+            .where('action_id', action.id)
+    }
+
+    getRuleObjects(rules) {
+        return knex(this.tableName)
+            .whereIn('id', rules)
+    }
+
+    getParentRule(parentIds) {
+        return knex(this.tableName)
+            .whereIn('id', parentIds)
     }
 
     // getDependentRules() method using elasticsearch
