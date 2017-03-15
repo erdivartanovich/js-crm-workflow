@@ -1,13 +1,15 @@
 'use strict'
 
 const BaseService = require('../BaseService')
+const di = require('../../di')
 const knex = require('../../connection')
 
-class LogService extends BaseService{
+class LogService extends BaseService {
 
-    constructor(){
+    constructor() {
         super()
         this.tableName = 'action_logs'
+        this.workflowService = di.container['WorkflowService']
     }
 
     attachRules(log, rules) {
@@ -17,7 +19,7 @@ class LogService extends BaseService{
 
         rules.map((rule) => {
             attach.action_log_id = log.id,
-            attach.rule_id =  rule.id
+                attach.rule_id = rule.id
 
             ids.push(attach)
             attach = {}
@@ -30,11 +32,11 @@ class LogService extends BaseService{
 
     doLog(workflow, action, rules, status, info, loggableType, loggableId) {
 
-        if(typeof loggableType === 'undefined') {
+        if (typeof loggableType === 'undefined') {
             loggableType = null
         }
 
-        if(typeof loggableId === 'undefined') {
+        if (typeof loggableId === 'undefined') {
             loggableId = null
         }
 
@@ -51,29 +53,37 @@ class LogService extends BaseService{
         let log = {}
 
         return this.add(logObject)
-        .then(() => {
-            return knex(this.tableName).orderBy('id', 'desc').first()
-        })
-        .then(result => {
-            log = result
-            return new Promise((resolve, reject)=>{
-                this.attachRules(log, rules).then((result)=>{
-                    resolve({log, result})
-                })
+            .then(() => {
+                return knex(this.tableName).orderBy('id', 'desc').first()
             })
-            return this.attachRules(log, rules)
-        })
-        .then(test => {
-// console.log(test.log.id)
-            return test.log
-        })
+            .then(result => {
+                log = result
+                return new Promise((resolve, reject) => {
+                    this.attachRules(log, rules).then((result) => {
+                        resolve({ log, result })
+                    })
+                })
+                return this.attachRules(log, rules)
+            })
+            .then(test => {
+                // console.log(test.log.id)
+                return test.log
+            })
     }
 
-// FIXME: need to implement this method
+    // FIXME: need to implement this method
     isRunned(workflow, action, resource) {
         const result = 0
 
         return Promise.resolve(result > 0)
+    }
+
+    isParentRunned(workflow, action, resource) {
+
+        return this.workflowService.getRulesActions(workflow)
+            .then(result => {
+                console.log(result)
+            })
     }
 
 

@@ -15,7 +15,9 @@ class WorkflowService extends BaseService {
         }
 
         this.services = {
-            rule, action, task
+            rule,
+            action,
+            task
         }
     }
 
@@ -25,8 +27,7 @@ class WorkflowService extends BaseService {
         return this.services.rule.add(rule)
     }
 
-    deleteRule(rule, forced)
-    {
+    deleteRule(rule, forced) {
         return this.services.rule.delete(rule, forced)
     }
 
@@ -40,13 +41,12 @@ class WorkflowService extends BaseService {
         return knex(this.objectTableName).insert(object)
     }
 
-    editObject(object)
-    {
+    editObject(object) {
         return knex(this.objectTableName).update(object).where('id', object.id)
     }
 
     deleteObject(object, forced) {
-        if (! forced) {
+        if (!forced) {
             return knex(this.objectTableName).update({
                 deleted_at: this.getNow()
             }).where('id', object.id)
@@ -88,8 +88,7 @@ class WorkflowService extends BaseService {
         })
     }
 
-    syncRuleActions(workflow, actions)
-    {
+    syncRuleActions(workflow, actions) {
         return this.syncActions(workflow, actions)
     }
 
@@ -116,11 +115,12 @@ class WorkflowService extends BaseService {
      * @param rules
      * @return promise list of action_id that match between action_workflow and rule_action tables
      */
-    getActionsList(workflow, rules){
+    getActionsList(workflow, rules) {
         let id = rules.map((rule) => rule.id)
 
         return knex(this.pivots.action)
-            .select('action_workflow.action_id')
+            .distinct('action_workflow.action_id')
+            .select()
             .join('rule_action', 'action_workflow.action_id', '=', 'rule_action.action_id')
             .where('workflow_id', workflow.id)
             .whereIn('rule_id ', id)
@@ -132,9 +132,9 @@ class WorkflowService extends BaseService {
      */
     getRulesActions(workflow) {
         return this.getRules(workflow)
-        .then(rules => {
-            return this.getActionsList(workflow, rules)
-        }) 
+            .then(rules => {
+                return this.getActionsList(workflow, rules)
+            })
     }
 
     listObjects(workflow) {
@@ -164,14 +164,14 @@ class WorkflowService extends BaseService {
         workflow.user_id = newOwner.id
 
         this.add(workflow).then(newWorkflow => {
-            return new Promise((resolve, reject) => {
-                if (typeof newWorkflow == 'undefined') {
-                    reject(newWorkflow)
-                }
+                return new Promise((resolve, reject) => {
+                    if (typeof newWorkflow == 'undefined') {
+                        reject(newWorkflow)
+                    }
 
-                resolve(newWorkflow)
+                    resolve(newWorkflow)
+                })
             })
-        })
             .then((newWorkflow) => {
                 return this.listActions(workflow).then(actions => {
                     this.copyActions(actions, newOwner).then(copiedAction => {
