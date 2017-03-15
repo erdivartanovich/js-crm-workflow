@@ -108,6 +108,35 @@ class WorkflowService extends BaseService {
         return this.listRules(workflow)
     }
 
+    /**
+     * This method used by getRulesActions(), inner join action_workflow and rule_action tables
+     * and searching action_id that are same between both tables.  
+     * 
+     * @param workflow 
+     * @param rules
+     * @return promise list of action_id that match between action_workflow and rule_action tables
+     */
+    getActionsList(workflow, rules){
+        let id = rules.map((rule) => rule.id)
+
+        return knex(this.pivots.action)
+            .select('action_workflow.action_id')
+            .join('rule_action', 'action_workflow.action_id', '=', 'rule_action.action_id')
+            .where('workflow_id', workflow.id)
+            .whereIn('rule_id ', id)
+    }
+
+    /**
+     * @param workflow 
+     * @return promise query builder
+     */
+    getRulesActions(workflow) {
+        return this.getRules(workflow)
+        .then(rules => {
+            return this.getActionsList(workflow, rules)
+        }) 
+    }
+
     listObjects(workflow) {
         return knex(this.objectTableName).whereIn('workflow_id', [workflow.id])
     }
