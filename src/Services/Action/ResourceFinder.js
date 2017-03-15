@@ -58,12 +58,18 @@ class ResourceFinder {
         }
 
         //apply getPauseWorkflowByPerson filter
-        this.getPauseWorkflowByPerson().then((results) => {
+        return this.getPauseWorkflowByPerson().then((results) => {
+            
+            //safety undefined check
+            results = (!!results) ? results: [] 
+            
             results.map((result) => {
-                this.personService.where('id', result)
+                this.personService.where(result)
             })
             
-            return this
+            //return this class as thenable value
+            return Promise.resolve(this)
+
         })
     }
 
