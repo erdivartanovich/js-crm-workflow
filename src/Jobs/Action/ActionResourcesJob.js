@@ -61,8 +61,27 @@ class ActionResourcesJob {
                     this.finished()
                     return false
                 } else {
-                    //process action
-                    return this.applyAction(resource, service)
+                    //check for rule dependency
+                    return this.ruleService.getDependentRules(this.workflow, this.action)
+                        .then(dependentRules => {
+                            if (dependentRules) {
+                                return this.logService.isParentRunned(this.workflow, this.action, resource, dependentRules)
+                                    .then(exist => {
+                                        if (!exist) {
+                                            return this.log(resource, LOG_STATUS_FAILED, 'Dependent rule(s) not meet!')
+                                                .then(() => {
+                                                    this.finished()
+                                                    return false
+                                                })
+                                        } else {
+                                            return this.applyAction(resource, service)
+                                        }
+                                    })
+                            } else {
+                                //process action
+                                return this.applyAction(resource, service)
+                            }
+                        })
                 }
 
                 // TODO:

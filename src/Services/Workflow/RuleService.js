@@ -49,38 +49,6 @@ class RuleService extends BaseService {
         })
     }
 
-    getDependentRules(workflow, action) {
-        return knex(this.tableName)
-            .where('workflow_id', workflow.id)
-            .whereNotNull('parent_id')
-            .then(result => {
-                console.log('Hello', result)
-                const ids = []
-                result.map(item => {
-                    ids.push(item.id)
-                })
-                return knex(this.ruleActionName)
-                    .whereIn('rule_id', ids)
-                    .where('action_id', action.id)
-            })
-            .then(result => {
-                const rules = []
-                result.map(item => {
-                    rules.push(item.rule_id)
-                })
-                return knex(this.tableName)
-                    .whereIn('id', rules)
-            })
-            .then(result => {
-                const parentIds = []
-                result.map(item => {
-                    parentIds.push(item.parent_id)
-                })
-                return knex(this.tableName)
-                    .whereIn('id', parentIds)
-            })
-    }
-
     // getDependentRules() method using elasticsearch
     getRuleThatHasAction(workflow, action) {
         return knex(this.ruleActionName)
