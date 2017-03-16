@@ -68,13 +68,19 @@ class TaskService extends BaseService {
             return tagModel.whereIn('tag', arrTag)
         }
 
-        
+        //define function to populate set of ids to attached into taggables id 
+        const populateIds =function(_tags) {
+            _tags.map((_tag) => {
+                let new_id = {}
+                new_id[_tag.id.toString()] = {'user_id': user.id}
+                ids.push(new_id)
+            })
+            Promise.resolve(ids)
+        }
 
         
         
 
-      // task->tags()->attach(ids); (new TaskObserver)->updated(task); foreach (tags
-      // as tag) {     (new TagObserver)->updated(tag); } return true;
     }
 
   /**
