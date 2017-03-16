@@ -49,7 +49,6 @@ class TaskService extends BaseService {
   * additional function: attachTags
   */
     attachTags(task, user, tags) {
-        const ids = []
         const arrTag = []
         const tagModel = knex('tags')
         const taggablesModel = knex('taggables')
@@ -68,15 +67,28 @@ class TaskService extends BaseService {
             return tagModel.whereIn('tag', arrTag)
         }
 
-        //define function to populate set of ids to attached into taggables id 
+        //define function to populate set of ids that will be attached into taggables id 
         const populateIds =function(_tags) {
+            let ids = []
             _tags.map((_tag) => {
                 let new_id = {}
-                new_id[_tag.id.toString()] = {'user_id': user.id}
+                new_id['tag_id'] = _tag.id
+                new_id['user_id'] = user.id 
+                new_id['taggable_type'] = 'tasks'
+                new_id['taggable_id'] = task.id
                 ids.push(new_id)
             })
-            Promise.resolve(ids)
+            return Promise.resolve(ids)
         }
+
+        //define function to attach new set of ids
+        const attachIds = function(ids) {
+            let payloads = ids
+            return Promise.each(payloads, (payload) => {
+                return taggablesModel.insert(payload)
+            })
+        }
+       
 
         
         
