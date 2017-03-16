@@ -61,10 +61,12 @@ class ActionResourcesJob {
                     this.finished()
                     return false
                 } else {
-                    //check for rule dependency
+                    //     //check for rule dependency
                     return this.ruleService.getDependentRules(this.workflow, this.action)
                         .then(dependentRules => {
-                            if (dependentRules) {
+                            // console.log(dependentRules)
+                            if (dependentRules.length > 0) {
+                                console.log('Rule dependency', dependentRules)
                                 return this.logService.isParentRunned(this.workflow, this.action, resource, dependentRules)
                                     .then(exist => {
                                         if (!exist) {
@@ -87,6 +89,9 @@ class ActionResourcesJob {
                 // TODO:
                 //2. check priority
                 //3. check dependency rules
+
+                //process action
+                // return this.applyAction(resource, service)
             })
     }
 
