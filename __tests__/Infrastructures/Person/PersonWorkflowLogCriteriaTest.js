@@ -1,13 +1,13 @@
 'use strict'
 
 const basePath = '../../../src'
-const PersonWorkflowLogCriteria = require(basePath + '/Infrastructure/Person/PersonWorkflowLogCriteria')
+const PersonWorkflowLogCriteria = require(basePath + '/Infrastructures/Person/PersonWorkflowLogCriteria')
 const WorkflowService = require(basePath + '/Services/Workflow/WorkflowService')
 var tracker = require('mock-knex').getTracker()
 var td = require('testdouble')
 
-const workflow = {id: 4}
-const action = {id: 7}
+const workflow = { id: 4 }
+const action = { id: 7 }
 
 const testObj = new PersonWorkflowLogCriteria(workflow, action)
 const tableName = 'action_logs'
@@ -27,7 +27,7 @@ describe('PersonWorkflowLogCriteria', () => {
         tracker.uninstall()
     })
 
-    describe('#getExistLog()' , () => {
+    describe('#getExistLog()', () => {
         it('should return a valid query', (done) => {
             const browseQuery = 'select `id` from `' + tableName + '` where `workflow_id` = ? and `action_id` = ? and `status` = ?'
 
@@ -43,7 +43,7 @@ describe('PersonWorkflowLogCriteria', () => {
         })
     })
 
-     describe('#apply()', () => {
+    describe('#apply()', () => {
         model = td.object(WorkflowService)
         it('should return a valid object', () => {
             testObj.apply(model).should.be.an.instanceOf(Object)
