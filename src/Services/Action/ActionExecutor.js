@@ -4,6 +4,7 @@ const knex = require('../../connection')
 const ResourceFinder = require('../../Services/Action/ResourceFinder')
 const TargetServiceFactory = require('./TargetServiceFactory')
 const ActionResourcesJob = require('../../Jobs/Action/ActionResourcesJob')
+const LogService = require('../../Services/Workflow/LogService')
 const EventObserver = require('../../Infrastructures/Observer/EventObserver')
 
 class ActionExecutor {
@@ -15,6 +16,7 @@ class ActionExecutor {
         this.objects = objects
         this.action = action
         this.rules = rules
+        this.log = new LogService
         this.event = new EventObserver
 
         this.event.on('check', (states) => {
@@ -63,7 +65,10 @@ class ActionExecutor {
                 .getBatches())
             .then(batches => {
                 if (batches.length <= 0) {
-                    this.event.emit('exit')
+                    return this.log.doLog(this.workflow, this.action, this.rules, 0, 'Resource(s) not found!')
+                        .then(() => {
+                            this.event.emit('exit')
+                        })
                 }
                 batches.map(batch => {
                     batch.then(resources => {
