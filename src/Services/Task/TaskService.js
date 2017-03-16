@@ -89,9 +89,12 @@ class TaskService extends BaseService {
             })
         }
        
-
-        
-        
+       //chain all earlier function into single process
+        return getTagsRecords()
+          .then(populateIds)
+          .then(attachIds)
+          .then(() => {return Promise.resolve(true)})
+          .catch((error) => {return Promise.resolve(false)})
 
     }
 
