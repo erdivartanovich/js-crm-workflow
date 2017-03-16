@@ -1,15 +1,14 @@
 'use strict'
 
 const BaseService = require('../BaseService')
-const di = require('../../di')
 const knex = require('../../connection')
 
 class LogService extends BaseService {
 
-    constructor() {
+    constructor(workflowService) {
         super()
         this.tableName = 'action_logs'
-        this.workflowService = di.container['WorkflowService']
+        this.workflowService = workflowService
     }
 
     attachRules(log, rules) {
@@ -78,12 +77,33 @@ class LogService extends BaseService {
         return Promise.resolve(result > 0)
     }
 
-    isParentRunned(workflow, action, resource) {
+    isParentRunned(workflow, action, resource, rules) {
 
-        return this.workflowService.getRulesActions(workflow)
-            .then(result => {
-                console.log(result)
+        return this.workflowService.getRulesActions(workflow, rules).then((parentActions) => {
+            const queries = []
+
+            parentActions.map((parentAction) => {
+                const conditions = {
+                    'workflow_id': workflow.id,
+                    'action_id': parentAction.id,
+
+                    // @todo: need to get resource table based on supplemented resource.
+                    // ... for now, it's assumed that every resource is person.
+                    'object_class': 'persons',
+                    'object_id': resource.id,
+                    'status': 1,
+                }
+
+                const query = this.resetConditions().browse().where(conditions).count()
+                queries.push(query)
             })
+
+            return Promise.all(queries)
+        }).then(results => {
+            return results.reduce((carry, count) => {
+                return carry && (count > 0)
+            }, true)
+        })
     }
 
 
