@@ -51,12 +51,30 @@ class TaskService extends BaseService {
 
   /**
   * additional function: detachTags
+  * @param tags = [{id: 1, tag: 'cool}, {id: 2, tag: 'important'}]
   */
     detachTags(tasks, users, ...tags) {
-        return this.model
-              .whereIn(
-                'id', knex.raw('select `tag_id` from `taggables` where `taggables`.`taggable_id` = \'tasks\' and `user_id` = `users.id`')
-              )
+        // return this.model
+        //       .whereIn(
+        //         'id', knex.raw('select `tag_id` from `taggables` where `taggables`.`taggable_id` = \'tasks\' and `user_id` = `users.id`')
+        //       )
+
+        let arrTag = []
+        tags.map((tag) => {
+            arrTag.push(tag.tag)
+        })
+
+        knex('taggables')
+          .whereIn('tag', arrTag)
+          .where({
+              user_id: users.id,
+              task_id: tasks.id
+          })
+          .del()
+          .then((result) => {
+              return result
+          })
+            
   }
 
   /**
