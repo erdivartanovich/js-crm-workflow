@@ -14,7 +14,11 @@ class TaskService extends BaseService {
     constructor() {
         super()
         this.tableName = 'tasks'
+        this.tableTags = 'tags'
+        this.tableTaggables = 'taggables'
         this.model = knex(this.tableName)
+        this.tagsModel = knex(this.tableTags)
+        this.taggablesModel = knex(this.tableTaggables)
         this.tagService = new tagService
     }
 
@@ -49,10 +53,7 @@ class TaskService extends BaseService {
   * additional function: attachTags
   */
     attachTags(task, user, tags) {
-        const arrTag = []
-        const tagModel = knex('tags')
-        const taggablesModel = knex('taggables')
-        
+        const arrTag = []  
         
         // safety check of undefined tags
         tags = !!tags ? tags : []
@@ -64,7 +65,7 @@ class TaskService extends BaseService {
 
         //define function to get instance of tags from db that should contains tag.id
         const getTagsRecords = function() {
-            return tagModel.whereIn('tag', arrTag)
+            return this.tagsModel.whereIn('tag', arrTag)
         }
 
         //define function to populate set of ids that will be attached into taggables id 
@@ -85,7 +86,7 @@ class TaskService extends BaseService {
         const attachIds = function(ids) {
             let payloads = ids
             return Promise.each(payloads, (payload) => {
-                return taggablesModel.insert(payload)
+                return this.taggablesModel.insert(payload)
             })
         }
        
@@ -100,10 +101,26 @@ class TaskService extends BaseService {
 
   /**
   * additional function: detachTags
+  * @param tags = [{id: 1, tag: 'cold'}, {id: 2, tag: 'important'}]
   */
-    detachTags() {
-      // fix me
-    }
+    detachTags(tasks, users, tags) {
+        const arrTag = []
+        const newTags = !!tags ? tags : []
+
+        newTags.map((tag) => arrTag.push(tag.tag))
+
+        return this.taggablesModel
+                    .where({ 
+                      user_id: users.id, 
+                      taggable_id: tasks.id,
+                      taggable_type: 'tasks'
+                    })
+                    .whereIn('tag_id', arrTag)
+                    .del()            
+                    .then((result) =>  result)
+                    .catch(err => err)
+  }
+
 
   /**
   * additional function: syncTags
@@ -211,3 +228,8 @@ class TaskService extends BaseService {
 * export module
 */
 module.exports = TaskService
+
+const tag = new TaskService()
+
+return tag.detachTags({id: 10, tasks: 'cold'}, {id: 2}, [{id: 1, tag: 'cold'}, {id: 2, tag: 'important'}])
+  .then((result) => console.log(result))
