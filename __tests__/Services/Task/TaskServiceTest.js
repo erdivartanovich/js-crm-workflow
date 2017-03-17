@@ -195,7 +195,7 @@ describe('TaskService', () => {
         result.sql.should.equals(markNotCompletedQuery)
         result.method.should.equals('update')
         result.bindings[0].should.equals(0)
-        result.bindings[1].should.not.emptys
+        result.bindings[1].should.not.empty
         result.bindings[2].should.equals(taskObject.updated_by)
         result.bindings[3].should.equals(taskObject.id)
         done()
