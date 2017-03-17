@@ -50,7 +50,7 @@ class ActionResourcesJob {
 
     finished() {
         // TODO: fix the implementation of Observer
-        // this.event.emit('finished')
+        this.event.emit('finished')
     }
 
     processResource(resource, service) {
@@ -170,8 +170,10 @@ class ActionResourcesJob {
                                 return Promise.resolve(true)
                             })
                     } else {
-                        this.finished()
-                        return this.log(resource, LOG_STATUS_FAILED, `Action ${this.action.target_field} on ${this.action.target_class} failed!`)
+                        return this.log(resource, LOG_STATUS_FAILED, `Action ${this.action.target_field} on ${this.action.target_class} failed!`).then(() => {
+                            this.finished()
+                            return Promise.resolve(true)
+                        })
                     }
 
                 })
