@@ -2,6 +2,7 @@
 
 const RuleCriteriaFactory = require('../../Infrastructures/Rule/RuleCriteriaFactory')
 const ObjectCriteriaFactory = require('../../Infrastructures/Workflow/ObjectCriteriaFactory')
+const PersonWorkflowLogCriteria = require('../../Infrastructures/Person/PersonWorkflowLogCriteria')
 const di = require('../../di')
 const knex = require('../../connection')
 
@@ -53,23 +54,31 @@ class ResourceFinder {
             .applyCriteria(ruleCriteria)
             .applyCriteria(objectCriteria)
 
-        if (this.runnableOnce) {
-            /** @todo Only query non exists on action_logs table resource if runnableOnce is true */
-        }
+        return Promise.resolve((() => {
+            if (this.runOnce) {
+                const logCriteria = new PersonWorkflowLogCriteria(this.workflow, this.action)
 
-        //apply getPauseWorkflowByPerson filter
-        return this.getPauseWorkflowByPerson().then((results) => {
-            
+                return this.personService.applyCriteria(logCriteria)
+            } else {
+                return Promise.resolve(false)
+            }
+        })()).then(() => {
+            //apply getPauseWorkflowByPerson filter
+            return this.getPauseWorkflowByPerson()
+        }).then((results) => {
+
             //safety undefined check
-            results = (!!results) ? results: [] 
-            
+            results = (!!results) ? results : []
+
             results.map((result) => {
                 this.personService.where('id', '=', result)
             })
-            
+
             //return this class as thenable value
             return Promise.resolve(this)
+        }).then(result => {
 
+            return Promise.resolve(result)
         })
     }
 
@@ -101,7 +110,7 @@ class ResourceFinder {
      */
 
     getPauseWorkflowByPerson() {
-        
+
         //define data model
         const model = knex('preferences')
 
@@ -109,19 +118,19 @@ class ResourceFinder {
         const identifier = 'person-workflow-is-paused'
 
         return model.where({
-            identifier: identifier,
-            value: 1,
-            preferenceable_type: 'persons'
-        })
-        .select('preferenceable_id')
-        .then((result) => {
-            let preferences = []
-            result.map((item) => {
-                preferences.push(item.preferenceable_id)
+                identifier: identifier,
+                value: 1,
+                preferenceable_type: 'persons'
             })
-            return Promise.resolve(preferences)
-        })
-        
+            .select('preferenceable_id')
+            .then((result) => {
+                let preferences = []
+                result.map((item) => {
+                    preferences.push(item.preferenceable_id)
+                })
+                return Promise.resolve(preferences)
+            })
+
     }
 }
 
