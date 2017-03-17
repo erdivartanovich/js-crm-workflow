@@ -4,31 +4,27 @@ const knex = require('../../connection')
 
 class PersonWorkflowLogCriteria {
 
-	constructor(workflow, action) {
-		this.workflow = workflow
-		this.action = action
-	}
+    constructor(workflow, action) {
+        this.workflow = workflow
+        this.action = action
+    }
 
-	apply(model) {
+    apply(model) {
+        return this.getExistLog()
+            .then(results => {
+                const ids = results.map(id => id.object_id)
+                return model.whereNotIn('id', ids)
+            })
+    }
 
-		return this.getExistLog()
-		.then(ids => {
-			return model.whereNotIn('id', ids)
-		})
-
-		return model
-	}
-
-	getExistLog() {
-		return knex()
-			.select('id')
-			.from('action_logs')
-			.where({
-				workflow_id: this.workflow.id,
-				action_id: this.action.id,
-				status: 1
-			})
-	}	
+    getExistLog() {
+        return knex('action_logs')
+            .where({
+                workflow_id: this.workflow.id,
+                action_id: this.action.id,
+                status: 1
+            })
+    }
 }
 
 module.exports = PersonWorkflowLogCriteria
