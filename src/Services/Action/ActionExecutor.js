@@ -60,9 +60,8 @@ class ActionExecutor {
 
                 return this.runOnce ? this.resourceFinder.runnableOnce() : this.resourceFinder
             })
-            .then(resourceFinder => resourceFinder
-                .prepareCriteria()
-                .getBatches())
+            .then(resourceFinder => resourceFinder.prepareCriteria())
+            .then(resourceFinder => resourceFinder.getBatches())
             .then(batches => {
                 if (batches.length <= 0) {
                     return this.log.doLog(this.workflow, this.action, this.rules, 0, 'Resource(s) not found!')
