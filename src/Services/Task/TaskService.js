@@ -157,11 +157,26 @@ class TaskService extends BaseService {
     }
 
   /**
-  * additional function: restore
-  */
-    restore() {
-      // fix me
-    }
+   * This method intended to change deleted_at value to be null, 
+   * so data that already set to 
+   * soft delete will able to appear.
+   * 
+   * @param payload = task object 
+   * @return pormise of query builder
+   */
+  restore(payload) {
+      if(!payload.permanent_deleted_at){
+      
+          return knex(this.tableName)
+              .where('id', payload['id'])
+              .update({
+                  deleted_at: null
+              })
+
+      }
+
+      return Promise.resolve(null)
+  }
 
   /**
   * additional function: clone
