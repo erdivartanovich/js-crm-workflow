@@ -49,7 +49,7 @@ class PersonService extends BaseService {
             person_social_accounts: {'persons.id': 'person_social_accounts.person_id'},
         }
 
-        this.modelAssets = knex('assetables')
+        this.modelAssets = knex('digital_assets')
 
     }
 
@@ -439,22 +439,19 @@ class PersonService extends BaseService {
 
     getProfilePhoto(person) {
 
-        return this.modelAssets
-                .where({
-                    assetable_id: person.id, 
-                    assetable_type: 'persons',
-                    asset_type: 1
-                })
-                .first()
-                .then((asset) => {
-                    if (asset == 'undefined') {
-                        return ''
-                    }
-                    return asset.public_url
-                })
-                .catch(err => err)
+        return this.modelAssets.whereIn('id', knex.raw('select `asset_id` from `assetables` where `assetables`.`assetable_id` = ' + person.id + ' and `assetables`.`assetable_type` = \'persons\' and `assetables`.`asset_type` = 1'))
+            .first()
+            .then((asset) => {
+                if (typeof asset === 'undefined') {
+                    return ''
+                }
+                
+                return asset.public_url
+            })
+            .catch(err => err)
     }
 
 }
 
 module.exports = PersonService
+
