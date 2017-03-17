@@ -127,7 +127,20 @@ class TaskService extends BaseService {
             return tagModel.whereIn('tag', arrTag)
         }
 
-        
+        //define function to populate set of ids that will be sync into taggables id 
+        const populateIds =function(_tags) {
+            let ids = []
+            _tags.map((_tag) => {
+                let new_id = {}
+                new_id['tag_id'] = _tag.id
+                new_id['user_id'] = user.id 
+                new_id['taggable_type'] = 'tasks'
+                new_id['taggable_id'] = task.id
+                ids.push(new_id)
+            })
+            return Promise.resolve(ids)
+        }
+
 
     }
 
