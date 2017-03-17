@@ -9,7 +9,7 @@ if (typeof bottle == 'undefined') {
     bottle.service('RuleService', require('./Services/Workflow/RuleService'))
     bottle.service('ActionService', require('./Services/Action/ActionService'))
     bottle.service('TaskService', require('./Services/Task/TaskService'))
-    bottle.service('LogService', require('./Services/Workflow/LogService'))
+    bottle.service('LogService', require('./Services/Workflow/LogService'), 'WorkflowService')
 
     bottle.service('WorkflowService', require('./Services/Workflow/WorkflowService'),
         'RuleService', 'ActionService', 'TaskService')
@@ -38,7 +38,7 @@ if (typeof bottle == 'undefined') {
     bottle.service('PersonScore', require('./Services/Person/PersonScoreService'))
 
     bottle.service('PersonCrawlService', require('./Services/Person/PersonCrawlService'))
-    bottle.service('SocialAppend', require('./Infrastructures/Target/SocialAppend'),'PersonCrawlService' )
+    bottle.service('SocialAppend', require('./Infrastructures/Target/SocialAppend'), 'PersonCrawlService')
 }
 
 

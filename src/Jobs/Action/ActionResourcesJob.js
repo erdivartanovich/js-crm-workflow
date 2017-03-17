@@ -61,13 +61,37 @@ class ActionResourcesJob {
                     this.finished()
                     return false
                 } else {
-                    //process action
-                    return this.applyAction(resource, service)
+                    //     //check for rule dependency
+                    return this.ruleService.getDependentRules(this.workflow, this.action)
+                        .then(dependentRules => {
+                            // console.log(dependentRules)
+                            if (dependentRules.length > 0) {
+                                console.log('Rule dependency', dependentRules)
+                                return this.logService.isParentRunned(this.workflow, this.action, resource, dependentRules)
+                                    .then(exist => {
+                                        if (!exist) {
+                                            return this.log(resource, LOG_STATUS_FAILED, 'Dependent rule(s) not meet!')
+                                                .then(() => {
+                                                    this.finished()
+                                                    return false
+                                                })
+                                        } else {
+                                            return this.applyAction(resource, service)
+                                        }
+                                    })
+                            } else {
+                                //process action
+                                return this.applyAction(resource, service)
+                            }
+                        })
                 }
 
                 // TODO:
                 //2. check priority
                 //3. check dependency rules
+
+                //process action
+                // return this.applyAction(resource, service)
             })
     }
 

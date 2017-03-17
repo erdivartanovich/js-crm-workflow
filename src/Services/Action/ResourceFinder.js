@@ -3,6 +3,7 @@
 const RuleCriteriaFactory = require('../../Infrastructures/Rule/RuleCriteriaFactory')
 const ObjectCriteriaFactory = require('../../Infrastructures/Workflow/ObjectCriteriaFactory')
 const di = require('../../di')
+const knex = require('../../connection')
 
 class ResourceFinder {
 
@@ -56,7 +57,20 @@ class ResourceFinder {
             /** @todo Only query non exists on action_logs table resource if runnableOnce is true */
         }
 
-        return this
+        //apply getPauseWorkflowByPerson filter
+        return this.getPauseWorkflowByPerson().then((results) => {
+            
+            //safety undefined check
+            results = (!!results) ? results: [] 
+            
+            results.map((result) => {
+                this.personService.where('id', '=', result)
+            })
+            
+            //return this class as thenable value
+            return Promise.resolve(this)
+
+        })
     }
 
     getBatches() {
@@ -77,6 +91,37 @@ class ResourceFinder {
 
             return batches
         })
+    }
+
+
+    /**
+     * getPauseWorkflowByPerson
+     * will return array of object, with value of preferenceable_id
+     * example:  [9, 15]
+     */
+
+    getPauseWorkflowByPerson() {
+        
+        //define data model
+        const model = knex('preferences')
+
+        //define preference identifer
+        const identifier = 'person-workflow-is-paused'
+
+        return model.where({
+            identifier: identifier,
+            value: 1,
+            preferenceable_type: 'persons'
+        })
+        .select('preferenceable_id')
+        .then((result) => {
+            let preferences = []
+            result.map((item) => {
+                preferences.push(item.preferenceable_id)
+            })
+            return Promise.resolve(preferences)
+        })
+        
     }
 }
 

@@ -52,7 +52,7 @@ class RuleService extends BaseService {
     getDependentRules(workflow, action) {
         return this.getRuleWithParent(workflow)
             .then(result => {
-                console.log('first....', result)
+                // console.log('first....', result)
                 const ids = []
                 result.map(item => {
                     ids.push(item.id)
