@@ -91,10 +91,23 @@ class TaskService extends BaseService {
   }
 
   /**
-  * additional function: restore
-  */
-  restore() {
-    // fix me
+   * This method intended to change deleted_at value to be null, 
+   * so data that already set to 
+   * soft delete will able to appear.
+   * 
+   * @param task object 
+   * @return pormise of query builder
+   */
+  restore(task) {
+    if(!task.permanent_deleted_at){
+      task.deleted_at = null
+
+      //called from BaseService
+      return this.edit(task)
+    }
+
+    return Promise.resolve(null)
+    
   }
 
   /**
