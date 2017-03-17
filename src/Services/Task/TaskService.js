@@ -95,19 +95,21 @@ class TaskService extends BaseService {
    * so data that already set to 
    * soft delete will able to appear.
    * 
-   * @param task object 
+   * @param payload = task object 
    * @return pormise of query builder
    */
-  restore(task) {
-    if(!task.permanent_deleted_at){
-      task.deleted_at = null
+  restore(payload) {
+      if(!payload.permanent_deleted_at){
+      
+          return knex(this.tableName)
+              .where('id', payload['id'])
+              .update({
+                  deleted_at: null
+              })
 
-      //called from BaseService
-      return this.edit(task)
-    }
+      }
 
-    return Promise.resolve(null)
-    
+      return Promise.resolve(null)
   }
 
   /**

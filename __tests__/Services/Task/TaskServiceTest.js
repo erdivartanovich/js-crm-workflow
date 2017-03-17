@@ -195,9 +195,27 @@ describe('TaskService', () => {
         result.sql.should.equals(markNotCompletedQuery)
         result.method.should.equals('update')
         result.bindings[0].should.equals(0)
-        result.bindings[1].should.not.empty
+        result.bindings[1].should.not.emptys
         result.bindings[2].should.equals(taskObject.updated_by)
         result.bindings[3].should.equals(taskObject.id)
+        done()
+      }).catch(err => done(err))
+    })
+  })
+
+  describe('#restore()', () => {
+    it('should return a valid query for restore data', (done) => {
+      const restoreQuery = 'update `tasks` set `deleted_at` = ? where `id` = ?'
+      const obj = {
+        id: 25,
+        deleted_at: null
+      }
+
+      testObj.restore(obj).then(result => {
+        result.sql.should.equals(restoreQuery)
+        result.method.should.equals('update')
+        result.bindings[0].should.equals(obj.deleted_at)
+        result.bindings[1].should.equals(obj.id)
         done()
       }).catch(err => done(err))
     })
