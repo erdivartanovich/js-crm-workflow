@@ -121,7 +121,7 @@ class WorkflowService extends BaseService {
         return knex(this.pivots.action)
             .join('rule_action', 'action_workflow.action_id', '=', 'rule_action.action_id')
             .where('workflow_id', workflow.id)
-            .whereIn('rule_id ', id)
+            .whereIn('rule_id', id)
     }
 
     /**
