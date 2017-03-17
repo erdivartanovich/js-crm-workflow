@@ -108,8 +108,27 @@ class TaskService extends BaseService {
   /**
   * additional function: syncTags
   */
-    syncTags() {
-      // fix me
+    syncTags(task, user, tags) {
+      const arrTag = []
+        const tagModel = knex('tags')
+        const taggablesModel = knex('taggables')
+        
+        
+        // safety check of undefined tags
+        tags = !!tags ? tags : []
+
+        //flatten array of tag objects 
+        tags.map((tag) => {
+            arrTag.push(tag.tag)
+        })
+
+        //define function to get instance of tags from db that should contains tag.id
+        const getTagsRecords = function() {
+            return tagModel.whereIn('tag', arrTag)
+        }
+
+        
+
     }
 
   /**
