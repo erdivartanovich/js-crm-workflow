@@ -117,7 +117,7 @@ class WorkflowService extends BaseService {
      */
     getActionsList(workflow, rules) {
         let id = rules.map((rule) => rule.id)
-
+        console.log('Get associated actions for parent')
         return knex(this.pivots.action)
             .join('rule_action', 'action_workflow.action_id', '=', 'rule_action.action_id')
             .where('workflow_id', workflow.id)
@@ -128,12 +128,11 @@ class WorkflowService extends BaseService {
      * @param workflow 
      * @return promise query builder
      */
-    getRulesActions(workflow) {
-        return this.getRules(workflow).then(rules => {
-            return this.getActionsList(workflow, rules)
-        }).then((results) => {
-            return this.services.action.browse().whereIn('id', results.map(result => result.action_id))
-        })
+    getRulesActions(workflow, rules) {
+        return this.getActionsList(workflow, rules)
+            .then((results) => {
+                return this.services.action.browse().whereIn('id', results.map(result => result.action_id))
+            })
     }
 
     listObjects(workflow) {
