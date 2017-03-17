@@ -5,9 +5,10 @@ const knex = require('../../connection')
 
 class LogService extends BaseService {
 
-    constructor() {
+    constructor(workflowService) {
         super()
         this.tableName = 'action_logs'
+        this.workflowService = workflowService
     }
 
     attachRules(log, rules) {
@@ -74,6 +75,46 @@ class LogService extends BaseService {
         const result = 0
 
         return Promise.resolve(result > 0)
+    }
+
+    isParentRunned(workflow, action, resource, rules) {
+        console.log('Parent rule(s)', rules)
+        return this.workflowService.getRulesActions(workflow, rules)
+            .then((parentActions) => {
+                console.log('Parent actions', parentActions)
+                const queries = []
+
+                parentActions.map((parentAction) => {
+                    const conditions = {
+                        'workflow_id': workflow.id,
+                        'action_id': parentAction.id,
+
+                        // @todo: need to get resource table based on supplemented resource.
+                        // ... for now, it's assumed that every resource is person.
+                        'object_class': 'persons',
+                        'object_id': resource.id,
+                        'status': 1,
+                    }
+
+                    const query = this.resetConditions().browse().where(conditions).count()
+                    queries.push(query)
+                })
+
+                return Promise.all(queries)
+            }).then(results => {
+                // console.log('Log checking result...', results)
+                const counts = []
+
+                results.map(result => {
+                        result.map(count => {
+                            counts.push(count['count(*)'])
+                        })
+                    })
+                    // console.log(counts)
+                return counts.reduce((carry, count) => {
+                    return carry && (count > 0)
+                }, true)
+            })
     }
 
 
