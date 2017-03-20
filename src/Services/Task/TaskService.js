@@ -53,12 +53,12 @@ class TaskService extends BaseService {
   * additional function: attachTags
   */
     attachTags(task, user, tags) {
-        const arrTag = []  
-        
+        const arrTag = []
+
         // safety check of undefined tags
         tags = !!tags ? tags : []
 
-        //flatten array of tag objects 
+        //flatten array of tag objects
         tags.map((tag) => {
             arrTag.push(tag.tag)
         })
@@ -68,13 +68,13 @@ class TaskService extends BaseService {
             return this.tagsModel.whereIn('tag', arrTag)
         }
 
-        //define function to populate set of ids that will be attached into taggables id 
+        //define function to populate set of ids that will be attached into taggables id
         const populateIds =function(_tags) {
             let ids = []
             _tags.map((_tag) => {
                 let new_id = {}
                 new_id['tag_id'] = _tag.id
-                new_id['user_id'] = user.id 
+                new_id['user_id'] = user.id
                 new_id['taggable_type'] = 'tasks'
                 new_id['taggable_id'] = task.id
                 ids.push(new_id)
@@ -89,7 +89,7 @@ class TaskService extends BaseService {
                 return this.taggablesModel.insert(payload)
             })
         }
-       
+
        //chain all earlier function into single process
         return getTagsRecords()
           .then(populateIds)
@@ -110,13 +110,13 @@ class TaskService extends BaseService {
         newTags.map((tag) => arrTag.push(tag.tag))
 
         return this.taggablesModel
-                    .where({ 
-                      user_id: users.id, 
+                    .where({
+                      user_id: users.id,
                       taggable_id: tasks.id,
                       taggable_type: 'tasks'
                     })
                     .whereIn('tag_id', arrTag)
-                    .del()            
+                    .del()
                     .then((result) =>  result)
                     .catch(err => err)
   }
@@ -157,16 +157,16 @@ class TaskService extends BaseService {
     }
 
   /**
-   * This method intended to change deleted_at value to be null, 
-   * so data that already set to 
+   * This method intended to change deleted_at value to be null,
+   * so data that already set to
    * soft delete will able to appear.
-   * 
-   * @param payload = task object 
+   *
+   * @param payload = task object
    * @return pormise of query builder
    */
   restore(payload) {
       if(!payload.permanent_deleted_at){
-      
+
           return knex(this.tableName)
               .where('id', payload['id'])
               .update({
@@ -243,8 +243,3 @@ class TaskService extends BaseService {
 * export module
 */
 module.exports = TaskService
-
-const tag = new TaskService()
-
-return tag.detachTags({id: 10, tasks: 'cold'}, {id: 2}, [{id: 1, tag: 'cold'}, {id: 2, tag: 'important'}])
-  .then((result) => console.log(result))
