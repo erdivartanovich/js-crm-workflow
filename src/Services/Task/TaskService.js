@@ -94,7 +94,7 @@ class TaskService extends BaseService {
           .then(populateIds)
           .then(attachIds)
           .then(() => {return Promise.resolve(true)})
-          .catch((error) => {return Promise.resolve(false)})
+          .catch(() => {return Promise.resolve(false)})
 
     }
 
@@ -151,9 +151,12 @@ class TaskService extends BaseService {
         }
 
         //sync process, => mean detach existing and attach new one
-        
-
-
+        return getTagsRecords()
+          .then(populateIds)
+          .then(detachExisting)
+          .then(this.attachTags(task, user, tags))
+          .then((attachResult) => {return Promise.resolve(attachResult)})
+          .catch(() => {return Promise.resolve(false)})
 
     }
 
