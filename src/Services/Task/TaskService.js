@@ -133,7 +133,13 @@ class TaskService extends BaseService {
   * additional function: markCompleted
   */
     markCompleted(payload) {
-      // fix me
+      return knex(this.tableName)
+        .where('id', payload['id'])
+        .update({
+          is_completed: 1,
+          updated_by: payload['updated_by'],
+          updated_at: this.getNow()
+        })
     }
 
   /**
