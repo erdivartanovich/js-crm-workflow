@@ -185,7 +185,22 @@ describe('TaskService', () => {
       }).catch(err => done(err))
     })
   })
+  // markCompleted test that fill / change status value to 1
+  describe('#markCompleted()', () => {
+    it('should return a valid query for updated status column', (done) => {
+      const markCompletedQuery = 'update `tasks` set `is_completed` = ?, `updated_at` = ?, `updated_by` = ? where `id` = ?'      
 
+      testObj.markCompleted(taskObject).then(result => {
+        result.sql.should.equals(markCompletedQuery)
+        result.method.should.equals('update')
+        result.bindings[0].should.equals(1)
+        result.bindings[1].should.not.empty
+        result.bindings[2].should.equals(taskObject.updated_by)
+        result.bindings[3].should.equals(taskObject.id)
+        done()
+      }).catch(err => done(err))
+    })
+  })
   // markNotCompleted test that fill / change status value to 0
   describe('#markNotCompleted()', () => {
     it('should return a valid query for updated status column', (done) => {
