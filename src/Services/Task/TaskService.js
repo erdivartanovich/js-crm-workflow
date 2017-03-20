@@ -143,13 +143,15 @@ class TaskService extends BaseService {
         
         //define function to detach existing tags for current task;
         const detachExisting = function(_ids) {
-            taggablesModel.where({
-              user_id: _ids.tag_id;
-              taggable_type: _ids.taggable_type;
-              taggable_type: _ids.taggable_id; 
-            })
+            return taggablesModel.where({
+                user_id: _ids.tag_id,
+                taggable_type: _ids.taggable_type,
+                taggable_id: _ids.taggable_id,
+            }).del()
         }
+
         //sync process, => mean detach existing and attach new one
+        
 
 
 
