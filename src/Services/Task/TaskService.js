@@ -95,7 +95,7 @@ class TaskService extends BaseService {
           .then(populateIds)
           .then(attachIds)
           .then(() => {return Promise.resolve(true)})
-          .catch((error) => {return Promise.resolve(false)})
+          .catch(() => {return Promise.resolve(false)})
 
     }
 
@@ -125,8 +125,56 @@ class TaskService extends BaseService {
   /**
   * additional function: syncTags
   */
-    syncTags() {
-      // fix me
+    syncTags(task, user, tags) {
+      const arrTag = []
+        const tagModel = knex('tags')
+        const taggablesModel = knex('taggables')
+        
+        
+        // safety check of undefined tags
+        tags = !!tags ? tags : []
+
+        //flatten array of tag objects 
+        tags.map((tag) => {
+            arrTag.push(tag.tag)
+        })
+
+        //define function to get instance of tags from db that should contains tag.id
+        const getTagsRecords = function() {
+            return tagModel.whereIn('tag', arrTag)
+        }
+
+        //define function to populate set of ids that will be sync into taggables id 
+        const populateIds =function(_tags) {
+            let ids = []
+            _tags.map((_tag) => {
+                let new_id = {}
+                new_id['tag_id'] = _tag.id
+                new_id['user_id'] = user.id 
+                new_id['taggable_type'] = 'tasks'
+                new_id['taggable_id'] = task.id
+                ids.push(new_id)
+            })
+            return Promise.resolve(ids)
+        }
+        
+        //define function to detach existing tags for current task;
+        const detachExisting = function(_ids) {
+            return taggablesModel.where({
+                user_id: _ids.tag_id,
+                taggable_type: _ids.taggable_type,
+                taggable_id: _ids.taggable_id,
+            }).del()
+        }
+
+        //sync process, => mean detach existing and attach new one
+        return getTagsRecords()
+          .then(populateIds)
+          .then(detachExisting)
+          .then(this.attachTags(task, user, tags))
+          .then((attachResult) => {return Promise.resolve(attachResult)})
+          .catch(() => {return Promise.resolve(false)})
+
     }
 
   /**
