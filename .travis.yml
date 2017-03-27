@@ -35,7 +35,7 @@ env:
 notifications:
   slack:
     rooms:
-      - kwdev:dknCQKK3enfxFtNg9gGg2s6C
+      - refactory-id:T1r3gl1APBJzx88UA1cUJDFE#activities
     on_success: always
     on_failure: always
     on_start: always
@@ -50,7 +50,6 @@ branches:
 
 # Commands to be run before your environment runs.
 before_script:
-  - sleep 10
   - curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
   - sudo apt-get install -y nodejs
   # - git config --global url."https://$OAUTH_ACCESS_TOKEN:x-oauth-basic@github.com".insteadOf "https://github.com"
@@ -68,6 +67,7 @@ before_script:
 # CANNOT DO ANY OF THESE YET
 script:
   - npm run test
+  - node report.js
 #  - php artisan migrate:install --no-interaction -v
 #  - php artisan migrate:refresh --no-interaction -v
 #  - php artisan es:install --no-interaction -v

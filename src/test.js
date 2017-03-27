@@ -1,60 +1,28 @@
-const PersonFamilyService = require('./Services/Person/person-family-service')
-const PersonIdentifierService = require('./Services/Person/person-identifier-service')
-const PersonScoresService = require('./Services/Person/person-scores-service')
+const ruleService = require('./Services/Workflow/RuleService')
+const ob = require('./Services/CustomField/ObjectCustomFieldService')
 
-//person family
-const familyService = new PersonFamilyService
+const a = new ob()
 
-familyService.read(1)
-    .then((result) => result) 
+let u ={
+    id : 1
+}
 
-familyService.edit({id: 1, person_id: 66, related_to: 53})
-    .then((result) => result) 
+let cf = {
+    id : 2
+}
 
-//person identifier
-const personIdentifier = new PersonIdentifierService
+let o = {
+    id : 2,
+    tableName: 'persons'
+}
 
-personIdentifier.browse()
-    .then((result) => result)
+a.getFieldValue(cf, o, u).then(r => console.log(r)).then(() => process.exit())
 
-personIdentifier.read(1)
-    .then((result) => result)
+// const a = new ruleService()
 
-personIdentifier.edit({id: 1, person_id: 48, identifier_type: 1})
-    .then((result) => result)
+// let z = {
+//     id: 3,
+//     parent_id: 2
+// }
 
-personIdentifier.add({id: 11, person_id: 48, identifier_type: 4, identifier: 'blabla'})
-    .then((result) => result)
-
-personIdentifier.add({id: 12, person_id: 48, identifier_type: 2, identifier: 'blabla'})
-    .then((result) => result)
-
-personIdentifier.delete(11)
-    .then((result) => result)
-
-personIdentifier.delete(12)
-    .then((result) => result)
-
-//person scores
-const personScores = new PersonScoresService
-
-personScores.browse()
-    .then((result) => result)
-
-personScores.read(1)
-    .then((result) => result)
-
-personScores.edit({id: 1, person_id: 45, score_type: 2, model_applied: 'Model CRMFoundation\lied', score: 4.3, confidence: 50})
-    .then((result) => result)
-
-personScores.add({id: 143, person_id: 1, score_type: 2, model_applied: 'Model CRMFoundation\lied', score: 4.3, confidence: 50})
-    .then((result) => result)
-
-personScores.delete(143)
-    .then((result) => result)
-
-
-
-
-
-
+// a.getParentsFor(z).then(x => console.log(x)).then(() => process.exit())
